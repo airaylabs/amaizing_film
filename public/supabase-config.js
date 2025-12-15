@@ -21,11 +21,17 @@ const Auth = {
 
   // Sign up with email
   async signUpEmail(email, password, fullName) {
+    // Get the correct redirect URL for email confirmation
+    const redirectUrl = window.location.origin.includes('localhost') 
+      ? window.location.origin 
+      : 'https://amaizingfilm.netlify.app';
+    
     const { data, error } = await supabase.auth.signUp({
       email,
       password,
       options: {
-        data: { full_name: fullName }
+        data: { full_name: fullName },
+        emailRedirectTo: redirectUrl
       }
     });
     if (error) throw error;
@@ -44,10 +50,15 @@ const Auth = {
 
   // Sign in with Google
   async signInGoogle() {
+    // Get the correct redirect URL (production or local)
+    const redirectUrl = window.location.origin.includes('localhost') 
+      ? window.location.origin 
+      : 'https://amaizingfilm.netlify.app';
+    
     const { data, error } = await supabase.auth.signInWithOAuth({
       provider: 'google',
       options: {
-        redirectTo: window.location.origin
+        redirectTo: redirectUrl
       }
     });
     if (error) throw error;
@@ -324,7 +335,7 @@ const DB = {
     if (error) throw error;
   },
 
-  // ---- OPAL LINKS ----
+  // ---- OPAL LINKS (User's personal links) ----
   async getOpalLinks(userId) {
     const { data, error } = await supabase
       .from('opal_links')
@@ -338,6 +349,141 @@ const DB = {
     const { data, error } = await supabase
       .from('opal_links')
       .upsert([{ user_id: userId, app_id: appId, url }], { onConflict: 'user_id,app_id' })
+      .select()
+      .single();
+    if (error) throw error;
+    return data;
+  },
+
+  // ---- GLOBAL OPAL LINKS (Admin-managed, visible to all) ----
+  async getGlobalOpalLinks() {
+    const { data, error } = await supabase
+      .from('global_opal_links')
+      .select('*')
+      .eq('is_active', true);
+    if (error) {
+      console.warn('Global opal links table may not exist yet:', error.message);
+      return [];
+    }
+    return data || [];
+  },
+
+  async upsertGlobalOpalLink(appId, url, userId) {
+    const { data, error } = await supabase
+      .from('global_opal_links')
+      .upsert([{ app_id: appId, url, is_active: true, created_by: userId }], { onConflict: 'app_id' })
+      .select()
+      .single();
+    if (error) throw error;
+    return data;
+  },
+
+  async deleteGlobalOpalLink(appId) {
+    const { error } = await supabase
+      .from('global_opal_links')
+      .delete()
+      .eq('app_id', appId);
+    if (error) throw error;
+  },
+
+  // ---- USER ROLES ----
+  async getUserRole(userId) {
+    const { data, error } = await supabase
+      .from('user_roles')
+      .select('role')
+      .eq('user_id', userId)
+      .single();
+    if (error) {
+      // If no role found, user is regular user
+      if (error.code === 'PGRST116') return 'user';
+      console.warn('User roles table may not exist yet:', error.message);
+      return 'user';
+    }
+    return data?.role || 'user';
+  },
+
+  async setUserRole(userId, role) {
+    const { data, error } = await supabase
+      .from('user_roles')
+      .upsert([{ user_id: userId, role }], { onConflict: 'user_id' })
+      .select()
+      .single();
+    if (error) throw error;
+    return data;
+  },
+
+  // ---- GENERATED ASSETS ----
+  async getGeneratedAssets(userId, projectId = null) {
+    let query = supabase
+      .from('generated_assets')
+      .select('*')
+      .eq('user_id', userId)
+      .order('created_at', { ascending: false });
+    
+    if (projectId) query = query.eq('project_id', projectId);
+    
+    const { data, error } = await query;
+    if (error) {
+      console.warn('Generated assets table may not exist yet:', error.message);
+      return [];
+    }
+    return data || [];
+  },
+
+  async createGeneratedAsset(asset) {
+    const { data, error } = await supabase
+      .from('generated_assets')
+      .insert([asset])
+      .select()
+      .single();
+    if (error) throw error;
+    return data;
+  },
+
+  async deleteGeneratedAsset(id) {
+    const { error } = await supabase
+      .from('generated_assets')
+      .delete()
+      .eq('id', id);
+    if (error) throw error;
+  },
+
+  // ---- CHARACTER VARIANTS ----
+  async getCharacterVariants(characterId) {
+    const { data, error } = await supabase
+      .from('character_variants')
+      .select('*')
+      .eq('character_id', characterId)
+      .order('variant_number', { ascending: true });
+    if (error) {
+      console.warn('Character variants table may not exist yet:', error.message);
+      return [];
+    }
+    return data || [];
+  },
+
+  async createCharacterVariant(variant) {
+    const { data, error } = await supabase
+      .from('character_variants')
+      .insert([variant])
+      .select()
+      .single();
+    if (error) throw error;
+    return data;
+  },
+
+  async selectCharacterVariant(characterId, variantId) {
+    // First, unselect all variants for this character
+    await supabase
+      .from('character_variants')
+      .update({ is_selected: false })
+      .eq('character_id', characterId);
+    
+    // Then select the chosen one
+    const { data, error } = await supabase
+      .from('character_variants')
+      .update({ is_selected: true })
+      .eq('id', variantId)
       .select()
       .single();
     if (error) throw error;

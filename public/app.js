@@ -3,6 +3,7 @@
 // ============ STATE ============
 let state = {
   user: null,
+  userRole: 'user', // 'admin' or 'user'
   currentPage: 'dashboard',
   currentApp: null,
   currentProject: null,
@@ -10,7 +11,10 @@ let state = {
   characters: [],
   locations: [],
   history: [],
-  opalLinks: {}
+  opalLinks: {},        // User's personal links
+  globalOpalLinks: {},  // Admin-managed global links (visible to all)
+  generatedAssets: [],
+  outputCount: 1        // Default output count (1/2/3/4)
 };
 
 // ============ INITIALIZATION ============
@@ -155,7 +159,8 @@ function updateUserInfo() {
   if (!state.user) return;
   const name = state.user.user_metadata?.full_name || state.user.email?.split('@')[0] || 'User';
   const email = state.user.email || '';
-  document.getElementById('user-name').textContent = name;
+  const nameEl = document.getElementById('user-name');
+  nameEl.innerHTML = name + (isAdmin() ? ' <span class="text-yellow-400 text-xs">👑</span>' : '');
   document.getElementById('user-email').textContent = email;
   document.getElementById('user-avatar').textContent = name.charAt(0).toUpperCase();
 }
@@ -164,25 +169,52 @@ function updateUserInfo() {
 async function loadUserData() {
   if (!state.user) return;
   try {
-    const [projects, characters, locations, history, opalLinks] = await Promise.all([
+    const [projects, characters, locations, history, opalLinks, globalOpalLinks, userRole, generatedAssets] = await Promise.all([
       DB.getProjects(state.user.id),
       DB.getCharacters(state.user.id),
       DB.getLocations(state.user.id),
       DB.getHistory(state.user.id),
-      DB.getOpalLinks(state.user.id)
+      DB.getOpalLinks(state.user.id),
+      DB.getGlobalOpalLinks(),
+      DB.getUserRole(state.user.id),
+      DB.getGeneratedAssets(state.user.id)
     ]);
     state.projects = projects;
     state.characters = characters;
     state.locations = locations;
     state.history = history;
+    state.userRole = userRole;
+    state.generatedAssets = generatedAssets;
+    
+    // Personal opal links
     state.opalLinks = {};
     opalLinks.forEach(link => { state.opalLinks[link.app_id] = link.url; });
+    
+    // Global opal links (admin-managed)
+    state.globalOpalLinks = {};
+    globalOpalLinks.forEach(link => { state.globalOpalLinks[link.app_id] = link.url; });
+    
     const savedProject = localStorage.getItem('currentProject');
     if (savedProject && state.projects.find(p => p.id === savedProject)) {
       state.currentProject = savedProject;
     }
+    
+    // Load saved output count preference
+    const savedOutputCount = localStorage.getItem('outputCount');
+    if (savedOutputCount) state.outputCount = parseInt(savedOutputCount);
+    
     updateProjectSelector();
   } catch (error) { console.error('Error loading data:', error); }
+}
+
+// Helper: Get effective Opal link (personal > global)
+function getEffectiveOpalLink(appId) {
+  return state.opalLinks[appId] || state.globalOpalLinks[appId] || null;
+}
+
+// Helper: Check if user is admin
+function isAdmin() {
+  return state.userRole === 'admin';
 }
 
 // ============ NAVIGATION ============
@@ -207,6 +239,8 @@ function updateBreadcrumb() {
   else if (state.currentPage === 'locations') text = '🎭 Locations';
   else if (state.currentPage === 'workflow') text = '📋 Workflow';
   else if (state.currentPage === 'opal-links') text = '🔗 Opal Links';
+  else if (state.currentPage === 'admin-opal-links') text = '👑 Admin / Manage Global Links';
+  else if (state.currentPage === 'admin-users') text = '👑 Admin / User Management';
   bc.textContent = text;
 }
 
@@ -273,6 +307,22 @@ function renderSidebar() {
       <span class="mr-2">🔗</span> Opal Links
     </div>
   `;
+  
+  // Admin section (only visible to admins)
+  if (isAdmin()) {
+    html += `
+      <div class="mt-4 mb-2 px-3 text-xs text-red-400 uppercase tracking-wider flex items-center gap-2">
+        <span>👑</span> Admin Panel
+      </div>
+      <div class="sidebar-item ${state.currentPage === 'admin-opal-links' ? 'active' : ''} rounded-lg p-3 cursor-pointer mb-1" onclick="navigateTo('admin-opal-links')">
+        <span class="mr-2">⚙️</span> Manage Global Links
+      </div>
+      <div class="sidebar-item ${state.currentPage === 'admin-users' ? 'active' : ''} rounded-lg p-3 cursor-pointer mb-1" onclick="navigateTo('admin-users')">
+        <span class="mr-2">👥</span> User Management
+      </div>
+    `;
+  }
+  
   nav.innerHTML = html;
 }
 
@@ -349,6 +399,8 @@ function renderPage() {
     case 'locations': html = renderLocationsPage(); break;
     case 'workflow': html = renderWorkflowPage(); break;
     case 'opal-links': html = renderOpalLinksPage(); break;
+    case 'admin-opal-links': html = isAdmin() ? renderAdminOpalLinksPage() : renderDashboard(); break;
+    case 'admin-users': html = isAdmin() ? renderAdminUsersPage() : renderDashboard(); break;
     default: html = renderDashboard();
   }
   content.innerHTML = `<div class="fade-in">${html}</div>`;
@@ -409,6 +461,29 @@ function renderDashboard() {
           <div class="bg-green-500/10 px-4 py-2 rounded-full border border-green-500/20">4️⃣ Copy to Opal</div>
         </div>
       </div>
+      
+      <!-- Quick Access Opal Links -->
+      ${Object.keys(state.globalOpalLinks).length > 0 || Object.keys(state.opalLinks).length > 0 ? `
+        <div class="glass rounded-2xl p-6 mb-8 gradient-card">
+          <h3 class="font-semibold mb-4 flex items-center gap-2">
+            <span>🔗</span> Quick Access Opal Tools
+            <span class="text-xs text-gray-500">(Click to open)</span>
+          </h3>
+          <div class="grid grid-cols-3 md:grid-cols-4 lg:grid-cols-6 gap-3">
+            ${PHASES.flatMap(phase => phase.apps.filter(app => getEffectiveOpalLink(app.id)).slice(0, 2).map(app => `
+              <a href="${getEffectiveOpalLink(app.id)}" target="_blank" 
+                class="glass glass-hover rounded-xl p-3 text-center cursor-pointer block">
+                <span class="text-2xl block mb-1">${app.icon}</span>
+                <span class="text-xs">${app.name.split(' ')[0]}</span>
+              </a>
+            `)).join('')}
+            <div onclick="navigateTo('opal-links')" class="glass glass-hover rounded-xl p-3 text-center cursor-pointer">
+              <span class="text-2xl block mb-1">➕</span>
+              <span class="text-xs">More</span>
+            </div>
+          </div>
+        </div>
+      ` : ''}
       
       <h3 class="text-lg font-semibold mb-4">📋 Production Phases</h3>
       <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4 mb-8">
@@ -487,6 +562,8 @@ function renderAppPage() {
   
   const chars = state.characters.filter(c => !state.currentProject || c.project_id === state.currentProject);
   const locs = state.locations.filter(l => !state.currentProject || l.project_id === state.currentProject);
+  const effectiveLink = getEffectiveOpalLink(state.currentApp);
+  const isGlobalLink = !state.opalLinks[state.currentApp] && state.globalOpalLinks[state.currentApp];
   
   return `
     <div class="max-w-6xl mx-auto">
@@ -495,15 +572,45 @@ function renderAppPage() {
         <div class="flex-1">
           <div class="flex items-center gap-2 mb-1">
             <span class="tag">${phase.name}</span>
+            ${isGlobalLink ? '<span class="tag bg-green-500/20 border-green-500/30 text-green-400">✓ Ready</span>' : ''}
           </div>
           <h2 class="text-2xl font-bold">${app.name}</h2>
           <p class="text-gray-400 text-sm">${app.desc}</p>
         </div>
-        ${state.opalLinks[state.currentApp] ? `
-          <a href="${state.opalLinks[state.currentApp]}" target="_blank" class="btn-primary px-5 py-2.5 rounded-xl text-sm font-medium">🚀 Open in Opal</a>
+        ${effectiveLink ? `
+          <a href="${effectiveLink}" target="_blank" class="btn-primary px-5 py-2.5 rounded-xl text-sm font-medium flex items-center gap-2">
+            🚀 Open in Opal
+            ${isGlobalLink ? '<span class="text-xs opacity-70">(Global)</span>' : ''}
+          </a>
         ` : `
           <button onclick="navigateTo('opal-links')" class="btn-secondary px-4 py-2 rounded-xl text-sm">🔗 Setup Opal Link</button>
         `}
+      </div>
+      
+      <!-- Output Count Selector -->
+      <div class="glass rounded-xl p-4 mb-6">
+        <div class="flex items-center justify-between">
+          <div class="flex items-center gap-3">
+            <span class="text-sm text-gray-400">Output Count:</span>
+            <div class="flex gap-2">
+              ${[1, 2, 3, 4].map(n => `
+                <button onclick="setOutputCount(${n})" class="w-10 h-10 rounded-lg ${state.outputCount === n ? 'btn-primary' : 'btn-secondary'} text-sm font-bold">
+                  ${n}
+                </button>
+              `).join('')}
+            </div>
+            <span class="text-xs text-gray-500 ml-2">Generate ${state.outputCount} variation${state.outputCount > 1 ? 's' : ''}</span>
+          </div>
+          <div class="flex items-center gap-2">
+            <span class="text-xs text-gray-500">Character Mode:</span>
+            <select id="character-mode" class="rounded-lg px-3 py-1.5 text-sm" onchange="updateCharacterMode(this.value)">
+              <option value="single">Single Character</option>
+              <option value="multi-2">2 Characters</option>
+              <option value="multi-3">3 Characters</option>
+              <option value="multi-4">4+ Characters</option>
+            </select>
+          </div>
+        </div>
       </div>
       
       ${(chars.length > 0 || locs.length > 0) ? `
@@ -583,10 +690,22 @@ function generatePrompt() {
     if (el) values[input.id] = el.value;
   });
   
-  let prompt = appConfig.template;
+  let prompt = appConfig.promptTemplate || appConfig.template;
   Object.keys(values).forEach(key => {
     prompt = prompt.replace(new RegExp(`{${key}}`, 'g'), values[key] || `[${key}]`);
   });
+  
+  // Add output count instruction if supported
+  if (appConfig.supportsOutputCount && state.outputCount > 1) {
+    prompt += `\n\n[Generate ${state.outputCount} variations]`;
+  }
+  
+  // Add character mode info if supported
+  const charMode = localStorage.getItem('characterMode') || 'single';
+  if (appConfig.supportsMultiCharacter && charMode !== 'single') {
+    const charCount = charMode.replace('multi-', '');
+    prompt += `\n\n[Scene with ${charCount} characters]`;
+  }
   
   document.getElementById('prompt-output').textContent = prompt;
 }
@@ -631,8 +750,19 @@ async function saveToHistory() {
 
 function copyAndOpenOpal() {
   copyPrompt();
-  const opalUrl = state.opalLinks[state.currentApp] || 'https://opal.google';
+  const opalUrl = getEffectiveOpalLink(state.currentApp) || 'https://opal.google';
   window.open(opalUrl, '_blank');
+}
+
+function setOutputCount(count) {
+  state.outputCount = count;
+  localStorage.setItem('outputCount', count);
+  renderPage();
+}
+
+function updateCharacterMode(mode) {
+  // Store character mode for prompt generation
+  localStorage.setItem('characterMode', mode);
 }
 
 function quickInsertCharacter(id) {
@@ -906,20 +1036,69 @@ function renderWorkflowPage() {
 
 // ============ OPAL LINKS PAGE ============
 function renderOpalLinksPage() {
+  const globalLinksCount = Object.keys(state.globalOpalLinks).filter(k => state.globalOpalLinks[k]).length;
+  const personalLinksCount = Object.keys(state.opalLinks).filter(k => state.opalLinks[k]).length;
+  
   return `
     <div class="max-w-4xl mx-auto">
       <div class="mb-6">
         <h2 class="text-2xl font-bold">🔗 Opal Links</h2>
-        <p class="text-gray-400 text-sm">Configure quick links to Google Opal for each tool</p>
+        <p class="text-gray-400 text-sm">Quick access to Google Opal tools</p>
       </div>
       
+      <!-- Status Cards -->
+      <div class="grid grid-cols-2 gap-4 mb-6">
+        <div class="glass rounded-2xl p-5">
+          <div class="flex items-center gap-3 mb-2">
+            <span class="text-2xl">🌐</span>
+            <div>
+              <h4 class="font-semibold">Global Links</h4>
+              <p class="text-xs text-gray-500">Pre-configured by admin</p>
+            </div>
+          </div>
+          <p class="text-3xl font-bold text-green-400">${globalLinksCount}</p>
+          <p class="text-xs text-gray-500 mt-1">Ready to use</p>
+        </div>
+        <div class="glass rounded-2xl p-5">
+          <div class="flex items-center gap-3 mb-2">
+            <span class="text-2xl">👤</span>
+            <div>
+              <h4 class="font-semibold">Personal Links</h4>
+              <p class="text-xs text-gray-500">Your custom overrides</p>
+            </div>
+          </div>
+          <p class="text-3xl font-bold text-purple-400">${personalLinksCount}</p>
+          <p class="text-xs text-gray-500 mt-1">Custom links</p>
+        </div>
+      </div>
+      
+      <!-- Quick Access Section -->
+      ${globalLinksCount > 0 ? `
+        <div class="glass rounded-2xl p-6 mb-6 gradient-card">
+          <h3 class="font-semibold mb-4 flex items-center gap-2">
+            <span>🚀</span> Quick Access (Click to Open)
+          </h3>
+          <div class="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-3">
+            ${PHASES.flatMap(phase => phase.apps.filter(app => getEffectiveOpalLink(app.id)).map(app => `
+              <a href="${getEffectiveOpalLink(app.id)}" target="_blank" 
+                class="glass glass-hover rounded-xl p-3 text-center cursor-pointer block">
+                <span class="text-2xl block mb-1">${app.icon}</span>
+                <span class="text-xs">${app.name}</span>
+                ${state.globalOpalLinks[app.id] && !state.opalLinks[app.id] ? '<span class="block text-[10px] text-green-400 mt-1">✓ Global</span>' : ''}
+              </a>
+            `)).join('')}
+          </div>
+        </div>
+      ` : ''}
+      
+      <!-- Personal Links Override Section -->
       <div class="glass rounded-2xl p-6 mb-6">
-        <h3 class="font-semibold mb-4">How to get Opal links:</h3>
-        <ol class="text-sm text-gray-400 space-y-2">
+        <h3 class="font-semibold mb-4">📝 Personal Link Overrides (Optional)</h3>
+        <p class="text-sm text-gray-400 mb-4">Add your own links to override global settings, or leave empty to use global links.</p>
+        <ol class="text-sm text-gray-500 space-y-1 mb-4">
           <li>1. Go to <a href="https://opal.google" target="_blank" class="text-purple-400 hover:underline">opal.google</a></li>
-          <li>2. Open the specific tool you want (Image, Video, etc.)</li>
-          <li>3. Copy the URL from your browser</li>
-          <li>4. Paste it below for quick access</li>
+          <li>2. Open the specific tool you want</li>
+          <li>3. Copy the URL and paste below</li>
         </ol>
       </div>
       
@@ -928,15 +1107,19 @@ function renderOpalLinksPage() {
           <div class="glass rounded-2xl p-5">
             <h3 class="font-semibold mb-4">${phase.icon} ${phase.name}</h3>
             <div class="space-y-3">
-              ${phase.apps.map(app => `
+              ${phase.apps.map(app => {
+                const hasGlobal = !!state.globalOpalLinks[app.id];
+                const hasPersonal = !!state.opalLinks[app.id];
+                return `
                 <div class="flex items-center gap-3">
                   <span class="w-8">${app.icon}</span>
                   <span class="w-40 text-sm">${app.name}</span>
+                  ${hasGlobal ? '<span class="text-xs text-green-400 w-16">✓ Global</span>' : '<span class="w-16"></span>'}
                   <input type="text" id="opal-${app.id}" value="${state.opalLinks[app.id] || ''}" 
-                    class="flex-1 rounded-lg px-3 py-2 text-sm" placeholder="https://opal.google/...">
+                    class="flex-1 rounded-lg px-3 py-2 text-sm" placeholder="${hasGlobal ? 'Using global link (optional override)' : 'https://opal.google/...'}">
                   <button onclick="saveOpalLink('${app.id}')" class="btn-secondary px-3 py-2 rounded-lg text-sm">Save</button>
                 </div>
-              `).join('')}
+              `}).join('')}
             </div>
           </div>
         `).join('')}
@@ -1044,9 +1227,156 @@ function showSettingsModal() {
   showModal('Settings', `
     <div class="space-y-4">
       <p class="text-gray-400">Logged in as: <span class="text-white">${state.user?.email}</span></p>
+      <p class="text-gray-400">Role: <span class="text-white ${isAdmin() ? 'text-yellow-400' : ''}">${isAdmin() ? '👑 Admin' : '👤 User'}</span></p>
       <button onclick="handleLogout()" class="btn-secondary w-full py-2 rounded-lg text-red-400">Logout</button>
     </div>
   `, hideModal);
+}
+
+// ============ ADMIN: GLOBAL OPAL LINKS PAGE ============
+function renderAdminOpalLinksPage() {
+  if (!isAdmin()) return '<p>Access denied</p>';
+  
+  const totalApps = PHASES.reduce((sum, p) => sum + p.apps.length, 0);
+  const configuredCount = Object.keys(state.globalOpalLinks).filter(k => state.globalOpalLinks[k]).length;
+  
+  return `
+    <div class="max-w-4xl mx-auto">
+      <div class="mb-6">
+        <div class="flex items-center gap-3 mb-2">
+          <span class="text-3xl">👑</span>
+          <div>
+            <h2 class="text-2xl font-bold">Manage Global Opal Links</h2>
+            <p class="text-gray-400 text-sm">Configure links that ALL users can access</p>
+          </div>
+        </div>
+      </div>
+      
+      <!-- Stats -->
+      <div class="glass rounded-2xl p-5 mb-6 gradient-card">
+        <div class="flex items-center justify-between">
+          <div>
+            <p class="text-sm text-gray-400">Global Links Configured</p>
+            <p class="text-3xl font-bold text-green-400">${configuredCount} / ${totalApps}</p>
+          </div>
+          <div class="text-right">
+            <p class="text-sm text-gray-400">Coverage</p>
+            <p class="text-3xl font-bold text-purple-400">${Math.round(configuredCount/totalApps*100)}%</p>
+          </div>
+        </div>
+        <div class="mt-4 bg-dark-800 rounded-full h-2 overflow-hidden">
+          <div class="bg-gradient-to-r from-purple-500 to-green-500 h-full" style="width: ${configuredCount/totalApps*100}%"></div>
+        </div>
+      </div>
+      
+      <!-- Instructions -->
+      <div class="glass rounded-2xl p-6 mb-6">
+        <h3 class="font-semibold mb-3 text-yellow-400">⚠️ Admin Instructions</h3>
+        <ol class="text-sm text-gray-400 space-y-2">
+          <li>1. Go to <a href="https://opal.google" target="_blank" class="text-purple-400 hover:underline">opal.google</a> and open each tool</li>
+          <li>2. Copy the URL with the flow parameter (e.g., <code class="text-xs bg-dark-800 px-2 py-1 rounded">https://opal.google/?flow=drive:/...</code>)</li>
+          <li>3. Paste below and click Save - this link will be available to ALL users</li>
+          <li>4. Users can still override with their own personal links if needed</li>
+        </ol>
+      </div>
+      
+      <!-- Links Configuration -->
+      <div class="space-y-4">
+        ${PHASES.map(phase => `
+          <div class="glass rounded-2xl p-5">
+            <h3 class="font-semibold mb-4 flex items-center gap-2">
+              ${phase.icon} ${phase.name}
+              <span class="text-xs text-gray-500">(${phase.apps.filter(a => state.globalOpalLinks[a.id]).length}/${phase.apps.length} configured)</span>
+            </h3>
+            <div class="space-y-3">
+              ${phase.apps.map(app => {
+                const hasLink = !!state.globalOpalLinks[app.id];
+                return `
+                <div class="flex items-center gap-3 ${hasLink ? 'bg-green-500/5 -mx-2 px-2 py-1 rounded-lg' : ''}">
+                  <span class="w-8">${app.icon}</span>
+                  <span class="w-40 text-sm font-medium">${app.name}</span>
+                  ${hasLink ? '<span class="text-xs text-green-400 w-12">✓ Live</span>' : '<span class="text-xs text-gray-500 w-12">Empty</span>'}
+                  <input type="text" id="global-opal-${app.id}" value="${state.globalOpalLinks[app.id] || ''}" 
+                    class="flex-1 rounded-lg px-3 py-2 text-sm" placeholder="https://opal.google/?flow=drive:/...">
+                  <button onclick="saveGlobalOpalLink('${app.id}')" class="btn-primary px-3 py-2 rounded-lg text-sm">Save</button>
+                  ${hasLink ? `<button onclick="deleteGlobalOpalLink('${app.id}')" class="bg-red-500/20 px-3 py-2 rounded-lg text-sm text-red-400">×</button>` : ''}
+                </div>
+              `}).join('')}
+            </div>
+          </div>
+        `).join('')}
+      </div>
+    </div>
+  `;
+}
+
+async function saveGlobalOpalLink(appId) {
+  if (!isAdmin()) { alert('Admin access required'); return; }
+  const url = document.getElementById('global-opal-' + appId).value;
+  if (!url) { alert('Please enter a URL'); return; }
+  try {
+    await DB.upsertGlobalOpalLink(appId, url, state.user.id);
+    state.globalOpalLinks[appId] = url;
+    alert('Global link saved! All users can now access this.');
+    renderPage();
+  } catch (error) { alert('Error: ' + error.message); }
+}
+
+async function deleteGlobalOpalLink(appId) {
+  if (!isAdmin()) { alert('Admin access required'); return; }
+  if (!confirm('Remove this global link? Users will need to set their own.')) return;
+  try {
+    await DB.deleteGlobalOpalLink(appId);
+    delete state.globalOpalLinks[appId];
+    renderPage();
+  } catch (error) { alert('Error: ' + error.message); }
+}
+
+// ============ ADMIN: USER MANAGEMENT PAGE ============
+function renderAdminUsersPage() {
+  if (!isAdmin()) return '<p>Access denied</p>';
+  
+  return `
+    <div class="max-w-4xl mx-auto">
+      <div class="mb-6">
+        <div class="flex items-center gap-3 mb-2">
+          <span class="text-3xl">👥</span>
+          <div>
+            <h2 class="text-2xl font-bold">User Management</h2>
+            <p class="text-gray-400 text-sm">Manage user roles and permissions</p>
+          </div>
+        </div>
+      </div>
+      
+      <div class="glass rounded-2xl p-6 mb-6">
+        <h3 class="font-semibold mb-4">Make User Admin</h3>
+        <p class="text-sm text-gray-400 mb-4">Enter the user's email to grant admin access. They must have already signed up.</p>
+        <div class="flex gap-3">
+          <input type="email" id="admin-email-input" class="flex-1 rounded-lg px-4 py-2" placeholder="user@email.com">
+          <button onclick="makeUserAdmin()" class="btn-primary px-6 py-2 rounded-lg">Grant Admin</button>
+        </div>
+      </div>
+      
+      <div class="glass rounded-2xl p-6">
+        <h3 class="font-semibold mb-4">Current Admin</h3>
+        <div class="flex items-center gap-3 p-3 bg-yellow-500/10 rounded-xl">
+          <span class="text-2xl">👑</span>
+          <div>
+            <p class="font-medium">${state.user?.email}</p>
+            <p class="text-xs text-yellow-400">You (Admin)</p>
+          </div>
+        </div>
+        <p class="text-xs text-gray-500 mt-4">Note: To manage other admins, use Supabase dashboard directly.</p>
+      </div>
+    </div>
+  `;
+}
+
+async function makeUserAdmin() {
+  if (!isAdmin()) { alert('Admin access required'); return; }
+  const email = document.getElementById('admin-email-input').value;
+  if (!email) { alert('Please enter an email'); return; }
+  alert('To add admin users, please use Supabase dashboard:\n\n1. Go to your Supabase project\n2. Open Table Editor > user_roles\n3. Find the user by their user_id\n4. Set role to "admin"\n\nThis ensures proper security.');
 }
 
 console.log('✅ App initialized');

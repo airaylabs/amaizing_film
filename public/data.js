@@ -127,7 +127,7 @@ const APP_FORMS = {
       { id: 'mood', type: 'select', label: 'Overall Mood', options: 'mood' },
       { id: 'colorPalette', type: 'select', label: 'Color Direction', options: 'colorPalette' }
     ],
-    promptTemplate: 'Analyze this script/story and create a visual treatment:\n\n{script}\n\nProject Type: {projectType}\nGenre: {genre}\nVisual Style: {style}\nMood: {mood}\nColor Direction: {colorPalette}\n\nProvide: Scene breakdown, character notes, shot suggestions, lighting/color notes for each scene.'
+    promptTemplate: 'Analyze this script/story and create a comprehensive VISUAL TREATMENT:\n\nSTORY/SCRIPT:\n{script}\n\nProject Type: {projectType}\nGenre: {genre}\nVisual Style: {style}\nMood: {mood}\nColor Direction: {colorPalette}\n\nProvide detailed treatment including:\n- Project Overview (title, logline, visual approach)\n- Scene-by-Scene Breakdown (location, time, characters, shots, lighting)\n- Character Visual Notes (appearance, costume, expressions)\n- Shot List Suggestions\n- Technical Recommendations'
   },
   
   '02': { // Storyboard Creator
@@ -140,10 +140,11 @@ const APP_FORMS = {
       { id: 'cameraAngle', type: 'select', label: 'Camera Angle', options: 'cameraAngle' },
       { id: 'camera', type: 'select', label: 'Camera Movement', options: 'camera' },
       { id: 'style', type: 'select', label: 'Storyboard Style', options: 'styles' },
+      { id: 'aspectRatio', type: 'select', label: 'Aspect Ratio', options: 'aspectRatio' },
       { id: 'action', type: 'text', label: 'Action Notes', placeholder: 'Maya turns toward the door...' },
       { id: 'dialogue', type: 'text', label: 'Dialogue (optional)', placeholder: 'MAYA: I knew you would come...' }
     ],
-    promptTemplate: 'Create a storyboard frame:\n\nShot #{shotNumber}: {sceneHeading}\n{shotDesc}\n\nShot Type: {shotType}\nCamera Angle: {cameraAngle}\nCamera Movement: {camera}\nAction: {action}\nDialogue: {dialogue}\n\nStyle: {style} storyboard sketch, clear composition, professional storyboard format'
+    promptTemplate: 'Generate storyboard frame:\n\nShot #{shotNumber} - {sceneHeading}\n\n{shotDesc}\n\nShot Type: {shotType}\nCamera Angle: {cameraAngle}\nCamera Movement: {camera}\nAspect Ratio: {aspectRatio}\n\nAction: {action}\nDialogue: {dialogue}\n\nStyle: {style} storyboard sketch, clear composition, professional storyboard panel format'
   },
   
   '03': { // Character Designer
@@ -161,7 +162,9 @@ const APP_FORMS = {
       { id: 'style', type: 'select', label: 'Art Style', options: 'styles' },
       { id: 'lighting', type: 'select', label: 'Lighting', options: 'lighting' }
     ],
-    promptTemplate: 'Character Design: {name}\n\n{age} {gender}, {bodyType} build\n{physical}\n\nWearing: {costume}\n\nExpression: {expression}\nPersonality: {personality}\n\n{style} style, {lighting} lighting, character portrait, highly detailed, professional character design sheet'
+    promptTemplate: 'Character Design: {name}\n\n{age} {gender}, {bodyType} build\n{physical}\n\nWearing: {costume}\n\nExpression: {expression}\nPersonality: {personality}\n\n{style} style, {lighting} lighting, character portrait, highly detailed, professional character design sheet',
+    supportsOutputCount: true,
+    supportsMultiCharacter: true
   },
   
   '04': { // World Builder
@@ -193,7 +196,8 @@ const APP_FORMS = {
       { id: 'aspectRatio', type: 'select', label: 'Aspect Ratio', options: 'aspectRatio' },
       { id: 'negative', type: 'text', label: 'Avoid (optional)', placeholder: 'blurry, watermark, text...' }
     ],
-    promptTemplate: '{subject}\n\n{style} style, {lighting} lighting, {mood} atmosphere, {colorPalette} colors, {cameraAngle} angle, highly detailed, 8K quality\n\nAvoid: {negative}'
+    promptTemplate: '{subject}\n\n{style} style, {lighting} lighting, {mood} atmosphere, {colorPalette} colors, {cameraAngle} angle, highly detailed, 8K quality\n\nAvoid: {negative}',
+    supportsOutputCount: true
   },
   
   '06': { // Character Transform
@@ -219,9 +223,11 @@ const APP_FORMS = {
       { id: 'lighting', type: 'select', label: 'Lighting', options: 'lighting' },
       { id: 'colorPalette', type: 'select', label: 'Color Palette', options: 'colorPalette' },
       { id: 'style', type: 'select', label: 'Style', options: 'styles' },
+      { id: 'shotType', type: 'select', label: 'Shot Type', options: 'shotType' },
       { id: 'aspectRatio', type: 'select', label: 'Aspect Ratio', options: 'aspectRatio' }
     ],
-    promptTemplate: '{locationType}\n\n{description}\n\n{timeOfDay}, {weather}\n{mood} atmosphere, {lighting} lighting, {colorPalette} colors\n\n{style} style, {aspectRatio}, wide establishing shot, highly detailed, cinematic'
+    promptTemplate: 'Generate scene/background image:\n\nLocation: {locationType}\n\n{description}\n\nTime: {timeOfDay}\nWeather: {weather}\nMood: {mood}\nLighting: {lighting}\nColors: {colorPalette}\nStyle: {style}\nShot Type: {shotType}\nAspect Ratio: {aspectRatio}\n\nHighly detailed environment, cinematic composition, no characters',
+    supportsOutputCount: true
   },
   
   '08': { // Text to Video Pro
@@ -229,15 +235,18 @@ const APP_FORMS = {
     inputs: [
       { id: 'description', type: 'textarea', label: 'Video Scene Description', placeholder: 'A woman walks through neon-lit Tokyo streets at night...', rows: 4 },
       { id: 'style', type: 'select', label: 'Visual Style', options: 'styles' },
+      { id: 'shotType', type: 'select', label: 'Shot Type', options: 'shotType' },
       { id: 'camera', type: 'select', label: 'Camera Movement', options: 'camera' },
       { id: 'speed', type: 'select', label: 'Motion Speed', options: 'speed' },
       { id: 'duration', type: 'select', label: 'Duration', options: 'duration' },
       { id: 'mood', type: 'select', label: 'Mood', options: 'mood' },
       { id: 'lighting', type: 'select', label: 'Lighting', options: 'lighting' },
       { id: 'colorGrade', type: 'select', label: 'Color Grade', options: 'colorGrade' },
-      { id: 'aspectRatio', type: 'select', label: 'Aspect Ratio', options: 'aspectRatio' }
+      { id: 'aspectRatio', type: 'select', label: 'Aspect Ratio', options: 'aspectRatio' },
+      { id: 'negative', type: 'text', label: 'Avoid (optional)', placeholder: 'blurry, shaky, distorted, low quality...' }
     ],
-    promptTemplate: '{description}\n\nCamera: {camera}\nSpeed: {speed}\nDuration: {duration}\n\n{style} style, {mood} atmosphere, {lighting} lighting, {colorGrade} color grade\n\n{aspectRatio}, cinematic video, smooth motion'
+    promptTemplate: 'Generate cinematic video clip:\n\nSCENE:\n{description}\n\nStyle: {style}\nShot Type: {shotType}\nAspect Ratio: {aspectRatio}\nDuration: {duration}\nCamera Movement: {camera}\nMotion Speed: {speed}\nLighting: {lighting}\nColor Grade: {colorGrade}\nMood: {mood}\n\nNegative: {negative}\n\nGenerate smooth, cinematic video suitable for film production.',
+    supportsOutputCount: true
   },
   
   '09': { // Image to Video Pro
@@ -246,10 +255,12 @@ const APP_FORMS = {
       { id: 'motion', type: 'textarea', label: 'Motion Description', placeholder: 'Person slowly smiles, hair flows in wind...', rows: 3 },
       { id: 'motionIntensity', type: 'select', label: 'Motion Intensity', options: 'motionIntensity' },
       { id: 'camera', type: 'select', label: 'Camera Effect', options: 'camera' },
+      { id: 'speed', type: 'select', label: 'Motion Speed', options: 'speed' },
       { id: 'duration', type: 'select', label: 'Duration', options: 'duration' },
       { id: 'aspectRatio', type: 'select', label: 'Output Ratio', options: 'aspectRatio' }
     ],
-    promptTemplate: 'Animate the uploaded image:\n\n{motion}\n\nMotion Intensity: {motionIntensity}\nCamera Effect: {camera}\nDuration: {duration}\nOutput: {aspectRatio}\n\nSmooth natural animation, maintain image quality'
+    promptTemplate: 'Animate the uploaded image:\n\nMotion: {motion}\n\nMotion Intensity: {motionIntensity}\nCamera Effect: {camera}\nSpeed: {speed}\nDuration: {duration}\nOutput: {aspectRatio}\n\nSmooth natural animation, maintain image quality, cinematic motion',
+    supportsOutputCount: true
   },
   
   '10': { // Dialogue Animator
@@ -274,12 +285,14 @@ const APP_FORMS = {
       { id: 'motionIntensity', type: 'select', label: 'Intensity', options: 'motionIntensity' },
       { id: 'speed', type: 'select', label: 'Speed', options: 'speed' },
       { id: 'camera', type: 'select', label: 'Camera Style', options: 'camera' },
+      { id: 'shotType', type: 'select', label: 'Shot Type', options: 'shotType' },
       { id: 'lighting', type: 'select', label: 'Lighting', options: 'lighting' },
       { id: 'style', type: 'select', label: 'Visual Style', options: 'styles' },
       { id: 'duration', type: 'select', label: 'Duration', options: 'duration' },
       { id: 'aspectRatio', type: 'select', label: 'Aspect Ratio', options: 'aspectRatio' }
     ],
-    promptTemplate: '{actionType}:\n\n{description}\n\nIntensity: {motionIntensity}\nSpeed: {speed}\nCamera: {camera}\nLighting: {lighting}\n\n{style} style, {duration}, {aspectRatio}, dynamic action, debris and effects, cinematic'
+    promptTemplate: 'Generate action sequence video:\n\nAction Type: {actionType}\n\n{description}\n\nIntensity: {motionIntensity}\nSpeed: {speed}\nCamera: {camera}\nShot Type: {shotType}\nLighting: {lighting}\nStyle: {style}\nDuration: {duration}\nAspect Ratio: {aspectRatio}\n\nDynamic action, debris and effects, cinematic quality',
+    supportsOutputCount: true
   },
   
   '12': { // Video Extender

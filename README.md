@@ -13,6 +13,14 @@ Complete AI Filmmaking Platform - Control Center untuk produksi film/series deng
 - **History Tracking** - Semua prompt tersimpan untuk referensi
 - **Opal Links** - Quick access ke semua Opal apps
 
+### 🆕 New Features (v2.1)
+- **👑 Admin System** - Admin dapat setup Global Opal Links untuk semua user
+- **🌐 Global Opal Links** - User tinggal klik, tidak perlu setup sendiri
+- **🔢 Output Count** - Pilih jumlah output (1/2/3/4 variasi)
+- **👥 Multi-Character Mode** - Support single atau multiple karakter (2/3/4+)
+- **🚀 Quick Access Dashboard** - Opal links langsung di dashboard
+- **✅ Ready Status** - Indikator tool yang sudah di-setup admin
+
 ### 📋 Production Phases
 
 **Phase 1: Pre-Production**
@@ -115,15 +123,39 @@ npm start
 - Node.js + Express
 - Vanilla JavaScript
 - TailwindCSS (CDN)
-- LocalStorage (data persistence)
+- Supabase (Auth + Database)
+
+## 👑 Admin Setup
+
+### 1. Make User Admin
+```sql
+-- Run in Supabase SQL Editor after user signs up
+INSERT INTO user_roles (user_id, role)
+SELECT id, 'admin' FROM auth.users WHERE email = 'your-admin@email.com'
+ON CONFLICT (user_id) DO UPDATE SET role = 'admin';
+```
+
+### 2. Setup Global Opal Links
+1. Login sebagai admin
+2. Buka **Admin Panel > Manage Global Links**
+3. Paste Opal link untuk setiap tool
+4. Klik **Save** - link akan tersedia untuk SEMUA user
+
+### 3. Database Schema V2
+```bash
+# Run database-schema-v2.sql in Supabase SQL Editor
+# This adds: user_roles, global_opal_links, generated_assets, character_variants
+```
 
 ## 📝 Notes
 
-- Data disimpan di browser localStorage
+- Data disimpan di Supabase (cloud database)
 - Google Opal tidak punya API, generation tetap manual di Opal
 - Platform ini sebagai "Control Center" untuk organize workflow
+- Admin dapat setup links sekali, semua user bisa pakai
 
 ---
 
-*AI Filmmaking Studio v2.0*
+*AI Filmmaking Studio v2.1*
 *Unlimited VEO 3 + Gemini via Google Opal*
+*Admin System + Global Opal Links*
