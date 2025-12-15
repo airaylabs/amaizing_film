@@ -1,0 +1,348 @@
+// Supabase Configuration
+const SUPABASE_URL = 'https://gqinziavjwglevgdntlw.supabase.co';
+const SUPABASE_ANON_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImdxaW56aWF2andnbGV2Z2RudGx3Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3NjU3ODE2OTAsImV4cCI6MjA4MTM1NzY5MH0.CnDHukxlPrBX64GdRcSJ1WyXIj-EpPsgcQZD_P765wQ';
+
+// Initialize Supabase Client
+const supabase = window.supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
+
+// ============ AUTH FUNCTIONS ============
+const Auth = {
+  // Get current user
+  async getUser() {
+    const { data: { user } } = await supabase.auth.getUser();
+    return user;
+  },
+
+  // Get session
+  async getSession() {
+    const { data: { session } } = await supabase.auth.getSession();
+    return session;
+  },
+
+  // Sign up with email
+  async signUpEmail(email, password, fullName) {
+    const { data, error } = await supabase.auth.signUp({
+      email,
+      password,
+      options: {
+        data: { full_name: fullName }
+      }
+    });
+    if (error) throw error;
+    return data;
+  },
+
+  // Sign in with email
+  async signInEmail(email, password) {
+    const { data, error } = await supabase.auth.signInWithPassword({
+      email,
+      password
+    });
+    if (error) throw error;
+    return data;
+  },
+
+  // Sign in with Google
+  async signInGoogle() {
+    const { data, error } = await supabase.auth.signInWithOAuth({
+      provider: 'google',
+      options: {
+        redirectTo: window.location.origin
+      }
+    });
+    if (error) throw error;
+    return data;
+  },
+
+  // Sign out
+  async signOut() {
+    const { error } = await supabase.auth.signOut();
+    if (error) throw error;
+  },
+
+  // Listen to auth changes
+  onAuthStateChange(callback) {
+    return supabase.auth.onAuthStateChange((event, session) => {
+      callback(event, session);
+    });
+  }
+};
+
+// ============ DATABASE FUNCTIONS ============
+const DB = {
+  // ---- PROJECTS ----
+  async getProjects(userId) {
+    const { data, error } = await supabase
+      .from('projects')
+      .select('*')
+      .eq('user_id', userId)
+      .order('created_at', { ascending: false });
+    if (error) throw error;
+    return data || [];
+  },
+
+  async createProject(project) {
+    const { data, error } = await supabase
+      .from('projects')
+      .insert([project])
+      .select()
+      .single();
+    if (error) throw error;
+    return data;
+  },
+
+  async updateProject(id, updates) {
+    const { data, error } = await supabase
+      .from('projects')
+      .update(updates)
+      .eq('id', id)
+      .select()
+      .single();
+    if (error) throw error;
+    return data;
+  },
+
+  async deleteProject(id) {
+    const { error } = await supabase
+      .from('projects')
+      .delete()
+      .eq('id', id);
+    if (error) throw error;
+  },
+
+  // ---- CHARACTERS ----
+  async getCharacters(userId, projectId = null) {
+    let query = supabase
+      .from('characters')
+      .select('*')
+      .eq('user_id', userId)
+      .order('created_at', { ascending: false });
+    
+    if (projectId) {
+      query = query.eq('project_id', projectId);
+    }
+    
+    const { data, error } = await query;
+    if (error) throw error;
+    return data || [];
+  },
+
+  async createCharacter(character) {
+    const { data, error } = await supabase
+      .from('characters')
+      .insert([character])
+      .select()
+      .single();
+    if (error) throw error;
+    return data;
+  },
+
+  async updateCharacter(id, updates) {
+    const { data, error } = await supabase
+      .from('characters')
+      .update(updates)
+      .eq('id', id)
+      .select()
+      .single();
+    if (error) throw error;
+    return data;
+  },
+
+  async deleteCharacter(id) {
+    const { error } = await supabase
+      .from('characters')
+      .delete()
+      .eq('id', id);
+    if (error) throw error;
+  },
+
+  // ---- LOCATIONS ----
+  async getLocations(userId, projectId = null) {
+    let query = supabase
+      .from('locations')
+      .select('*')
+      .eq('user_id', userId)
+      .order('created_at', { ascending: false });
+    
+    if (projectId) {
+      query = query.eq('project_id', projectId);
+    }
+    
+    const { data, error } = await query;
+    if (error) throw error;
+    return data || [];
+  },
+
+  async createLocation(location) {
+    const { data, error } = await supabase
+      .from('locations')
+      .insert([location])
+      .select()
+      .single();
+    if (error) throw error;
+    return data;
+  },
+
+  async updateLocation(id, updates) {
+    const { data, error } = await supabase
+      .from('locations')
+      .update(updates)
+      .eq('id', id)
+      .select()
+      .single();
+    if (error) throw error;
+    return data;
+  },
+
+  async deleteLocation(id) {
+    const { error } = await supabase
+      .from('locations')
+      .delete()
+      .eq('id', id);
+    if (error) throw error;
+  },
+
+  // ---- HISTORY ----
+  async getHistory(userId, projectId = null, appId = null) {
+    let query = supabase
+      .from('history')
+      .select('*')
+      .eq('user_id', userId)
+      .order('created_at', { ascending: false });
+    
+    if (projectId) query = query.eq('project_id', projectId);
+    if (appId) query = query.eq('app_id', appId);
+    
+    const { data, error } = await query;
+    if (error) throw error;
+    return data || [];
+  },
+
+  async createHistory(historyItem) {
+    const { data, error } = await supabase
+      .from('history')
+      .insert([historyItem])
+      .select()
+      .single();
+    if (error) throw error;
+    return data;
+  },
+
+  async deleteHistory(id) {
+    const { error } = await supabase
+      .from('history')
+      .delete()
+      .eq('id', id);
+    if (error) throw error;
+  },
+
+  // ---- SCRIPTS ----
+  async getScripts(userId, projectId = null) {
+    let query = supabase
+      .from('scripts')
+      .select('*')
+      .eq('user_id', userId)
+      .order('created_at', { ascending: false });
+    
+    if (projectId) query = query.eq('project_id', projectId);
+    
+    const { data, error } = await query;
+    if (error) throw error;
+    return data || [];
+  },
+
+  async createScript(script) {
+    const { data, error } = await supabase
+      .from('scripts')
+      .insert([script])
+      .select()
+      .single();
+    if (error) throw error;
+    return data;
+  },
+
+  async updateScript(id, updates) {
+    const { data, error } = await supabase
+      .from('scripts')
+      .update(updates)
+      .eq('id', id)
+      .select()
+      .single();
+    if (error) throw error;
+    return data;
+  },
+
+  async deleteScript(id) {
+    const { error } = await supabase
+      .from('scripts')
+      .delete()
+      .eq('id', id);
+    if (error) throw error;
+  },
+
+  // ---- STORYBOARDS ----
+  async getStoryboards(userId, projectId = null) {
+    let query = supabase
+      .from('storyboards')
+      .select('*')
+      .eq('user_id', userId)
+      .order('scene_number', { ascending: true });
+    
+    if (projectId) query = query.eq('project_id', projectId);
+    
+    const { data, error } = await query;
+    if (error) throw error;
+    return data || [];
+  },
+
+  async createStoryboard(storyboard) {
+    const { data, error } = await supabase
+      .from('storyboards')
+      .insert([storyboard])
+      .select()
+      .single();
+    if (error) throw error;
+    return data;
+  },
+
+  async updateStoryboard(id, updates) {
+    const { data, error } = await supabase
+      .from('storyboards')
+      .update(updates)
+      .eq('id', id)
+      .select()
+      .single();
+    if (error) throw error;
+    return data;
+  },
+
+  async deleteStoryboard(id) {
+    const { error } = await supabase
+      .from('storyboards')
+      .delete()
+      .eq('id', id);
+    if (error) throw error;
+  },
+
+  // ---- OPAL LINKS ----
+  async getOpalLinks(userId) {
+    const { data, error } = await supabase
+      .from('opal_links')
+      .select('*')
+      .eq('user_id', userId);
+    if (error) throw error;
+    return data || [];
+  },
+
+  async upsertOpalLink(userId, appId, url) {
+    const { data, error } = await supabase
+      .from('opal_links')
+      .upsert([{ user_id: userId, app_id: appId, url }], { onConflict: 'user_id,app_id' })
+      .select()
+      .single();
+    if (error) throw error;
+    return data;
+  }
+};
+
+console.log('✅ Supabase initialized');
