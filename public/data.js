@@ -3,7 +3,19 @@
 
 // Default Opal Links - Pre-configured for all users
 // Format: Tool ID -> Google Opal Flow URL
+// Updated: December 2024
 const DEFAULT_OPAL_LINKS = {
+  // ============ IDEATION (idea-01 to idea-03) ============
+  'idea-01': 'https://opal.google/?flow=drive:/1ypRFcIjmwkAkPUn6c0pcxYEd3dvxbl_e&shared&mode=app', // AI Trend Explorer
+  'idea-02': 'https://opal.google/?flow=drive:/1C139Z9wKnW0DIpeWq1Ic9Vo-KZ-9zKCX&shared&mode=app', // AI Idea Generator
+  'idea-03': 'https://opal.google/?flow=drive:/1_GJz_eqFT9Q7gPIqSv_ntSl42_IYad_o&shared&mode=app', // AI Genre Mixer
+  
+  // ============ STORY DEVELOPMENT (story-01 to story-04) ============
+  'story-01': 'https://opal.google/?flow=drive:/1H-dzGcJmusSBjpU6tBZMDbqnB7Nx9Zkc&shared&mode=app', // Synopsis Writer (CORE)
+  'story-02': 'https://opal.google/?flow=drive:/1mQofq2bcDNuR6CEjDjPeKwJtZ6RElOiO&shared&mode=app', // Episode Breakdown
+  'story-03': 'https://opal.google/?flow=drive:/1ZaQUa6x1cLz2YwrIWMS4s9djw_iFsGyj&shared&mode=app', // Scene Planner
+  'story-04': 'https://opal.google/?flow=drive:/17fWsrQkwpy7C1xz0WQVtO7zaDESURgwf&shared&mode=app', // Character Arc
+  
   // ============ PRE-PRODUCTION (01-04) ============
   '01': 'https://opal.google/?flow=drive:/1caOGG8vp2TVISN_p0Dody6KXdcP1Z72x&shared&mode=app', // Script to Treatment
   '02': 'https://opal.google/?flow=drive:/1diFY1SWTlrW3wHVFdfVwxyCCFOuggDjx&shared&mode=app', // Storyboard Creator
@@ -21,43 +33,25 @@ const DEFAULT_OPAL_LINKS = {
   '10': 'https://opal.google/?flow=drive:/1ydc01Pl2mw_x10ccuNlAty1fY2kPnSUj&shared&mode=app', // Dialogue Animator
   '11': 'https://opal.google/?flow=drive:/1pUK94WVmgVwI3tj-lbzrWl646Zmfxd0e&shared&mode=app', // Action Sequence
   
-  // ============ POST-PRODUCTION (12-14) ============
-  '12': 'https://opal.google/?flow=drive:/1ZFF8efHntb0lrmLjWkjzYRhP_OVDs7Zw&shared&mode=app', // Video Extender
-  '13': 'https://opal.google/?flow=drive:/1OenPJRFgsFe9OgryYTKkP8gOg4jTI9Uv&shared&mode=app', // Transition Maker
-  '14': 'https://opal.google/?flow=drive:/15-y85A94YJdZCq3F6o9ztGww1LzMcKY8&shared&mode=app', // Color Mood Matcher
-  
-  // ============ DISTRIBUTION (15-16) ============
-  '15': 'https://opal.google/?flow=drive:/1IWqFICWLwv4q1zzkFsJmce2IfFP6zSA4&shared&mode=app', // Thumbnail Generator
-  '16': 'https://opal.google/?flow=drive:/1PpDulaHTdhDO7WZ_GbVJ5kDRCrSfr0aa&shared&mode=app', // Poster & Promo
-  
-  // ============ IDEATION (idea-01 to idea-03) ============
-  // These use Gemini for text generation - link to general Opal or AI Studio
-  'idea-01': null, // Trend Explorer - uses Gemini text
-  'idea-02': null, // Idea Generator - uses Gemini text
-  'idea-03': null, // Genre Mixer - uses Gemini text
-  
-  // ============ STORY DEVELOPMENT (story-01 to story-04) ============
-  // These use Gemini for text generation
-  'story-01': null, // Synopsis Writer - uses Gemini text (CORE TOOL)
-  'story-02': null, // Episode Breakdown - uses Gemini text
-  'story-03': null, // Scene Planner - uses Gemini text
-  'story-04': null, // Character Arc - uses Gemini text
-  
   // ============ PRODUCTION - AUDIO (audio-01 to audio-04) ============
-  // These would need audio generation Opal flows
-  'audio-01': null, // Dialogue Generator - needs TTS Opal
-  'audio-02': null, // Background Music - needs Music Gen Opal
-  'audio-03': null, // Sound Effects - needs SFX Gen Opal
-  'audio-04': null, // Audio Mixer - manual mixing
+  'audio-01': 'https://opal.google/?flow=drive:/1lY9YnPvYw_NIHhR6n-umdmf3FKM7qibp&shared&mode=app', // Dialogue Generator
+  'audio-02': 'https://opal.google/?flow=drive:/1lKIoHzdFq64SGpkc9QuuFijEilXvCEh-&shared&mode=app', // Background Music
+  'audio-03': 'https://opal.google/?flow=drive:/1cd3TRvwNBcZE4nac4gf8qJUMOFtx3OwL&shared&mode=app', // Sound Effects
+  'audio-04': 'https://opal.google/?flow=drive:/1eR-U5vKzOGHBVeWOUOMrjH_YZWBpWkjg&shared&mode=app', // Audio Mixer
   
-  // ============ POST-PRODUCTION EXTRAS (post-01 to post-03) ============
-  'post-01': null, // Scene Assembler - manual editing
-  'post-02': null, // Viral Picker - uses Gemini analysis
-  'post-03': null, // Export Manager - manual export
+  // ============ POST-PRODUCTION (post-01 to post-06) ============
+  'post-01': 'https://opal.google/?flow=drive:/1ZFF8efHntb0lrmLjWkjzYRhP_OVDs7Zw&shared&mode=app', // Video Extender
+  'post-02': 'https://opal.google/?flow=drive:/1OenPJRFgsFe9OgryYTKkP8gOg4jTI9Uv&shared&mode=app', // Transition Maker
+  'post-03': 'https://opal.google/?flow=drive:/15-y85A94YJdZCq3F6o9ztGww1LzMcKY8&shared&mode=app', // Color Mood Matcher
+  'post-04': 'https://opal.google/?flow=drive:/1m5N1z8dk2fvgdVg3yYN6sxll6n5AaYYg&shared&mode=app', // Scene Assembler
+  'post-05': 'https://opal.google/?flow=drive:/1JT2IKHs2fSLh_05qf4h7gtiEDbPue1XF&shared&mode=app', // Viral Picker
+  'post-06': 'https://opal.google/?flow=drive:/1tOXs62NkiPl8vaQZZN6qCYP3nrOWBVW6&shared&mode=app', // Export Manager
   
-  // ============ DISTRIBUTION EXTRAS (dist-01 to dist-02) ============
-  'dist-01': null, // Social Clips - uses video tools
-  'dist-02': null  // Trailer Maker - uses video tools
+  // ============ DISTRIBUTION (dist-01 to dist-04) ============
+  'dist-01': 'https://opal.google/?flow=drive:/1IWqFICWLwv4q1zzkFsJmce2IfFP6zSA4&shared&mode=app', // Thumbnail Generator
+  'dist-02': 'https://opal.google/?flow=drive:/1PpDulaHTdhDO7WZ_GbVJ5kDRCrSfr0aa&shared&mode=app', // Poster & Promo
+  'dist-03': 'https://opal.google/?flow=drive:/1lKI91oFEoxEWujXVVKO2k0JtKM2Jhxiw&shared&mode=app', // Social Clips
+  'dist-04': 'https://opal.google/?flow=drive:/1r3r7z4IMZV-ibay7kXevdThvhG-D78bI&shared&mode=app'  // Trailer Maker
 };
 
 // ============ INTEGRATED PHASES (Celtx-Style) ============
@@ -145,12 +139,12 @@ const PHASES = [
     color: 'green',
     description: 'Assemble, edit, pick viral moments',
     apps: [
-      { id: '12', name: 'Video Extender', icon: '➕', desc: 'Extend video clips', autoPopulate: true },
-      { id: '13', name: 'Transition Maker', icon: '🔀', desc: 'Create scene transitions', autoPopulate: true },
-      { id: '14', name: 'Color Mood Matcher', icon: '🎨', desc: 'Match colors across scenes', autoPopulate: true },
-      { id: 'post-01', name: 'Scene Assembler', icon: '🎬', desc: 'Combine scenes into episodes', autoPopulate: true },
-      { id: 'post-02', name: 'Viral Picker', icon: '🔥', desc: 'AI picks viral-worthy moments', autoPopulate: true },
-      { id: 'post-03', name: 'Export Manager', icon: '📤', desc: 'Export all formats', autoPopulate: true }
+      { id: 'post-01', name: 'Video Extender', icon: '➕', desc: 'Extend video clips', autoPopulate: true },
+      { id: 'post-02', name: 'Transition Maker', icon: '🔀', desc: 'Create scene transitions', autoPopulate: true },
+      { id: 'post-03', name: 'Color Mood Matcher', icon: '🎨', desc: 'Match colors across scenes', autoPopulate: true },
+      { id: 'post-04', name: 'Scene Assembler', icon: '🎬', desc: 'Combine scenes into episodes', autoPopulate: true },
+      { id: 'post-05', name: 'Viral Picker', icon: '🔥', desc: 'AI picks viral-worthy moments', autoPopulate: true },
+      { id: 'post-06', name: 'Export Manager', icon: '📤', desc: 'Export all formats', autoPopulate: true }
     ]
   },
   {
@@ -160,10 +154,10 @@ const PHASES = [
     color: 'orange',
     description: 'Create promotional content',
     apps: [
-      { id: '15', name: 'Thumbnail Generator', icon: '🖼️', desc: 'Auto-generate thumbnails', autoPopulate: true },
-      { id: '16', name: 'Poster & Promo', icon: '🎬', desc: 'Create posters from synopsis', autoPopulate: true },
-      { id: 'dist-01', name: 'Social Clips', icon: '📱', desc: 'Create viral short clips', autoPopulate: true },
-      { id: 'dist-02', name: 'Trailer Maker', icon: '🎥', desc: 'Auto-generate trailers', autoPopulate: true }
+      { id: 'dist-01', name: 'Thumbnail Generator', icon: '🖼️', desc: 'Auto-generate thumbnails', autoPopulate: true },
+      { id: 'dist-02', name: 'Poster & Promo', icon: '🎬', desc: 'Create posters from synopsis', autoPopulate: true },
+      { id: 'dist-03', name: 'Social Clips', icon: '📱', desc: 'Create viral short clips', autoPopulate: true },
+      { id: 'dist-04', name: 'Trailer Maker', icon: '🎥', desc: 'Auto-generate trailers', autoPopulate: true }
     ]
   }
 ];
@@ -174,7 +168,7 @@ const OPTIONS = {
   styles: ['Photorealistic', 'Cinematic', 'Anime/Manga', 'Digital Art', 'Oil Painting', 'Watercolor', 'Concept Art', 'Fantasy Art', 'Comic Book', 'Minimalist', 'Vintage/Retro', '3D Render', 'Sketch'],
   lighting: ['Natural Daylight', 'Golden Hour', 'Blue Hour', 'Studio Lighting', 'Dramatic Side Light', 'Soft/Diffused', 'Neon/Cyberpunk', 'Backlit/Silhouette', 'Moonlight', 'Candlelight', 'Overcast', 'High Key', 'Low Key'],
   mood: ['Epic/Grand', 'Mysterious', 'Tense/Suspenseful', 'Romantic', 'Melancholic', 'Action/Intense', 'Peaceful/Serene', 'Horror/Dark', 'Cheerful', 'Nostalgic', 'Dreamy', 'Chaotic'],
-  aspectRatio: ['16:9 Landscape', '9:16 Portrait', '1:1 Square', '21:9 Cinematic', '4:3 Classic', '2.39:1 Anamorphic'],
+  aspectRatio: ['9:16 Portrait (TikTok/Reels)', '16:9 Landscape (YouTube)', '1:1 Square (Instagram)', '4:5 Portrait (Instagram)', '21:9 Cinematic', '4:3 Classic', '2.39:1 Anamorphic'],
   
   // Character
   gender: ['Male', 'Female', 'Androgynous', 'Non-binary'],
@@ -212,11 +206,11 @@ const OPTIONS = {
   posterComposition: ['Character Centered', 'Silhouette', 'Floating Heads', 'Action Scene', 'Symbolic', 'Montage'],
   
   // Project
-  projectType: ['Short Film', 'Feature Film', 'Web Series', 'Drama Series', 'Music Video', 'Commercial', 'Documentary', 'Animation'],
-  genre: ['Drama', 'Thriller', 'Horror', 'Comedy', 'Romance', 'Action', 'Sci-Fi', 'Fantasy', 'Mystery', 'Adventure'],
+  projectType: ['Drama Pendek (3-5 min)', 'Short Film (5-15 min)', 'Feature Film', 'Web Series', 'Drama Series', 'Mini Drama (1-2 min)', 'Music Video', 'Commercial', 'Documentary', 'Animation', 'TikTok/Reels Series'],
+  genre: ['Drama', 'Thriller', 'Horror', 'Comedy', 'Romance', 'Action', 'Sci-Fi', 'Fantasy', 'Mystery', 'Adventure', 'Slice of Life', 'Melodrama', 'Romantic Comedy'],
   
   // Ideation
-  platforms: ['YouTube', 'TikTok', 'Instagram Reels', 'Netflix', 'Amazon Prime', 'Disney+', 'Hulu', 'HBO Max', 'Apple TV+', 'Twitch', 'Facebook Watch'],
+  platforms: ['YouTube', 'TikTok', 'Instagram Reels', 'Douyin (China TikTok)', 'WeTV', 'iQIYI', 'Youku', 'Bilibili', 'Netflix', 'Amazon Prime', 'Disney+', 'Viu', 'Vidio', 'Facebook Watch', 'Twitch'],
   contentCategory: ['Entertainment', 'Education', 'Documentary', 'News', 'Gaming', 'Lifestyle', 'Tech', 'Music', 'Sports', 'Comedy', 'Drama'],
   targetAudience: ['Gen Z (13-24)', 'Millennials (25-40)', 'Gen X (41-56)', 'Boomers (57-75)', 'Family/All Ages', 'Young Adults', 'Teens', 'Kids'],
   regions: ['Global', 'North America', 'Europe', 'Asia Pacific', 'Latin America', 'Middle East', 'Africa', 'Southeast Asia'],
@@ -224,9 +218,9 @@ const OPTIONS = {
   era: ['Contemporary', 'Near Future', 'Far Future', '1990s', '1980s', '1970s', '1960s', 'Victorian Era', 'Medieval', 'Ancient', 'Prehistoric', 'Alternate History'],
   
   // Story Development
-  episodeLength: ['15 minutes', '22 minutes', '30 minutes', '45 minutes', '60 minutes', '90 minutes'],
-  sceneDuration: ['30 seconds', '1 minute', '2 minutes', '3 minutes', '5 minutes', '10 minutes'],
-  episodeCount: ['1 (Short Film)', '3 (Mini Series)', '6 (Limited Series)', '8 (Standard)', '10 (Full Season)', '12 (Extended)', '24 (Long Series)'],
+  episodeLength: ['1-2 minutes (Mini)', '3-5 minutes (Drama Pendek)', '5-10 minutes (Short)', '15 minutes', '22 minutes', '30 minutes', '45 minutes', '60 minutes', '90 minutes'],
+  sceneDuration: ['15 seconds', '30 seconds', '45 seconds', '1 minute', '1.5 minutes', '2 minutes', '3 minutes', '5 minutes', '10 minutes'],
+  episodeCount: ['1 (Single Episode)', '3-5 (Mini Drama)', '6-10 (Short Series)', '10-20 (Drama Pendek Series)', '20-40 (Standard Series)', '50+ (Long Series)'],
   
   // Audio
   voiceType: ['Deep Male', 'Warm Male', 'Young Male', 'Deep Female', 'Warm Female', 'Young Female', 'Child', 'Elderly Male', 'Elderly Female', 'Robotic', 'Narrator'],
@@ -979,7 +973,7 @@ Provide detailed mixing instructions including:
   },
 
   // ============ POST-PRODUCTION ============
-  '12': {
+  'post-01': {
     name: 'Video Extender',
     description: 'Extend video clips seamlessly',
     inputs: [
@@ -1002,7 +996,7 @@ Extension: {duration}
 Seamless continuation, match original style and lighting`
   },
 
-  '13': {
+  'post-02': {
     name: 'Transition Maker',
     description: 'Auto-populated - create scene transitions',
     autoPopulateFrom: 'story-03',
@@ -1027,7 +1021,7 @@ Duration: {duration}
 Smooth creative transition, cinematic`
   },
 
-  '14': {
+  'post-03': {
     name: 'Color Mood Matcher',
     description: 'Match colors across all scenes',
     inputs: [
@@ -1049,7 +1043,7 @@ Lighting: {lighting}
 Match colors and atmosphere while preserving content`
   },
 
-  'post-01': {
+  'post-04': {
     name: 'Scene Assembler',
     description: 'Auto-populated - combine scenes into episodes',
     autoPopulateFrom: 'story-02',
@@ -1076,7 +1070,7 @@ Provide:
 6. Title card/credits timing`
   },
 
-  'post-02': {
+  'post-05': {
     name: 'Viral Picker',
     description: 'AI picks viral-worthy moments from episodes',
     autoPopulateFrom: 'story-02',
@@ -1103,7 +1097,7 @@ Identify:
 7. Engagement prediction score`
   },
 
-  'post-03': {
+  'post-06': {
     name: 'Export Manager',
     description: 'Export all formats for all platforms',
     autoPopulateFrom: 'story-01',
@@ -1132,7 +1126,7 @@ Provide:
   },
 
   // ============ DISTRIBUTION ============
-  '15': {
+  'dist-01': {
     name: 'Thumbnail Generator',
     description: 'Auto-generate thumbnails from key scenes',
     autoPopulateFrom: 'story-02',
@@ -1155,7 +1149,7 @@ Mood: {mood}
 16:9, eye-catching, high contrast, click-worthy thumbnail`
   },
 
-  '16': {
+  'dist-02': {
     name: 'Poster & Promo',
     description: 'Auto-populated - create posters from synopsis',
     autoPopulateFrom: 'story-01',
@@ -1181,7 +1175,7 @@ Mood: {mood}
 Professional movie poster, space for title at bottom, cinematic, highly detailed`
   },
 
-  'dist-01': {
+  'dist-03': {
     name: 'Social Clips',
     description: 'Auto-populated - create viral short clips',
     autoPopulateFrom: 'post-02',
@@ -1208,7 +1202,7 @@ For each clip provide:
 7. Best posting time`
   },
 
-  'dist-02': {
+  'dist-04': {
     name: 'Trailer Maker',
     description: 'Auto-populated - generate trailers from synopsis',
     autoPopulateFrom: 'story-01',

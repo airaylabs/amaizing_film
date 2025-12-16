@@ -1,68 +1,29 @@
-// raymAIzing film - Integrated Production Platform (Celtx-Style)
-// Synopsis-Driven Production System with Guided Workflow
+// raymAIzing film - Main Application
+// Celtx-Style Production Management with Proper Workflow Logic
+// FIXED: Checklist = User Completion, NOT Opal Upload Status
 
-// ============ WORKFLOW STEPS DEFINITION ============
-// Base workflow steps - will be translated dynamically
-const WORKFLOW_STEPS_BASE = [
-  { step: 1, id: 'ideation', icon: '💡', tools: ['idea-01', 'idea-02', 'idea-03'], required: false },
-  { step: 2, id: 'synopsis', icon: '📖', tools: ['story-01'], required: true },
-  { step: 3, id: 'breakdown', icon: '📑', tools: ['story-02', 'story-03', 'story-04'], required: true },
-  { step: 4, id: 'preproduction', icon: '📝', tools: ['01', '02', '03', '04'], required: true },
-  { step: 5, id: 'production-visual', icon: '🎬', tools: ['05', '06', '07', '08', '09', '10', '11'], required: true },
-  { step: 6, id: 'production-audio', icon: '🔊', tools: ['audio-01', 'audio-02', 'audio-03', 'audio-04'], required: true },
-  { step: 7, id: 'postproduction', icon: '🎞️', tools: ['12', '13', '14', 'post-01', 'post-02', 'post-03'], required: true },
-  { step: 8, id: 'distribution', icon: '📢', tools: ['15', '16', 'dist-01', 'dist-02'], required: false }
+// ============ WORKFLOW PHASES DEFINITION ============
+// Matches PHASES in data.js for consistency
+const WORKFLOW_PHASES = [
+  { id: 'ideation', step: 1, icon: '💡', tools: ['idea-01', 'idea-02', 'idea-03'], required: false },
+  { id: 'story-development', step: 2, icon: '📖', tools: ['story-01', 'story-02', 'story-03', 'story-04'], required: true, isCore: true },
+  { id: 'pre-production', step: 3, icon: '📝', tools: ['01', '02', '03', '04'], required: true },
+  { id: 'production-image', step: 4, icon: '🎨', tools: ['05', '06', '07'], required: true },
+  { id: 'production-video', step: 5, icon: '🎬', tools: ['08', '09', '10', '11'], required: true },
+  { id: 'production-audio', step: 6, icon: '🔊', tools: ['audio-01', 'audio-02', 'audio-03', 'audio-04'], required: true },
+  { id: 'post-production', step: 7, icon: '🎞️', tools: ['post-01', 'post-02', 'post-03', 'post-04', 'post-05', 'post-06'], required: true },
+  { id: 'distribution', step: 8, icon: '📢', tools: ['dist-01', 'dist-02', 'dist-03', 'dist-04'], required: false }
 ];
 
-// Get translated workflow steps
-function getWorkflowSteps() {
-  const isId = typeof getLang === 'function' && getLang() === 'id';
-  const translations = {
-    id: [
-      { name: 'Cari Ide', description: 'Temukan ide cerita dari trend viral atau generate ide baru', tip: 'Optional: Gunakan jika belum punya ide cerita' },
-      { name: 'Tulis Synopsis', description: 'Tulis synopsis lengkap - INI YANG PALING PENTING!', tip: 'Wajib: Synopsis akan mengisi otomatis semua tools lainnya' },
-      { name: 'Breakdown Cerita', description: 'Pecah synopsis jadi episode dan scene', tip: 'Data dari synopsis akan otomatis terisi' },
-      { name: 'Pre-Production', description: 'Buat treatment, storyboard, design karakter & lokasi', tip: 'Pilih scene/karakter untuk auto-fill' },
-      { name: 'Produksi Visual', description: 'Generate gambar dan video untuk setiap scene', tip: 'Gunakan Opal untuk generate dengan AI' },
-      { name: 'Produksi Audio', description: 'Generate dialog, musik, dan sound effect', tip: 'Dialog otomatis dari scene script' },
-      { name: 'Post-Production', description: 'Edit, gabungkan scene, pilih momen viral', tip: 'Viral Picker akan pilih momen terbaik' },
-      { name: 'Distribution', description: 'Buat thumbnail, poster, trailer untuk publish', tip: 'Siap publish ke platform!' }
-    ],
-    en: [
-      { name: 'Find Ideas', description: 'Discover story ideas from viral trends or generate new ones', tip: 'Optional: Use if you don\'t have a story idea yet' },
-      { name: 'Write Synopsis', description: 'Write your full synopsis - THIS IS THE MOST IMPORTANT!', tip: 'Required: Synopsis will auto-fill all other tools' },
-      { name: 'Story Breakdown', description: 'Break down synopsis into episodes and scenes', tip: 'Data from synopsis will auto-fill' },
-      { name: 'Pre-Production', description: 'Create treatment, storyboard, character & location design', tip: 'Select scene/character for auto-fill' },
-      { name: 'Visual Production', description: 'Generate images and videos for each scene', tip: 'Use Opal to generate with AI' },
-      { name: 'Audio Production', description: 'Generate dialogue, music, and sound effects', tip: 'Dialogue auto-generated from scene script' },
-      { name: 'Post-Production', description: 'Edit, combine scenes, pick viral moments', tip: 'Viral Picker will select the best moments' },
-      { name: 'Distribution', description: 'Create thumbnails, posters, trailers for publishing', tip: 'Ready to publish to platforms!' }
-    ]
-  };
-  
-  const lang = isId ? 'id' : 'en';
-  return WORKFLOW_STEPS_BASE.map((step, idx) => ({
-    ...step,
-    ...translations[lang][idx]
-  }));
-}
-
-// For backward compatibility
-const WORKFLOW_STEPS = WORKFLOW_STEPS_BASE.map((step, idx) => ({
-  ...step,
-  name: ['Cari Ide', 'Tulis Synopsis', 'Breakdown Cerita', 'Pre-Production', 'Produksi Visual', 'Produksi Audio', 'Post-Production', 'Distribution'][idx],
-  description: ['Temukan ide cerita dari trend viral atau generate ide baru', 'Tulis synopsis lengkap - INI YANG PALING PENTING!', 'Pecah synopsis jadi episode dan scene', 'Buat treatment, storyboard, design karakter & lokasi', 'Generate gambar dan video untuk setiap scene', 'Generate dialog, musik, dan sound effect', 'Edit, gabungkan scene, pilih momen viral', 'Buat thumbnail, poster, trailer untuk publish'][idx],
-  tip: ['Optional: Gunakan jika belum punya ide cerita', 'Wajib: Synopsis akan mengisi otomatis semua tools lainnya', 'Data dari synopsis akan otomatis terisi', 'Pilih scene/karakter untuk auto-fill', 'Gunakan Opal untuk generate dengan AI', 'Dialog otomatis dari scene script', 'Viral Picker akan pilih momen terbaik', 'Siap publish ke platform!'][idx]
-}));
-
-// ============ STATE ============
+// ============ APP STATE ============
 let state = {
   user: null,
   userRole: 'user',
   currentPage: 'dashboard',
   currentApp: null,
   currentProject: null,
-  currentWorkflowStep: 1,
+  
+  // Data
   projects: [],
   characters: [],
   locations: [],
@@ -72,38 +33,20 @@ let state = {
   opalLinks: {},
   globalOpalLinks: {},
   generatedAssets: [],
-  outputCount: 1,
+  workflowProgress: [],
   
-  // ============ PRODUCTION BIBLE (Core Data) ============
+  // Production Bible
   productionBible: {
-    title: '',
-    logline: '',
-    synopsis: '',
-    genre: '',
-    projectType: '',
-    style: '',
-    mood: '',
-    setting: '',
-    themes: '',
-    episodes: [],
-    characters: [],
-    locations: [],
-    scenes: []
+    title: '', logline: '', synopsis: '', genre: '', projectType: '',
+    style: '', mood: '', setting: '', themes: '',
+    episodes: [], characters: [], locations: [], scenes: []
   },
   
-  // Workflow Progress
-  workflowProgress: {
-    ideation: false,
-    synopsis: false,
-    breakdown: false,
-    preproduction: false,
-    'production-visual': false,
-    'production-audio': false,
-    postproduction: false,
-    distribution: false
-  },
+  // UI State
+  outputCount: 1,
+  expandedPhases: [],
   
-  // Current selection for auto-populate
+  // Selection Context
   selectedEpisode: null,
   selectedScene: null,
   selectedCharacter: null,
@@ -137,6 +80,16 @@ async function initAuth() {
       showAuthScreen();
     }
   });
+  
+  // Listen for tab visibility changes to restore state
+  document.addEventListener('visibilitychange', () => {
+    if (document.visibilityState === 'visible' && state.user) {
+      // Tab became visible again - restore state if on tool page
+      if (state.currentPage === 'app' && state.currentApp) {
+        applyRestoredState(state.currentApp);
+      }
+    }
+  });
 }
 
 // ============ AUTH UI ============
@@ -151,15 +104,37 @@ function showApp() {
   document.getElementById('app').classList.remove('hidden');
   document.getElementById('loading-screen').classList.add('hidden');
   updateUserInfo();
+  
+  // Load local progress (fallback when DB unavailable)
+  loadLocalProgress();
+  
+  // Load local history
+  loadLocalHistory();
+  
+  // Restore navigation state from sessionStorage (for tab switching)
+  restoreNavigationState();
+  
   renderSidebar();
   renderPage();
   updateHistoryCount();
+}
+
+// Load local history from localStorage
+function loadLocalHistory() {
+  const localHistory = JSON.parse(localStorage.getItem('localHistory') || '[]');
+  // Merge with state history (local first, then DB)
+  state.history = [...localHistory, ...state.history.filter(h => h.user_id)];
 }
 
 function showLoading(show) {
   document.getElementById('loading-screen').classList.toggle('hidden', !show);
   document.getElementById('auth-screen').classList.add('hidden');
   document.getElementById('app').classList.add('hidden');
+}
+
+function renderApp() {
+  renderSidebar();
+  renderPage();
 }
 
 function showAuthTab(tab) {
@@ -252,8 +227,7 @@ function updateUserInfo() {
   if (!state.user) return;
   const name = state.user.user_metadata?.full_name || state.user.email?.split('@')[0] || 'User';
   const email = state.user.email || '';
-  const nameEl = document.getElementById('user-name');
-  nameEl.innerHTML = name + (isAdmin() ? ' <span class="text-yellow-400 text-xs">👑</span>' : '');
+  document.getElementById('user-name').innerHTML = name + (isAdmin() ? ' <span class="text-yellow-400 text-xs">👑</span>' : '');
   document.getElementById('user-email').textContent = email;
   document.getElementById('user-avatar').textContent = name.charAt(0).toUpperCase();
 }
@@ -272,6 +246,7 @@ async function loadUserData() {
       DB.getUserRole(state.user.id),
       DB.getGeneratedAssets(state.user.id)
     ]);
+    
     state.projects = projects;
     state.characters = characters;
     state.locations = locations;
@@ -283,62 +258,60 @@ async function loadUserData() {
     state.opalLinks = {};
     opalLinks.forEach(link => { state.opalLinks[link.app_id] = link.url; });
     
-    // Global opal links (admin-managed)
+    // Global opal links
     state.globalOpalLinks = {};
     globalOpalLinks.forEach(link => { state.globalOpalLinks[link.app_id] = link.url; });
     
+    // Load saved project
     const savedProject = localStorage.getItem('currentProject');
     if (savedProject && state.projects.find(p => p.id === savedProject)) {
       state.currentProject = savedProject;
+      await loadProjectData(savedProject);
     }
     
-    // Load saved output count preference
+    // Load preferences
     const savedOutputCount = localStorage.getItem('outputCount');
     if (savedOutputCount) state.outputCount = parseInt(savedOutputCount);
     
-    // Load Production Bible from localStorage
     loadProductionBible();
-    
-    // Load Workflow Progress
-    loadWorkflowProgress();
-    
     updateProjectSelector();
   } catch (error) { console.error('Error loading data:', error); }
 }
 
-// Helper: Get effective Opal link (personal > global > default)
+async function loadProjectData(projectId) {
+  if (!projectId) return;
+  try {
+    const overview = await DB.getProjectOverview(projectId);
+    state.productionBible = overview.bible || state.productionBible;
+    state.characters = overview.characters;
+    state.locations = overview.locations;
+    state.episodes = overview.episodes;
+    state.scenes = overview.scenes;
+    state.generatedAssets = overview.assets;
+    state.workflowProgress = overview.progress;
+  } catch (error) {
+    console.error('Error loading project data:', error);
+  }
+}
+
+function loadProductionBible() {
+  const saved = localStorage.getItem('productionBible');
+  if (saved) {
+    try { state.productionBible = JSON.parse(saved); } catch (e) {}
+  }
+}
+
+function saveProductionBible() {
+  localStorage.setItem('productionBible', JSON.stringify(state.productionBible));
+}
+
+// ============ HELPER FUNCTIONS ============
 function getEffectiveOpalLink(appId) {
   return state.opalLinks[appId] || state.globalOpalLinks[appId] || DEFAULT_OPAL_LINKS[appId] || null;
 }
 
-// Helper: Check if user is admin
 function isAdmin() {
   return state.userRole === 'admin';
-}
-
-// ============ NAVIGATION ============
-function navigateTo(page, appId = null) {
-  state.currentPage = page;
-  state.currentApp = appId;
-  renderSidebar();
-  renderPage();
-  updateBreadcrumb();
-}
-
-function updateBreadcrumb() {
-  const bc = document.getElementById('breadcrumb');
-  let text = '';
-  if (state.currentPage === 'dashboard') text = '🏠 Dashboard';
-  else if (state.currentPage === 'app' && state.currentApp) {
-    const app = findApp(state.currentApp);
-    const phase = findPhase(state.currentApp);
-    text = `${phase.icon} ${phase.name} / ${app.name}`;
-  }
-  else if (state.currentPage === 'characters') text = '👤 Characters';
-  else if (state.currentPage === 'locations') text = '🎭 Locations';
-  else if (state.currentPage === 'workflow') text = '📋 Workflow';
-  else if (state.currentPage === 'admin-opal-links') text = '👑 Global Links';
-  bc.textContent = text;
 }
 
 function findApp(appId) {
@@ -356,133 +329,209 @@ function findPhase(appId) {
   return null;
 }
 
-
-// ============ SIDEBAR ============
-function renderSidebar() {
-  const nav = document.getElementById('sidebar-nav');
-  const chars = state.characters.filter(c => !state.currentProject || c.project_id === state.currentProject);
-  const locs = state.locations.filter(l => !state.currentProject || l.project_id === state.currentProject);
-  const hasBible = state.productionBible.synopsis && state.productionBible.synopsis.length > 0;
-  
-  let html = `
-    <div class="sidebar-item ${state.currentPage === 'dashboard' ? 'active' : ''} rounded-lg p-2 cursor-pointer mb-1 text-sm" onclick="navigateTo('dashboard')">
-      <span class="mr-2">🏠</span> Dashboard
-    </div>
-  `;
-  
-  // Production Bible Status
-  if (hasBible) {
-    html += `
-      <div class="mx-2 my-2 p-2 rounded-lg bg-green-500/10 border border-green-500/20">
-        <div class="flex items-center gap-2">
-          <span class="text-green-400 text-xs">📖</span>
-          <span class="text-[10px] text-green-400 font-medium truncate">${state.productionBible.title || 'Bible Active'}</span>
-        </div>
-      </div>
-    `;
-  }
-  
-  // Group phases by category
-  const phaseGroups = [
-    { label: 'Development', phases: ['ideation', 'story-development'] },
-    { label: 'Production', phases: ['pre-production', 'production-image', 'production-video', 'production-audio'] },
-    { label: 'Finishing', phases: ['post-production', 'distribution'] }
-  ];
-  
-  phaseGroups.forEach(group => {
-    html += `<div class="mt-3 mb-1 px-2 text-[10px] text-slate-500 uppercase tracking-wider">${group.label}</div>`;
-    
-    PHASES.filter(p => group.phases.includes(p.id)).forEach(phase => {
-      const isExpanded = phase.apps.some(a => a.id === state.currentApp);
-      const hasOpalLinks = phase.apps.filter(a => getEffectiveOpalLink(a.id)).length;
-      const autoPopulateApps = phase.apps.filter(a => a.autoPopulate).length;
-      
-      html += `
-        <div class="mb-0.5">
-          <div class="flex items-center justify-between p-2 rounded-lg cursor-pointer hover:bg-white/5 text-sm" onclick="togglePhase('${phase.id}')">
-            <span class="flex items-center gap-1.5">
-              <span class="text-sm">${phase.icon}</span>
-              <span class="text-xs">${phase.name}</span>
-            </span>
-            <span class="flex items-center gap-1">
-              ${hasBible && autoPopulateApps > 0 ? `<span class="text-[8px] text-green-400">🔗</span>` : ''}
-              ${hasOpalLinks > 0 ? `<span class="text-[10px] text-cyan-400">${hasOpalLinks}</span>` : ''}
-            </span>
-          </div>
-          <div id="phase-${phase.id}" class="${isExpanded ? '' : 'hidden'} ml-3 border-l border-cyan-500/15 pl-1.5">
-            ${phase.apps.map(app => {
-              const hasLink = getEffectiveOpalLink(app.id);
-              const isCore = app.isCore;
-              const canAutoPopulate = app.autoPopulate && hasBible;
-              return `
-              <div class="sidebar-item ${state.currentApp === app.id ? 'active' : ''} rounded p-1.5 cursor-pointer text-xs flex items-center justify-between group" onclick="navigateTo('app', '${app.id}')">
-                <span class="flex items-center gap-1.5 truncate">
-                  <span>${app.icon}</span>
-                  <span class="truncate">${app.name}</span>
-                  ${isCore ? '<span class="text-yellow-400 text-[8px]">⭐</span>' : ''}
-                  ${canAutoPopulate ? '<span class="text-green-400 text-[8px]">🔗</span>' : ''}
-                </span>
-                ${hasLink ? `<a href="${hasLink}" target="_blank" onclick="event.stopPropagation()" class="opacity-0 group-hover:opacity-100 text-cyan-400 text-[10px]">↗</a>` : ''}
-              </div>
-            `}).join('')}
-          </div>
-        </div>
-      `;
-    });
-  });
-  
-  html += `
-    <div class="mt-3 mb-1 px-2 text-[10px] text-slate-500 uppercase tracking-wider">${t('assets') || 'Assets'}</div>
-    <div class="sidebar-item ${state.currentPage === 'characters' ? 'active' : ''} rounded-lg p-2 cursor-pointer mb-0.5 text-sm flex items-center justify-between" onclick="navigateTo('characters')">
-      <span class="flex items-center gap-1.5"><span>👤</span><span class="text-xs">${t('characters')}</span></span>
-      <span class="text-[10px] text-slate-500">${chars.length}</span>
-    </div>
-    <div class="sidebar-item ${state.currentPage === 'locations' ? 'active' : ''} rounded-lg p-2 cursor-pointer mb-0.5 text-sm flex items-center justify-between" onclick="navigateTo('locations')">
-      <span class="flex items-center gap-1.5"><span>🎭</span><span class="text-xs">${t('locations')}</span></span>
-      <span class="text-[10px] text-slate-500">${locs.length}</span>
-    </div>
-  `;
-  
-  // Admin section
-  if (isAdmin()) {
-    html += `
-      <div class="mt-3 mb-1 px-2 text-[10px] text-amber-400 uppercase tracking-wider">Admin</div>
-      <div class="sidebar-item ${state.currentPage === 'admin-opal-links' ? 'active' : ''} rounded-lg p-2 cursor-pointer mb-0.5 text-xs" onclick="navigateTo('admin-opal-links')">
-        <span class="flex items-center gap-1.5"><span>⚙️</span> Global Links</span>
-      </div>
-    `;
-  }
-  
-  nav.innerHTML = html;
+function getWorkflowPhaseName(phaseId) {
+  const names = {
+    'ideation': { id: 'Cari Ide', en: 'Find Ideas' },
+    'story-development': { id: 'Story Development', en: 'Story Development' },
+    'pre-production': { id: 'Pre-Production', en: 'Pre-Production' },
+    'production-image': { id: 'Produksi Gambar', en: 'Image Production' },
+    'production-video': { id: 'Produksi Video', en: 'Video Production' },
+    'production-audio': { id: 'Produksi Audio', en: 'Audio Production' },
+    'post-production': { id: 'Post-Production', en: 'Post-Production' },
+    'distribution': { id: 'Distribution', en: 'Distribution' }
+  };
+  return names[phaseId]?.[getLang()] || phaseId;
 }
 
-function togglePhase(phaseId) {
-  document.getElementById('phase-' + phaseId).classList.toggle('hidden');
+
+// ============ WORKFLOW LOGIC (FIXED!) ============
+// Checklist = User has COMPLETED the step, NOT just uploaded Opal link
+
+function isPhaseCompleted(phaseId) {
+  const phase = WORKFLOW_PHASES.find(p => p.id === phaseId);
+  if (!phase) return false;
+  return phase.tools.every(toolId => isToolCompleted(toolId));
+}
+
+function isToolCompleted(toolId) {
+  const progress = state.workflowProgress.find(p => p.tool_id === toolId);
+  return progress && progress.is_completed;
+}
+
+function getPhaseCompletionPercent(phaseId) {
+  const phase = WORKFLOW_PHASES.find(p => p.id === phaseId);
+  if (!phase) return 0;
+  const completed = phase.tools.filter(t => isToolCompleted(t)).length;
+  return Math.round((completed / phase.tools.length) * 100);
+}
+
+function getCurrentWorkflowStep() {
+  if (!state.currentProject) return 1;
+  for (const phase of WORKFLOW_PHASES) {
+    if (!isPhaseCompleted(phase.id)) return phase.step;
+  }
+  return 8;
+}
+
+function isPhaseLocked(phaseId) {
+  const phase = WORKFLOW_PHASES.find(p => p.id === phaseId);
+  if (!phase || phase.step === 1) return false;
+  for (const prevPhase of WORKFLOW_PHASES) {
+    if (prevPhase.step >= phase.step) break;
+    if (prevPhase.required && !isPhaseCompleted(prevPhase.id)) return true;
+  }
+  return false;
+}
+
+function getOverallCompletionPercent() {
+  const totalTools = WORKFLOW_PHASES.reduce((sum, p) => sum + p.tools.length, 0);
+  const completedTools = state.workflowProgress.filter(p => p.is_completed).length;
+  return Math.round((completedTools / totalTools) * 100);
+}
+
+async function markToolAsCompleted(toolId, formData = null, generatedPrompt = null) {
+  if (!state.currentProject || !state.user) {
+    // Save locally if no project selected
+    saveToolProgressLocally(toolId, formData, generatedPrompt);
+    return;
+  }
+  
+  const phase = WORKFLOW_PHASES.find(p => p.tools.includes(toolId));
+  if (!phase) return;
+  
+  try {
+    await DB.saveToolProgress(state.currentProject, state.user.id, toolId, phase.id, {
+      is_completed: true,
+      completed_at: new Date().toISOString(),
+      form_data: formData,
+      generated_prompt: generatedPrompt
+    });
+    
+    state.workflowProgress = await DB.getWorkflowProgress(state.currentProject);
+    showToast(t('stepCompleted'), 'success');
+    renderSidebar();
+    renderPage();
+  } catch (error) {
+    console.error('Error marking tool completed:', error);
+    // Fallback to local storage
+    saveToolProgressLocally(toolId, formData, generatedPrompt);
+  }
+}
+
+// Save tool progress locally when database is unavailable
+function saveToolProgressLocally(toolId, formData, generatedPrompt) {
+  const localProgress = JSON.parse(localStorage.getItem('localWorkflowProgress') || '{}');
+  localProgress[toolId] = {
+    tool_id: toolId,
+    is_completed: true,
+    completed_at: new Date().toISOString(),
+    form_data: formData,
+    generated_prompt: generatedPrompt
+  };
+  localStorage.setItem('localWorkflowProgress', JSON.stringify(localProgress));
+  
+  // Update state with local progress
+  const existingIdx = state.workflowProgress.findIndex(p => p.tool_id === toolId);
+  if (existingIdx >= 0) {
+    state.workflowProgress[existingIdx] = localProgress[toolId];
+  } else {
+    state.workflowProgress.push(localProgress[toolId]);
+  }
+  
+  showToast(t('stepCompleted') + ' (local)', 'success');
+  renderSidebar();
+}
+
+// Load local progress on init
+function loadLocalProgress() {
+  const localProgress = JSON.parse(localStorage.getItem('localWorkflowProgress') || '{}');
+  Object.values(localProgress).forEach(progress => {
+    if (!state.workflowProgress.find(p => p.tool_id === progress.tool_id)) {
+      state.workflowProgress.push(progress);
+    }
+  });
+}
+
+// ============ NAVIGATION ============
+function navigateTo(page, appId = null) {
+  state.currentPage = page;
+  state.currentApp = appId;
+  
+  // Save navigation state to sessionStorage
+  sessionStorage.setItem('currentPage', page);
+  if (appId) {
+    sessionStorage.setItem('currentApp', appId);
+  } else {
+    sessionStorage.removeItem('currentApp');
+  }
+  
+  renderSidebar();
+  renderPage();
+  updateBreadcrumb();
+}
+
+// Restore navigation state from sessionStorage
+function restoreNavigationState() {
+  const savedPage = sessionStorage.getItem('currentPage');
+  const savedApp = sessionStorage.getItem('currentApp');
+  
+  if (savedPage) {
+    state.currentPage = savedPage;
+  }
+  if (savedApp) {
+    state.currentApp = savedApp;
+  }
+}
+
+function updateBreadcrumb() {
+  const bc = document.getElementById('breadcrumb');
+  let text = '';
+  if (state.currentPage === 'dashboard') text = '🏠 Dashboard';
+  else if (state.currentPage === 'app' && state.currentApp) {
+    const app = findApp(state.currentApp);
+    const phase = findPhase(state.currentApp);
+    text = `${phase?.icon || ''} ${phase?.name || ''} / ${app?.name || ''}`;
+  }
+  else if (state.currentPage === 'characters') text = '👤 ' + t('characters');
+  else if (state.currentPage === 'locations') text = '🎭 ' + t('locations');
+  else if (state.currentPage === 'scenes') text = '🎬 Scenes';
+  else if (state.currentPage === 'assets') text = '🖼️ ' + t('generatedAssets');
+  else if (state.currentPage === 'admin-opal-links') text = '👑 Global Links';
+  bc.textContent = text;
 }
 
 // ============ PROJECT MANAGEMENT ============
 function updateProjectSelector() {
   const sel = document.getElementById('project-selector');
-  sel.innerHTML = '<option value="">All Projects</option>' + 
+  sel.innerHTML = `<option value="">📁 ${t('selectProject')}</option>` + 
     state.projects.map(p => `<option value="${p.id}" ${p.id === state.currentProject ? 'selected' : ''}>${p.name}</option>`).join('');
 }
 
-function switchProject(projectId) {
+async function switchProject(projectId) {
   state.currentProject = projectId || null;
   localStorage.setItem('currentProject', state.currentProject || '');
+  
+  if (projectId) {
+    await loadProjectData(projectId);
+  } else {
+    state.workflowProgress = [];
+    state.episodes = [];
+    state.scenes = [];
+  }
+  
   renderSidebar();
   renderPage();
 }
 
 function showNewProjectModal() {
-  showModal('New Project', `
+  showModal(t('newProject'), `
     <div class="space-y-4">
       <div>
-        <label class="block text-sm text-slate-400 mb-1">Project Name</label>
+        <label class="block text-sm text-slate-400 mb-1">${t('projectName')}</label>
         <input type="text" id="new-project-name" class="w-full rounded-lg px-3 py-2" placeholder="My Film Project">
       </div>
       <div>
-        <label class="block text-sm text-slate-400 mb-1">Type</label>
+        <label class="block text-sm text-slate-400 mb-1">${t('projectType')}</label>
         <select id="new-project-type" class="w-full rounded-lg px-3 py-2">
           ${OPTIONS.projectType.map(t => `<option>${t}</option>`).join('')}
         </select>
@@ -495,7 +544,7 @@ function showNewProjectModal() {
       </div>
       <div>
         <label class="block text-sm text-slate-400 mb-1">Description</label>
-        <textarea id="new-project-desc" class="w-full rounded-lg px-3 py-2 h-20" placeholder="Brief description..."></textarea>
+        <textarea id="new-project-desc" class="w-full rounded-lg px-3 py-2 h-20" placeholder="${t('projectDesc')}"></textarea>
       </div>
     </div>
   `, async () => {
@@ -514,9 +563,131 @@ function showNewProjectModal() {
       updateProjectSelector();
       hideModal();
       renderPage();
-    } catch (error) { alert('Error: ' + error.message); }
+      showToast(t('savedSuccessfully'), 'success');
+    } catch (error) { 
+      showToast(error.message, 'error'); 
+    }
   });
 }
+
+// ============ SIDEBAR ============
+function renderSidebar() {
+  const nav = document.getElementById('sidebar-nav');
+  const chars = state.characters.filter(c => !state.currentProject || c.project_id === state.currentProject);
+  const locs = state.locations.filter(l => !state.currentProject || l.project_id === state.currentProject);
+  const hasBible = state.productionBible.synopsis && state.productionBible.synopsis.length > 0;
+  
+  let html = `
+    <div class="sidebar-item ${state.currentPage === 'dashboard' ? 'active' : ''} rounded-lg p-2 cursor-pointer mb-1 text-sm" onclick="navigateTo('dashboard')">
+      <span class="mr-2">🏠</span> Dashboard
+    </div>
+  `;
+  
+  // Project Status
+  if (state.currentProject) {
+    const project = state.projects.find(p => p.id === state.currentProject);
+    const completionPercent = getOverallCompletionPercent();
+    html += `
+      <div class="mx-2 my-2 p-2 rounded-lg bg-cyan-500/10 border border-cyan-500/20">
+        <div class="flex items-center justify-between mb-1">
+          <span class="text-xs font-medium truncate">${project?.name || 'Project'}</span>
+          <span class="text-[10px] text-cyan-400">${completionPercent}%</span>
+        </div>
+        <div class="h-1 bg-slate-700 rounded-full overflow-hidden">
+          <div class="h-full bg-cyan-500 transition-all" style="width: ${completionPercent}%"></div>
+        </div>
+      </div>
+    `;
+  }
+  
+  // Workflow Phases
+  html += `<div class="mt-3 mb-1 px-2 text-[10px] text-slate-500 uppercase tracking-wider">${t('phases')}</div>`;
+  
+  WORKFLOW_PHASES.forEach(phase => {
+    const isCompleted = isPhaseCompleted(phase.id);
+    const isLocked = isPhaseLocked(phase.id);
+    const completionPercent = getPhaseCompletionPercent(phase.id);
+    const isExpanded = state.expandedPhases.includes(phase.id) || phase.tools.includes(state.currentApp);
+    
+    html += `
+      <div class="mb-0.5">
+        <div class="flex items-center justify-between p-2 rounded-lg cursor-pointer hover:bg-white/5 text-sm ${isLocked ? 'opacity-50' : ''}" 
+             onclick="${isLocked ? '' : `togglePhase('${phase.id}')`}">
+          <span class="flex items-center gap-1.5">
+            <span class="text-sm">${phase.icon}</span>
+            <span class="text-xs">${getWorkflowPhaseName(phase.id)}</span>
+            ${isCompleted ? '<span class="text-green-400 text-[10px]">✓</span>' : ''}
+            ${isLocked ? '<span class="text-slate-500 text-[10px]">🔒</span>' : ''}
+          </span>
+          <span class="text-[10px] ${isCompleted ? 'text-green-400' : 'text-slate-500'}">${completionPercent}%</span>
+        </div>
+        <div id="phase-${phase.id}" class="${isExpanded ? '' : 'hidden'} ml-3 border-l border-cyan-500/15 pl-1.5">
+          ${phase.tools.map(toolId => {
+            const tool = findApp(toolId);
+            if (!tool) return '';
+            const isToolDone = isToolCompleted(toolId);
+            const hasLink = getEffectiveOpalLink(toolId);
+            return `
+              <div class="sidebar-item ${state.currentApp === toolId ? 'active' : ''} rounded p-1.5 cursor-pointer text-xs flex items-center justify-between group" 
+                   onclick="navigateTo('app', '${toolId}')">
+                <span class="flex items-center gap-1.5 truncate">
+                  <span>${tool.icon}</span>
+                  <span class="truncate">${tool.name}</span>
+                  ${isToolDone ? '<span class="text-green-400 text-[8px]">✓</span>' : ''}
+                </span>
+                ${hasLink ? `<a href="${hasLink}" target="_blank" onclick="event.stopPropagation()" class="opacity-0 group-hover:opacity-100 text-cyan-400 text-[10px]">↗</a>` : ''}
+              </div>
+            `;
+          }).join('')}
+        </div>
+      </div>
+    `;
+  });
+  
+  // Assets Section
+  html += `
+    <div class="mt-3 mb-1 px-2 text-[10px] text-slate-500 uppercase tracking-wider">${t('assets')}</div>
+    <div class="sidebar-item ${state.currentPage === 'characters' ? 'active' : ''} rounded-lg p-2 cursor-pointer mb-0.5 text-sm flex items-center justify-between" onclick="navigateTo('characters')">
+      <span class="flex items-center gap-1.5"><span>👤</span><span class="text-xs">${t('characters')}</span></span>
+      <span class="text-[10px] text-slate-500">${chars.length}</span>
+    </div>
+    <div class="sidebar-item ${state.currentPage === 'locations' ? 'active' : ''} rounded-lg p-2 cursor-pointer mb-0.5 text-sm flex items-center justify-between" onclick="navigateTo('locations')">
+      <span class="flex items-center gap-1.5"><span>🎭</span><span class="text-xs">${t('locations')}</span></span>
+      <span class="text-[10px] text-slate-500">${locs.length}</span>
+    </div>
+    <div class="sidebar-item ${state.currentPage === 'scenes' ? 'active' : ''} rounded-lg p-2 cursor-pointer mb-0.5 text-sm flex items-center justify-between" onclick="navigateTo('scenes')">
+      <span class="flex items-center gap-1.5"><span>🎬</span><span class="text-xs">Scenes</span></span>
+      <span class="text-[10px] text-slate-500">${state.scenes.length}</span>
+    </div>
+    <div class="sidebar-item ${state.currentPage === 'assets' ? 'active' : ''} rounded-lg p-2 cursor-pointer mb-0.5 text-sm flex items-center justify-between" onclick="navigateTo('assets')">
+      <span class="flex items-center gap-1.5"><span>🖼️</span><span class="text-xs">${t('generatedAssets')}</span></span>
+      <span class="text-[10px] text-slate-500">${state.generatedAssets.length}</span>
+    </div>
+  `;
+  
+  // Admin Section
+  if (isAdmin()) {
+    html += `
+      <div class="mt-3 mb-1 px-2 text-[10px] text-amber-400 uppercase tracking-wider">Admin</div>
+      <div class="sidebar-item ${state.currentPage === 'admin-opal-links' ? 'active' : ''} rounded-lg p-2 cursor-pointer mb-0.5 text-xs" onclick="navigateTo('admin-opal-links')">
+        <span class="flex items-center gap-1.5"><span>⚙️</span> Global Opal Links</span>
+      </div>
+    `;
+  }
+  
+  nav.innerHTML = html;
+}
+
+function togglePhase(phaseId) {
+  const idx = state.expandedPhases.indexOf(phaseId);
+  if (idx >= 0) {
+    state.expandedPhases.splice(idx, 1);
+  } else {
+    state.expandedPhases.push(phaseId);
+  }
+  renderSidebar();
+}
+
 
 // ============ PAGE RENDERING ============
 function renderPage() {
@@ -527,39 +698,47 @@ function renderPage() {
     case 'app': html = renderAppPage(); break;
     case 'characters': html = renderCharactersPage(); break;
     case 'locations': html = renderLocationsPage(); break;
-    case 'workflow': html = renderWorkflowPage(); break;
+    case 'scenes': html = renderScenesPage(); break;
+    case 'assets': html = renderAssetsPage(); break;
     case 'admin-opal-links': html = isAdmin() ? renderAdminOpalLinksPage() : renderDashboard(); break;
     default: html = renderDashboard();
   }
   content.innerHTML = `<div class="fade-in">${html}</div>`;
   updateBreadcrumb();
+  
+  // Restore tool state if on app page (after DOM is updated)
+  if (state.currentPage === 'app' && state.currentApp) {
+    setTimeout(() => applyRestoredState(state.currentApp), 50);
+  }
 }
 
+// ============ DASHBOARD ============
 function renderDashboard() {
   const project = state.projects.find(p => p.id === state.currentProject);
-  const chars = state.characters.filter(c => !state.currentProject || c.project_id === state.currentProject);
-  const locs = state.locations.filter(l => !state.currentProject || l.project_id === state.currentProject);
-  const bible = state.productionBible;
-  const hasBible = bible.synopsis && bible.synopsis.length > 0;
   const currentStep = getCurrentWorkflowStep();
+  const completionPercent = getOverallCompletionPercent();
   
   return `
     <div class="w-full">
       <!-- Header -->
       <div class="mb-6">
         <h1 class="text-2xl font-bold mb-1" style="font-family: 'Space Grotesk', sans-serif;">
-          <span class="text-white">raym</span><span class="bg-gradient-to-r from-cyan-400 to-blue-400 bg-clip-text text-transparent">AI</span><span class="text-slate-400 font-normal">zing film</span>
+          <span class="text-white">raym</span><span class="brand-ai">AI</span><span class="brand-film">zing film</span>
         </h1>
         <p class="text-slate-500 text-sm">${t('tagline')}</p>
       </div>
       
-      <!-- ============ GUIDED WORKFLOW - MAIN FEATURE ============ -->
+      <!-- Project Card -->
+      ${project ? renderProjectCard(project) : renderNoProject()}
+      
+      <!-- Workflow Progress -->
       <div class="glass rounded-2xl p-6 mb-6 border-2 border-cyan-500/30">
         <div class="flex items-center justify-between mb-4 flex-wrap gap-3">
           <div>
             <h2 class="text-lg font-bold flex items-center gap-2 flex-wrap">
               ${t('workflowTitle')}
               <span class="text-xs bg-cyan-500/20 text-cyan-400 px-2 py-1 rounded-full">${t('stepOf').replace('{current}', currentStep).replace('{total}', '8')}</span>
+              <span class="text-xs bg-green-500/20 text-green-400 px-2 py-1 rounded-full">${completionPercent}%</span>
             </h2>
             <p class="text-xs text-slate-400 mt-1">${t('workflowSubtitle')}</p>
           </div>
@@ -568,1738 +747,894 @@ function renderDashboard() {
         
         <!-- Progress Bar -->
         <div class="mb-6">
-          <div class="flex justify-between text-xs text-slate-500 mb-2">
-            <span>Progress</span>
-            <span>${Math.round((currentStep - 1) / 8 * 100)}% Complete</span>
-          </div>
           <div class="h-2 bg-slate-700 rounded-full overflow-hidden">
-            <div class="h-full bg-gradient-to-r from-cyan-500 to-blue-500 transition-all duration-500" style="width: ${(currentStep - 1) / 8 * 100}%"></div>
+            <div class="h-full bg-gradient-to-r from-cyan-500 to-green-500 transition-all duration-500" style="width: ${completionPercent}%"></div>
           </div>
         </div>
         
         <!-- Workflow Steps -->
         <div class="space-y-3">
-          ${getWorkflowSteps().map((step, idx) => {
-            const isCompleted = isStepCompleted(step.id);
-            const isCurrent = step.step === currentStep;
-            const isLocked = step.step > currentStep && step.required && !isStepCompleted(WORKFLOW_STEPS[idx-1]?.id);
-            const stepTools = step.tools.map(t => findApp(t)).filter(Boolean);
-            
-            return `
-              <div class="workflow-step ${isCurrent ? 'current' : ''} ${isCompleted ? 'completed' : ''} ${isLocked ? 'locked' : ''} 
-                          rounded-xl p-4 border ${isCurrent ? 'border-cyan-500 bg-cyan-500/10' : isCompleted ? 'border-green-500/30 bg-green-500/5' : 'border-slate-700 bg-slate-800/50'}
-                          ${isLocked ? 'opacity-50' : 'cursor-pointer hover:border-cyan-500/50'}"
-                   onclick="${isLocked ? '' : `startWorkflowStep(${step.step})`}">
-                <div class="flex items-start gap-4">
-                  <!-- Step Number -->
-                  <div class="flex-shrink-0 w-10 h-10 rounded-full flex items-center justify-center text-lg font-bold
-                              ${isCompleted ? 'bg-green-500 text-white' : isCurrent ? 'bg-cyan-500 text-white' : 'bg-slate-700 text-slate-400'}">
-                    ${isCompleted ? '✓' : step.step}
-                  </div>
-                  
-                  <!-- Step Content -->
-                  <div class="flex-1 min-w-0">
-                    <div class="flex items-center gap-2 mb-1">
-                      <span class="text-xl">${step.icon}</span>
-                      <h3 class="font-semibold ${isCurrent ? 'text-cyan-400' : isCompleted ? 'text-green-400' : 'text-white'}">${step.name}</h3>
-                      ${step.required ? `<span class="text-[10px] bg-red-500/20 text-red-400 px-1.5 py-0.5 rounded">${t('required')}</span>` : `<span class="text-[10px] bg-slate-600 text-slate-400 px-1.5 py-0.5 rounded">${t('optional')}</span>`}
-                      ${isLocked ? `<span class="text-[10px] bg-slate-600 text-slate-400 px-1.5 py-0.5 rounded">🔒 ${t('locked')}</span>` : ''}
-                    </div>
-                    <p class="text-sm text-slate-400 mb-2">${step.description}</p>
-                    
-                    <!-- Tools in this step -->
-                    <div class="flex flex-wrap gap-2 mb-2">
-                      ${stepTools.map(tool => {
-                        const hasOpal = getEffectiveOpalLink(tool.id);
-                        return `
-                          <span class="inline-flex items-center gap-1 text-xs px-2 py-1 rounded-lg 
-                                       ${hasOpal ? 'bg-cyan-500/20 text-cyan-400' : 'bg-slate-700 text-slate-400'}">
-                            ${tool.icon} ${tool.name}
-                            ${hasOpal ? '<span class="text-green-400">✓</span>' : ''}
-                          </span>
-                        `;
-                      }).join('')}
-                    </div>
-                    
-                    <!-- Tip -->
-                    <p class="text-xs text-slate-500 italic">💡 ${step.tip}</p>
-                  </div>
-                  
-                  <!-- Action Button -->
-                  <div class="flex-shrink-0">
-                    ${isCurrent ? `
-                      <button onclick="event.stopPropagation(); navigateTo('app', '${step.tools[0]}')" 
-                              class="btn-primary px-4 py-2 rounded-lg text-sm font-semibold animate-pulse">
-                        ${t('start')} →
-                      </button>
-                    ` : isCompleted ? `
-                      <button onclick="event.stopPropagation(); navigateTo('app', '${step.tools[0]}')" 
-                              class="btn-secondary px-3 py-1.5 rounded-lg text-xs">
-                        ${t('edit')}
-                      </button>
-                    ` : isLocked ? `
-                      <span class="text-slate-500 text-xs">🔒</span>
-                    ` : `
-                      <button onclick="event.stopPropagation(); navigateTo('app', '${step.tools[0]}')" 
-                              class="btn-secondary px-3 py-1.5 rounded-lg text-xs">
-                        ${t('next')}
-                      </button>
-                    `}
-                  </div>
-                </div>
-              </div>
-            `;
-          }).join('')}
+          ${WORKFLOW_PHASES.map(phase => renderWorkflowStep(phase, currentStep)).join('')}
         </div>
       </div>
       
-      <!-- Production Bible Status (if exists) -->
-      ${hasBible ? `
-        <div class="glass rounded-xl p-4 mb-6 border border-green-500/30 bg-green-500/5 card-hover">
-          <div class="flex items-start justify-between flex-wrap gap-3">
-            <div class="flex items-center gap-3">
-              <div class="w-12 h-12 rounded-xl bg-green-500/20 flex items-center justify-center text-2xl">📖</div>
-              <div>
-                <div class="flex items-center gap-2 flex-wrap">
-                  <h3 class="font-bold text-green-400">${bible.title || t('bibleEmpty')}</h3>
-                  <span class="tag bg-green-500/20 border-green-500/30 text-green-400 text-xs">${t('bibleActive')}</span>
-                </div>
-                <p class="text-xs text-slate-400 mt-1">${bible.genre || ''} • ${bible.projectType || ''}</p>
-                <div class="flex flex-wrap gap-3 mt-2 text-xs text-slate-500">
-                  <span>👥 ${bible.characters?.length || 0} ${t('characters')}</span>
-                  <span>🎭 ${bible.locations?.length || 0} ${t('locations')}</span>
-                  <span>📑 ${bible.episodes?.length || 0} Episode</span>
-                  <span>🎬 ${bible.scenes?.length || 0} Scene</span>
-                </div>
-              </div>
-            </div>
-            <div class="flex gap-2">
-              <button onclick="navigateTo('app', 'story-01')" class="btn-secondary px-3 py-1.5 rounded-lg text-xs">✏️ ${t('editBible')}</button>
-              <button onclick="clearProductionBible()" class="btn-secondary px-3 py-1.5 rounded-lg text-xs text-red-400">🗑️ ${t('clearBible')}</button>
-            </div>
-          </div>
-        </div>
-      ` : ''}
-      
-      ${project ? `
-        <div class="glass rounded-xl p-4 mb-6 gradient-card card-hover">
-          <div class="flex items-start justify-between flex-wrap gap-3">
-            <div>
-              <div class="flex items-center gap-2 mb-1">
-                <span class="tag text-xs">${project.type}</span>
-                <span class="tag text-xs">${project.genre}</span>
-              </div>
-              <h2 class="text-lg font-bold">${project.name}</h2>
-              <p class="text-slate-500 text-xs mt-1">${project.description || t('projectDesc')}</p>
-            </div>
-            <button onclick="deleteProject('${project.id}')" class="btn-secondary px-2 py-1 rounded text-xs">${t('delete')}</button>
-          </div>
-        </div>
-      ` : `
-        <div class="glass rounded-xl p-6 mb-6 text-center gradient-card">
-          <div class="text-3xl mb-2">🎬</div>
-          <h3 class="text-base font-semibold mb-1">${t('bibleStart')}</h3>
-          <p class="text-slate-500 text-xs mb-4">${t('bibleStartDesc')}</p>
-          <button onclick="showNewProjectModal()" class="btn-primary px-5 py-2 rounded-lg text-sm font-semibold">+ ${t('newProject')}</button>
-        </div>
-      `}
-      
-      <!-- Quick Stats Row - Responsive -->
+      <!-- Quick Stats -->
       <div class="grid grid-cols-2 sm:grid-cols-4 gap-3 mb-6">
-        <div class="glass rounded-xl p-3 cursor-pointer glass-hover" onclick="navigateTo('characters')">
-          <div class="flex items-center justify-between mb-1">
-            <span class="text-xl">👤</span>
-            <span class="text-xl font-bold text-cyan-400">${chars.length}</span>
-          </div>
-          <p class="text-xs text-slate-400">${t('characters')}</p>
-        </div>
-        <div class="glass rounded-xl p-3 cursor-pointer glass-hover card-hover" onclick="navigateTo('locations')">
-          <div class="flex items-center justify-between mb-1">
-            <span class="text-xl">🎭</span>
-            <span class="text-xl font-bold text-blue-400">${locs.length}</span>
-          </div>
-          <p class="text-xs text-slate-400">${t('locations')}</p>
-        </div>
-        <div class="glass rounded-xl p-3 cursor-pointer glass-hover card-hover" onclick="showHistoryPanel()">
-          <div class="flex items-center justify-between mb-1">
-            <span class="text-xl">📜</span>
-            <span class="text-xl font-bold text-sky-400">${state.history.length}</span>
-          </div>
-          <p class="text-xs text-slate-400">${t('history')}</p>
-        </div>
-        <div class="glass rounded-xl p-3 cursor-pointer glass-hover card-hover" onclick="navigateTo('workflow')">
-          <div class="flex items-center justify-between mb-1">
-            <span class="text-xl">📋</span>
-            <span class="text-xl font-bold text-indigo-400">${PHASES.length}</span>
-          </div>
-          <p class="text-xs text-slate-400">${t('phases')}</p>
-        </div>
-      </div>
-
-      <!-- Production Pipeline - Modern Horizontal Flow -->
-      <div class="mb-8">
-        <div class="flex items-center justify-between mb-4">
-          <h3 class="text-sm font-semibold text-slate-300">${t('phases')}</h3>
-          <button onclick="navigateTo('workflow')" class="text-xs text-cyan-400 hover:text-cyan-300 flex items-center gap-1">
-            ${t('helpWorkflow')} <span>→</span>
-          </button>
-        </div>
-        
-        <!-- Pipeline Progress Bar -->
-        <div class="glass rounded-2xl p-4 mb-4">
-          <div class="flex items-center gap-1 overflow-x-auto pb-2">
-            ${PHASES.map((phase, idx) => {
-              const configuredApps = phase.apps.filter(a => getEffectiveOpalLink(a.id));
-              const progress = Math.round((configuredApps.length / phase.apps.length) * 100);
-              const isComplete = progress === 100;
-              const isActive = progress > 0 && progress < 100;
-              return `
-                <div class="flex items-center ${idx < PHASES.length - 1 ? 'flex-1' : ''}">
-                  <div onclick="togglePhaseExpand(${idx})" 
-                       class="flex-shrink-0 cursor-pointer group relative">
-                    <div class="w-12 h-12 rounded-xl flex items-center justify-center text-xl transition-all
-                                ${isComplete ? 'bg-green-500/20 border-2 border-green-500' : 
-                                  isActive ? 'bg-cyan-500/20 border-2 border-cyan-500 animate-pulse' : 
-                                  'bg-slate-800 border border-slate-700 hover:border-cyan-500/50'}">
-                      ${phase.icon}
-                    </div>
-                    <div class="absolute -bottom-1 -right-1 w-5 h-5 rounded-full text-[10px] font-bold flex items-center justify-center
-                                ${isComplete ? 'bg-green-500 text-white' : 
-                                  isActive ? 'bg-cyan-500 text-dark-950' : 
-                                  'bg-slate-700 text-slate-400'}">
-                      ${isComplete ? '✓' : configuredApps.length}
-                    </div>
-                    <div class="absolute -top-8 left-1/2 -translate-x-1/2 whitespace-nowrap text-[10px] text-slate-500 
-                                opacity-0 group-hover:opacity-100 transition-opacity">
-                      ${phase.name}
-                    </div>
-                  </div>
-                  ${idx < PHASES.length - 1 ? `
-                    <div class="flex-1 h-0.5 mx-1 ${isComplete ? 'bg-green-500' : 'bg-slate-700'}"></div>
-                  ` : ''}
-                </div>
-              `;
-            }).join('')}
-          </div>
-        </div>
-        
-        <!-- Expandable Phase Cards -->
-        <div id="phase-cards" class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-3">
-          ${PHASES.slice(0, 3).map((phase, idx) => renderPhaseCard(phase, idx)).join('')}
-        </div>
-        <button onclick="toggleAllPhases()" id="show-more-phases" class="w-full mt-3 py-2 text-xs text-slate-500 hover:text-cyan-400 transition-colors">
-          ${t('next')} ${PHASES.length - 3} ${t('phases').toLowerCase()} ▼
-        </button>
-      </div>
-      
-      <!-- Quick Actions -->
-      <div class="glass rounded-xl p-4">
-        <h3 class="text-sm font-semibold text-slate-300 mb-3">⚡ ${t('quickActions')}</h3>
-        <div class="grid grid-cols-2 sm:grid-cols-4 gap-2">
-          <button onclick="navigateTo('app', 'story-01')" class="btn-secondary p-3 rounded-xl text-center hover:border-cyan-500/50 transition-all">
-            <span class="text-xl block mb-1">📖</span>
-            <span class="text-xs">${t('editBible')}</span>
-          </button>
-          <button onclick="navigateTo('characters')" class="btn-secondary p-3 rounded-xl text-center hover:border-cyan-500/50 transition-all">
-            <span class="text-xl block mb-1">👤</span>
-            <span class="text-xs">${t('characters')}</span>
-          </button>
-          <button onclick="navigateTo('locations')" class="btn-secondary p-3 rounded-xl text-center hover:border-cyan-500/50 transition-all">
-            <span class="text-xl block mb-1">🎭</span>
-            <span class="text-xs">${t('locations')}</span>
-          </button>
-          <button onclick="showHistoryPanel()" class="btn-secondary p-3 rounded-xl text-center hover:border-cyan-500/50 transition-all">
-            <span class="text-xl block mb-1">📜</span>
-            <span class="text-xs">${t('history')}</span>
-          </button>
-        </div>
+        ${renderQuickStat('👤', state.characters.length, t('characters'), 'characters')}
+        ${renderQuickStat('🎭', state.locations.length, t('locations'), 'locations')}
+        ${renderQuickStat('🎬', state.scenes.length, 'Scenes', 'scenes')}
+        ${renderQuickStat('🖼️', state.generatedAssets.length, t('generatedAssets'), 'assets')}
       </div>
     </div>
   `;
 }
 
-// Helper function to render phase card
-function renderPhaseCard(phase, idx) {
-  const configuredApps = phase.apps.filter(a => getEffectiveOpalLink(a.id));
-  const progress = Math.round((configuredApps.length / phase.apps.length) * 100);
-  
+function renderProjectCard(project) {
   return `
-    <div class="glass rounded-xl p-3 hover:border-cyan-500/30 transition-all cursor-pointer" onclick="navigateTo('app', '${phase.apps[0]?.id}')">
-      <div class="flex items-center gap-3 mb-2">
-        <div class="w-10 h-10 rounded-lg bg-cyan-500/10 flex items-center justify-center text-lg">${phase.icon}</div>
-        <div class="flex-1 min-w-0">
-          <h4 class="text-sm font-semibold truncate">${phase.name}</h4>
-          <div class="flex items-center gap-2">
-            <div class="flex-1 h-1 bg-slate-700 rounded-full overflow-hidden">
-              <div class="h-full ${progress === 100 ? 'bg-green-500' : 'bg-cyan-500'} transition-all" style="width: ${progress}%"></div>
-            </div>
-            <span class="text-[10px] ${progress === 100 ? 'text-green-400' : 'text-slate-500'}">${configuredApps.length}/${phase.apps.length}</span>
-          </div>
-        </div>
-      </div>
-      <div class="flex flex-wrap gap-1">
-        ${phase.apps.slice(0, 4).map(app => {
-          const hasLink = getEffectiveOpalLink(app.id);
-          return `<span class="text-xs px-2 py-0.5 rounded ${hasLink ? 'bg-cyan-500/20 text-cyan-400' : 'bg-slate-800 text-slate-500'}">${app.icon}</span>`;
-        }).join('')}
-        ${phase.apps.length > 4 ? `<span class="text-xs text-slate-500">+${phase.apps.length - 4}</span>` : ''}
-      </div>
-    </div>
-  `;
-}
-
-// Toggle phase expansion
-let showAllPhases = false;
-function toggleAllPhases() {
-  showAllPhases = !showAllPhases;
-  const container = document.getElementById('phase-cards');
-  const btn = document.getElementById('show-more-phases');
-  if (container) {
-    container.innerHTML = showAllPhases 
-      ? PHASES.map((phase, idx) => renderPhaseCard(phase, idx)).join('')
-      : PHASES.slice(0, 3).map((phase, idx) => renderPhaseCard(phase, idx)).join('');
-  }
-  if (btn) {
-    btn.innerHTML = showAllPhases 
-      ? `${t('previous')} ▲`
-      : `${t('next')} ${PHASES.length - 3} ${t('phases').toLowerCase()} ▼`;
-  }
-}
-
-function togglePhaseExpand(idx) {
-  const phase = PHASES[idx];
-  if (phase && phase.apps.length > 0) {
-    navigateTo('app', phase.apps[0].id);
-  }
-}
-
-async function deleteProject(id) {
-  if (!confirm('Delete this project and all its data?')) return;
-  try {
-    await DB.deleteProject(id);
-    state.projects = state.projects.filter(p => p.id !== id);
-    if (state.currentProject === id) state.currentProject = null;
-    updateProjectSelector();
-    renderPage();
-  } catch (error) { alert('Error: ' + error.message); }
-}
-
-
-// ============ APP PAGE (Celtx-Style Integrated) ============
-function renderAppPage() {
-  const appConfig = APP_FORMS[state.currentApp];
-  const app = findApp(state.currentApp);
-  const phase = findPhase(state.currentApp);
-  if (!appConfig || !app) return '<p>App not found</p>';
-  
-  const chars = state.characters.filter(c => !state.currentProject || c.project_id === state.currentProject);
-  const locs = state.locations.filter(l => !state.currentProject || l.project_id === state.currentProject);
-  const effectiveLink = getEffectiveOpalLink(state.currentApp);
-  const isGlobalLink = !state.opalLinks[state.currentApp] && state.globalOpalLinks[state.currentApp];
-  const hasAutoPopulate = appConfig.autoPopulateFrom || app.autoPopulate;
-  const isCoreTool = appConfig.isCore;
-  
-  return `
-    <div class="w-full">
-      <div class="flex items-center gap-4 mb-6">
-        <div class="w-16 h-16 rounded-2xl bg-cyan-500/20 flex items-center justify-center text-3xl">${app.icon}</div>
-        <div class="flex-1">
-          <div class="flex items-center gap-2 mb-1">
-            <span class="tag">${phase.name}</span>
-            ${isGlobalLink ? '<span class="tag bg-green-500/20 border-green-500/30 text-green-400">✓ Ready</span>' : ''}
-          </div>
-          <h2 class="text-2xl font-bold">${app.name}</h2>
-          <p class="text-slate-400 text-sm">${app.desc}</p>
-        </div>
-        ${effectiveLink ? `
-          <a href="${effectiveLink}" target="_blank" class="btn-primary px-5 py-2.5 rounded-xl text-sm font-medium flex items-center gap-2">
-            🚀 Open in Opal
-            ${isGlobalLink ? '<span class="text-xs opacity-70">(Global)</span>' : ''}
-          </a>
-        ` : `
-          <button onclick="navigateTo('opal-links')" class="btn-secondary px-4 py-2 rounded-xl text-sm">🔗 Setup Opal Link</button>
-        `}
-      </div>
-      
-      <!-- Core Tool Banner -->
-      ${isCoreTool ? `
-        <div class="glass rounded-xl p-4 mb-6 border border-yellow-500/30 bg-yellow-500/5">
-          <div class="flex items-center gap-3">
-            <span class="text-2xl">⭐</span>
-            <div>
-              <h4 class="font-semibold text-yellow-400">Core Tool - Synopsis Writer</h4>
-              <p class="text-xs text-slate-400">This is the master tool. Data entered here will auto-populate ALL other production phases.</p>
-            </div>
-          </div>
-        </div>
-      ` : ''}
-      
-      <!-- Context Selector (Auto-Populate) -->
-      ${hasAutoPopulate ? `
-        <div class="glass rounded-xl p-4 mb-6 border border-cyan-500/20">
-          <div class="flex items-center gap-2 mb-3">
-            <span class="text-cyan-400">🔗</span>
-            <span class="text-sm font-semibold text-cyan-400">Auto-Populate from Production Bible</span>
-          </div>
-          <div class="grid grid-cols-2 md:grid-cols-4 gap-3">
-            <div>
-              <label class="block text-xs text-slate-500 mb-1">Episode</label>
-              <select id="context-episode" class="w-full rounded-lg px-3 py-2 text-sm" onchange="onContextChange()">
-                <option value="">Select Episode...</option>
-                ${state.productionBible.episodes.map((ep, i) => `
-                  <option value="${i}" ${state.selectedEpisode === i ? 'selected' : ''}>Ep ${i+1}: ${ep.title || 'Untitled'}</option>
-                `).join('')}
-              </select>
-            </div>
-            <div>
-              <label class="block text-xs text-slate-500 mb-1">Scene</label>
-              <select id="context-scene" class="w-full rounded-lg px-3 py-2 text-sm" onchange="onContextChange()">
-                <option value="">Select Scene...</option>
-                ${getAvailableScenes().map((sc, i) => `
-                  <option value="${i}" ${state.selectedScene === i ? 'selected' : ''}>Scene ${sc.number}: ${sc.location || 'Unknown'}</option>
-                `).join('')}
-              </select>
-            </div>
-            <div>
-              <label class="block text-xs text-slate-500 mb-1">Character</label>
-              <select id="context-character" class="w-full rounded-lg px-3 py-2 text-sm" onchange="onContextChange()">
-                <option value="">Select Character...</option>
-                ${state.productionBible.characters.map((ch, i) => `
-                  <option value="${i}" ${state.selectedCharacter === i ? 'selected' : ''}>${ch.name || 'Character ' + (i+1)}</option>
-                `).join('')}
-                ${chars.map(c => `<option value="db-${c.id}">📁 ${c.name}</option>`).join('')}
-              </select>
-            </div>
-            <div>
-              <label class="block text-xs text-slate-500 mb-1">Location</label>
-              <select id="context-location" class="w-full rounded-lg px-3 py-2 text-sm" onchange="onContextChange()">
-                <option value="">Select Location...</option>
-                ${state.productionBible.locations.map((loc, i) => `
-                  <option value="${i}" ${state.selectedLocation === i ? 'selected' : ''}>${loc.name || 'Location ' + (i+1)}</option>
-                `).join('')}
-                ${locs.map(l => `<option value="db-${l.id}">📁 ${l.name}</option>`).join('')}
-              </select>
-            </div>
-          </div>
-          <button onclick="autoPopulateForm()" class="mt-3 btn-primary px-4 py-2 rounded-lg text-xs w-full">
-            ⚡ Auto-Fill Form from Selection
-          </button>
-        </div>
-      ` : ''}
-      
-      <!-- Output Count & Mode Selector -->
-      <div class="glass rounded-xl p-4 mb-6">
-        <div class="flex items-center justify-between flex-wrap gap-3">
-          <div class="flex items-center gap-3">
-            <span class="text-sm text-slate-400">Output:</span>
-            <div class="flex gap-1">
-              ${[1, 2, 3, 4].map(n => `
-                <button onclick="setOutputCount(${n})" class="w-8 h-8 rounded-lg ${state.outputCount === n ? 'btn-primary' : 'btn-secondary'} text-xs font-bold">
-                  ${n}
-                </button>
-              `).join('')}
-            </div>
-          </div>
-          <div class="flex items-center gap-2">
-            <span class="text-xs text-slate-500">Mode:</span>
-            <select id="character-mode" class="rounded-lg px-2 py-1 text-xs" onchange="updateCharacterMode(this.value)">
-              <option value="single">Single</option>
-              <option value="multi-2">2 Chars</option>
-              <option value="multi-3">3 Chars</option>
-              <option value="multi-4">4+ Chars</option>
-            </select>
-          </div>
-        </div>
-      </div>
-      
-      <!-- Quick Insert (from saved assets) -->
-      ${(chars.length > 0 || locs.length > 0) ? `
-        <div class="glass rounded-xl p-3 mb-6">
-          <div class="flex items-center gap-3 flex-wrap">
-            <span class="text-xs text-slate-500">Quick Insert:</span>
-            ${chars.slice(0, 4).map(c => `
-              <button onclick="quickInsertCharacter('${c.id}')" class="text-xs bg-cyan-500/10 border border-cyan-500/20 px-2 py-1 rounded">👤 ${c.name}</button>
-            `).join('')}
-            ${locs.slice(0, 4).map(l => `
-              <button onclick="quickInsertLocation('${l.id}')" class="text-xs bg-blue-500/10 border border-blue-500/20 px-2 py-1 rounded">🎭 ${l.name}</button>
-            `).join('')}
-          </div>
-        </div>
-      ` : ''}
-      
-      <div class="grid grid-cols-1 lg:grid-cols-5 gap-6">
-        <div class="lg:col-span-3 glass rounded-2xl p-6">
-          <h3 class="font-semibold mb-4">📝 Input Options</h3>
-          <div class="space-y-4" id="app-form">${renderAppForm(appConfig)}</div>
-          <div class="flex gap-3 mt-6">
-            <button onclick="generatePrompt()" class="flex-1 btn-primary py-3 rounded-xl font-semibold">✨ Generate Prompt</button>
-            <button onclick="clearForm()" class="btn-secondary px-4 py-3 rounded-xl">🗑️</button>
-          </div>
-        </div>
-        
-        <div class="lg:col-span-2 space-y-4">
-          <div class="glass rounded-2xl p-5">
-            <div class="flex items-center justify-between mb-3">
-              <h3 class="font-semibold text-sm">📋 Generated Prompt</h3>
-              <button onclick="copyPrompt()" id="copy-btn" class="btn-primary px-4 py-1.5 rounded-lg text-xs">📋 Copy</button>
-            </div>
-            <div id="prompt-output" class="prompt-output rounded-xl p-4 min-h-[180px] max-h-[300px] overflow-y-auto font-mono text-xs whitespace-pre-wrap">
-              <span class="text-slate-500 italic">Fill in the options above...</span>
-            </div>
-          </div>
-          
-          <div class="glass rounded-2xl p-5">
-            <h3 class="font-semibold text-sm mb-3">⚡ Quick Actions</h3>
-            <div class="grid grid-cols-2 gap-2">
-              <button onclick="saveToHistory()" class="btn-secondary py-2.5 rounded-lg text-xs">💾 Save to History</button>
-              <button onclick="copyAndOpenOpal()" class="btn-secondary py-2.5 rounded-lg text-xs">🚀 Copy & Open Opal</button>
-            </div>
-            ${isCoreTool ? `
-              <button onclick="saveToProductionBible()" class="mt-3 w-full btn-primary py-3 rounded-lg text-sm font-semibold bg-gradient-to-r from-yellow-500 to-orange-500 border-yellow-400/30">
-                ⭐ Save to Production Bible
-              </button>
-              <p class="text-xs text-slate-500 mt-2 text-center">This will enable auto-populate for all other tools</p>
-            ` : ''}
-          </div>
-          
-          ${hasAutoPopulate && state.productionBible.synopsis ? `
-            <div class="glass rounded-2xl p-5 border border-green-500/20">
-              <div class="flex items-center gap-2 mb-2">
-                <span class="text-green-400">✓</span>
-                <h3 class="font-semibold text-sm text-green-400">Production Bible Active</h3>
-              </div>
-              <p class="text-xs text-slate-400 mb-2">"${state.productionBible.title || 'Untitled Project'}"</p>
-              <p class="text-xs text-slate-500">${state.productionBible.characters?.length || 0} characters, ${state.productionBible.locations?.length || 0} locations, ${state.productionBible.episodes?.length || 0} episodes</p>
-            </div>
-          ` : ''}
-        </div>
-      </div>
-      
-      <!-- Workflow Navigation -->
-      ${renderWorkflowNavigation(state.currentApp)}
-    </div>
-  `;
-}
-
-function renderAppForm(config) {
-  return config.inputs.map(input => {
-    if (input.type === 'textarea') {
-      return `<div><label class="block text-sm text-slate-400 mb-1">${input.label}</label>
-        <textarea id="input-${input.id}" class="w-full rounded-lg px-3 py-2" rows="${input.rows || 3}" placeholder="${input.placeholder || ''}"></textarea></div>`;
-    } else if (input.type === 'select') {
-      const options = OPTIONS[input.options] || [];
-      return `<div><label class="block text-sm text-slate-400 mb-1">${input.label}</label>
-        <select id="input-${input.id}" class="w-full rounded-lg px-3 py-2">
-          <option value="">Select...</option>
-          ${options.map(opt => `<option value="${opt}">${opt}</option>`).join('')}
-        </select></div>`;
-    } else {
-      return `<div><label class="block text-sm text-slate-400 mb-1">${input.label}</label>
-        <input type="text" id="input-${input.id}" class="w-full rounded-lg px-3 py-2" placeholder="${input.placeholder || ''}"></div>`;
-    }
-  }).join('');
-}
-
-function generatePrompt() {
-  const appConfig = APP_FORMS[state.currentApp];
-  if (!appConfig) return;
-  
-  const values = {};
-  appConfig.inputs.forEach(input => {
-    const el = document.getElementById('input-' + input.id);
-    if (el) values[input.id] = el.value;
-  });
-  
-  let prompt = appConfig.promptTemplate || appConfig.template;
-  Object.keys(values).forEach(key => {
-    prompt = prompt.replace(new RegExp(`{${key}}`, 'g'), values[key] || `[${key}]`);
-  });
-  
-  // Add output count instruction if supported
-  if (appConfig.supportsOutputCount && state.outputCount > 1) {
-    prompt += `\n\n[Generate ${state.outputCount} variations]`;
-  }
-  
-  // Add character mode info if supported
-  const charMode = localStorage.getItem('characterMode') || 'single';
-  if (appConfig.supportsMultiCharacter && charMode !== 'single') {
-    const charCount = charMode.replace('multi-', '');
-    prompt += `\n\n[Scene with ${charCount} characters]`;
-  }
-  
-  document.getElementById('prompt-output').textContent = prompt;
-}
-
-function clearForm() {
-  const appConfig = APP_FORMS[state.currentApp];
-  if (!appConfig) return;
-  appConfig.inputs.forEach(input => {
-    const el = document.getElementById('input-' + input.id);
-    if (el) el.value = '';
-  });
-  document.getElementById('prompt-output').innerHTML = '<span class="text-slate-500 italic">Fill in the options above...</span>';
-}
-
-// ============ AUTO-POPULATE FUNCTIONS (Celtx-Style Integration) ============
-function getAvailableScenes() {
-  if (state.selectedEpisode !== null && state.productionBible.episodes[state.selectedEpisode]) {
-    return state.productionBible.episodes[state.selectedEpisode].scenes || [];
-  }
-  return state.productionBible.scenes || [];
-}
-
-function onContextChange() {
-  const epSelect = document.getElementById('context-episode');
-  const scSelect = document.getElementById('context-scene');
-  const charSelect = document.getElementById('context-character');
-  const locSelect = document.getElementById('context-location');
-  
-  if (epSelect) state.selectedEpisode = epSelect.value !== '' ? parseInt(epSelect.value) : null;
-  if (scSelect) state.selectedScene = scSelect.value !== '' ? parseInt(scSelect.value) : null;
-  if (charSelect) state.selectedCharacter = charSelect.value !== '' ? charSelect.value : null;
-  if (locSelect) state.selectedLocation = locSelect.value !== '' ? locSelect.value : null;
-  
-  // Update scene dropdown based on episode selection
-  if (epSelect && scSelect) {
-    const scenes = getAvailableScenes();
-    scSelect.innerHTML = '<option value="">Select Scene...</option>' + 
-      scenes.map((sc, i) => `<option value="${i}">Scene ${sc.number || i+1}: ${sc.location || 'Unknown'}</option>`).join('');
-  }
-}
-
-function autoPopulateForm() {
-  const appConfig = APP_FORMS[state.currentApp];
-  if (!appConfig) return;
-  
-  const bible = state.productionBible;
-  
-  // Get selected context data
-  const episode = state.selectedEpisode !== null ? bible.episodes[state.selectedEpisode] : null;
-  const scene = state.selectedScene !== null ? getAvailableScenes()[state.selectedScene] : null;
-  let character = null;
-  let location = null;
-  
-  // Handle character selection (from bible or database)
-  if (state.selectedCharacter !== null) {
-    if (typeof state.selectedCharacter === 'string' && state.selectedCharacter.startsWith('db-')) {
-      const dbId = state.selectedCharacter.replace('db-', '');
-      character = state.characters.find(c => c.id === dbId);
-    } else {
-      character = bible.characters[parseInt(state.selectedCharacter)];
-    }
-  }
-  
-  // Handle location selection (from bible or database)
-  if (state.selectedLocation !== null) {
-    if (typeof state.selectedLocation === 'string' && state.selectedLocation.startsWith('db-')) {
-      const dbId = state.selectedLocation.replace('db-', '');
-      location = state.locations.find(l => l.id === dbId);
-    } else {
-      location = bible.locations[parseInt(state.selectedLocation)];
-    }
-  }
-  
-  // Auto-fill form fields based on autoFill config
-  appConfig.inputs.forEach(input => {
-    const el = document.getElementById('input-' + input.id);
-    if (!el || !input.autoFill) return;
-    
-    let value = '';
-    const path = input.autoFill.split('.');
-    
-    // Map autoFill paths to actual data
-    switch(path[0]) {
-      case 'synopsis':
-        value = bible.synopsis || '';
-        break;
-      case 'title':
-        value = bible.title || '';
-        break;
-      case 'logline':
-        value = bible.logline || '';
-        break;
-      case 'genre':
-        value = bible.genre || '';
-        break;
-      case 'projectType':
-        value = bible.projectType || '';
-        break;
-      case 'style':
-        value = bible.style || '';
-        break;
-      case 'mood':
-        value = bible.mood || '';
-        break;
-      case 'setting':
-        value = bible.setting || '';
-        break;
-      case 'character':
-        if (character) {
-          if (path[1] === 'name') value = character.name || '';
-          else if (path[1] === 'physical') value = character.physical || character.description || '';
-          else if (path[1] === 'costume') value = character.costume || '';
-          else if (path[1] === 'personality') value = character.personality || '';
-          else if (path[1] === 'role') value = character.role || '';
-          else if (path[1] === 'age') value = character.age || '';
-          else if (path[1] === 'gender') value = character.gender || '';
-          else value = character.name || '';
-        }
-        break;
-      case 'location':
-        if (location) {
-          if (path[1] === 'name') value = location.name || '';
-          else if (path[1] === 'type') value = location.type || location.locationType || '';
-          else if (path[1] === 'description') value = location.description || '';
-          else value = location.name || '';
-        }
-        break;
-      case 'episode':
-        if (episode) {
-          if (path[1] === 'number') value = state.selectedEpisode + 1;
-          else if (path[1] === 'title') value = episode.title || '';
-          else if (path[1] === 'synopsis') value = episode.synopsis || '';
-          else if (path[1] === 'scenes') value = (episode.scenes || []).map(s => `Scene ${s.number}: ${s.location}`).join('\n');
-          else if (path[1] === 'duration') value = episode.duration || '';
-          else value = episode.synopsis || '';
-        }
-        break;
-      case 'scene':
-        if (scene) {
-          if (path[1] === 'number') value = scene.number || '';
-          else if (path[1] === 'heading') value = scene.heading || scene.location || '';
-          else if (path[1] === 'location') value = scene.location || '';
-          else if (path[1] === 'description') value = scene.description || '';
-          else if (path[1] === 'action') value = scene.action || '';
-          else if (path[1] === 'dialogue') value = scene.dialogue || '';
-          else if (path[1] === 'characters') value = (scene.characters || []).join(', ');
-          else if (path[1] === 'time') value = scene.timeOfDay || '';
-          else if (path[1] === 'visual') value = scene.visualDescription || scene.description || '';
-          else if (path[1] === 'context') value = scene.context || scene.description || '';
-          else if (path[1] === 'type') value = scene.type || '';
-          else if (path[1] === 'sfx') value = scene.sfx || '';
-          else if (path[1] === 'current') value = scene.description || '';
-          else if (path[1] === 'next') value = getNextSceneDescription();
-          else value = scene.description || '';
-        }
-        break;
-      case 'viral':
-        // For viral picker results
-        if (path[1] === 'moments') value = bible.viralMoments || '';
-        else if (path[1] === 'thumbnail') value = bible.thumbnailConcept || '';
-        break;
-      case 'poster':
-        if (path[1] === 'concept') value = bible.posterConcept || generatePosterConcept();
-        break;
-      case 'tagline':
-        value = bible.tagline || generateTagline();
-        break;
-    }
-    
-    if (value && el) {
-      el.value = value;
-    }
-  });
-  
-  // Show success message
-  showToast(getLang() === 'id' ? 'Form terisi otomatis dari Production Bible' : 'Form auto-filled from Production Bible', 'success');
-}
-
-function getNextSceneDescription() {
-  const scenes = getAvailableScenes();
-  if (state.selectedScene !== null && scenes[state.selectedScene + 1]) {
-    return scenes[state.selectedScene + 1].description || '';
-  }
-  return '';
-}
-
-function generatePosterConcept() {
-  const bible = state.productionBible;
-  if (!bible.synopsis) return '';
-  return `Movie poster for "${bible.title || 'Untitled'}". ${bible.genre || ''} ${bible.mood || ''} atmosphere. Key visual from the story.`;
-}
-
-function generateTagline() {
-  const bible = state.productionBible;
-  if (!bible.logline) return '';
-  // Simple tagline generation from logline
-  return bible.logline.split('.')[0] + '...';
-}
-
-function showToast(message, type = 'success') {
-  const colors = {
-    success: 'bg-gradient-to-r from-green-500 to-emerald-500',
-    info: 'bg-gradient-to-r from-cyan-500 to-blue-500',
-    warning: 'bg-gradient-to-r from-yellow-500 to-orange-500',
-    error: 'bg-gradient-to-r from-red-500 to-pink-500'
-  };
-  const icons = {
-    success: '✅',
-    info: 'ℹ️',
-    warning: '⚠️',
-    error: '❌'
-  };
-  
-  const toast = document.createElement('div');
-  toast.className = `fixed bottom-20 right-4 ${colors[type]} text-white px-4 py-3 rounded-xl shadow-2xl z-50 animate-fade-in flex items-center gap-2 max-w-sm`;
-  toast.innerHTML = `
-    <span class="text-lg">${icons[type]}</span>
-    <span class="text-sm font-medium">${message}</span>
-  `;
-  document.body.appendChild(toast);
-  
-  // Auto remove with fade out
-  setTimeout(() => {
-    toast.style.opacity = '0';
-    toast.style.transform = 'translateY(10px)';
-    toast.style.transition = 'all 0.3s ease';
-    setTimeout(() => toast.remove(), 300);
-  }, 3000);
-}
-
-// Save Synopsis to Production Bible (called from Synopsis Writer)
-function saveToProductionBible() {
-  const appConfig = APP_FORMS[state.currentApp];
-  if (!appConfig || state.currentApp !== 'story-01') return;
-  
-  // Collect all form values
-  appConfig.inputs.forEach(input => {
-    const el = document.getElementById('input-' + input.id);
-    if (el && el.value) {
-      state.productionBible[input.id] = el.value;
-    }
-  });
-  
-  // Save to localStorage for persistence
-  localStorage.setItem('productionBible', JSON.stringify(state.productionBible));
-  showToast(t('bibleSaved'), 'success');
-}
-
-// Load Production Bible from localStorage
-function loadProductionBible() {
-  const saved = localStorage.getItem('productionBible');
-  if (saved) {
-    try {
-      state.productionBible = JSON.parse(saved);
-    } catch (e) {
-      console.error('Error loading production bible:', e);
-    }
-  }
-}
-
-// Clear Production Bible
-function clearProductionBible() {
-  if (!confirm('Hapus Production Bible? Semua data auto-populate akan direset.')) return;
-  state.productionBible = {
-    title: '',
-    logline: '',
-    synopsis: '',
-    genre: '',
-    projectType: '',
-    style: '',
-    mood: '',
-    setting: '',
-    themes: '',
-    episodes: [],
-    characters: [],
-    locations: [],
-    scenes: []
-  };
-  state.workflowProgress = {
-    ideation: false,
-    synopsis: false,
-    breakdown: false,
-    preproduction: false,
-    'production-visual': false,
-    'production-audio': false,
-    postproduction: false,
-    distribution: false
-  };
-  localStorage.removeItem('productionBible');
-  localStorage.removeItem('workflowProgress');
-  showToast(t('bibleCleared'), 'info');
-  renderPage();
-}
-
-// ============ WORKFLOW HELPER FUNCTIONS ============
-function getCurrentWorkflowStep() {
-  const bible = state.productionBible;
-  
-  // Check each step completion
-  if (!bible.synopsis) return 1; // Need to start with ideation or synopsis
-  if (!bible.episodes || bible.episodes.length === 0) return 3; // Need breakdown
-  if (!state.workflowProgress.preproduction) return 4;
-  if (!state.workflowProgress['production-visual']) return 5;
-  if (!state.workflowProgress['production-audio']) return 6;
-  if (!state.workflowProgress.postproduction) return 7;
-  if (!state.workflowProgress.distribution) return 8;
-  
-  return 8; // All done
-}
-
-function isStepCompleted(stepId) {
-  if (!stepId) return false;
-  
-  const bible = state.productionBible;
-  
-  switch(stepId) {
-    case 'ideation':
-      return state.workflowProgress.ideation || bible.synopsis;
-    case 'synopsis':
-      return bible.synopsis && bible.synopsis.length > 50;
-    case 'breakdown':
-      return bible.episodes && bible.episodes.length > 0;
-    case 'preproduction':
-      return state.workflowProgress.preproduction;
-    case 'production-visual':
-      return state.workflowProgress['production-visual'];
-    case 'production-audio':
-      return state.workflowProgress['production-audio'];
-    case 'postproduction':
-      return state.workflowProgress.postproduction;
-    case 'distribution':
-      return state.workflowProgress.distribution;
-    default:
-      return false;
-  }
-}
-
-function startWorkflowStep(stepNumber) {
-  const step = WORKFLOW_STEPS.find(s => s.step === stepNumber);
-  if (!step) return;
-  
-  // Navigate to first tool in this step
-  if (step.tools && step.tools.length > 0) {
-    navigateTo('app', step.tools[0]);
-  }
-}
-
-function markStepCompleted(stepId) {
-  state.workflowProgress[stepId] = true;
-  localStorage.setItem('workflowProgress', JSON.stringify(state.workflowProgress));
-  showToast(t('stepCompleted'), 'success');
-}
-
-function loadWorkflowProgress() {
-  const saved = localStorage.getItem('workflowProgress');
-  if (saved) {
-    try {
-      state.workflowProgress = JSON.parse(saved);
-    } catch (e) {
-      console.error('Error loading workflow progress:', e);
-    }
-  }
-}
-
-function renderWorkflowNavigation(currentAppId) {
-  // Find which step this app belongs to
-  const currentStepData = WORKFLOW_STEPS.find(step => step.tools.includes(currentAppId));
-  if (!currentStepData) return '';
-  
-  const currentStepIndex = WORKFLOW_STEPS.findIndex(s => s.id === currentStepData.id);
-  const prevStep = currentStepIndex > 0 ? WORKFLOW_STEPS[currentStepIndex - 1] : null;
-  const nextStep = currentStepIndex < WORKFLOW_STEPS.length - 1 ? WORKFLOW_STEPS[currentStepIndex + 1] : null;
-  
-  // Find other tools in same step
-  const otherToolsInStep = currentStepData.tools.filter(t => t !== currentAppId).map(t => findApp(t)).filter(Boolean);
-  
-  return `
-    <div class="glass rounded-xl p-4 mt-6 border border-slate-700">
-      <div class="flex items-center justify-between mb-4">
-        <div class="flex items-center gap-2">
-          <span class="text-lg">${currentStepData.icon}</span>
+    <div class="glass rounded-xl p-4 mb-6 gradient-card card-hover">
+      <div class="flex items-start justify-between flex-wrap gap-3">
+        <div class="flex items-center gap-3">
+          <div class="w-12 h-12 rounded-xl bg-cyan-500/20 flex items-center justify-center text-2xl">🎬</div>
           <div>
-            <p class="text-xs text-slate-500">Step ${currentStepData.step} of 8</p>
-            <p class="font-semibold text-sm">${currentStepData.name}</p>
-          </div>
-        </div>
-        <button onclick="markCurrentStepDone()" class="btn-secondary px-3 py-1.5 rounded-lg text-xs flex items-center gap-1">
-          ✓ Tandai Selesai
-        </button>
-      </div>
-      
-      ${otherToolsInStep.length > 0 ? `
-        <div class="mb-4">
-          <p class="text-xs text-slate-500 mb-2">Tools lain di step ini:</p>
-          <div class="flex flex-wrap gap-2">
-            ${otherToolsInStep.map(tool => `
-              <button onclick="navigateTo('app', '${tool.id}')" class="text-xs bg-slate-700 hover:bg-slate-600 px-3 py-1.5 rounded-lg flex items-center gap-1">
-                ${tool.icon} ${tool.name}
-              </button>
-            `).join('')}
-          </div>
-        </div>
-      ` : ''}
-      
-      <div class="flex items-center justify-between pt-3 border-t border-slate-700">
-        ${prevStep ? `
-          <button onclick="navigateTo('app', '${prevStep.tools[0]}')" class="btn-secondary px-4 py-2 rounded-lg text-sm flex items-center gap-2">
-            ← ${prevStep.icon} ${prevStep.name}
-          </button>
-        ` : '<div></div>'}
-        
-        <button onclick="navigateTo('dashboard')" class="text-xs text-slate-500 hover:text-white">
-          🏠 Dashboard
-        </button>
-        
-        ${nextStep ? `
-          <button onclick="navigateTo('app', '${nextStep.tools[0]}')" class="btn-primary px-4 py-2 rounded-lg text-sm flex items-center gap-2">
-            ${nextStep.icon} ${nextStep.name} →
-          </button>
-        ` : `
-          <button onclick="navigateTo('dashboard')" class="btn-primary px-4 py-2 rounded-lg text-sm flex items-center gap-2">
-            🎉 Selesai!
-          </button>
-        `}
-      </div>
-    </div>
-  `;
-}
-
-function markCurrentStepDone() {
-  const currentStepData = WORKFLOW_STEPS.find(step => step.tools.includes(state.currentApp));
-  if (currentStepData) {
-    markStepCompleted(currentStepData.id);
-    renderPage();
-  }
-}
-
-function showWorkflowHelp() {
-  showModal('🎯 Panduan Workflow Produksi Film', `
-    <div class="space-y-4 text-sm">
-      <div class="p-3 rounded-lg bg-yellow-500/10 border border-yellow-500/30">
-        <h4 class="font-bold text-yellow-400 mb-2">⭐ Langkah Paling Penting</h4>
-        <p class="text-slate-300">Mulai dengan <strong>Synopsis Writer</strong> (Step 2). Tulis cerita lengkap di sana, dan semua tools lain akan otomatis terisi!</p>
-      </div>
-      
-      <div class="space-y-3">
-        <h4 class="font-semibold text-cyan-400">Cara Menggunakan:</h4>
-        
-        <div class="flex gap-3 items-start">
-          <span class="w-6 h-6 rounded-full bg-cyan-500 text-white text-xs flex items-center justify-center flex-shrink-0">1</span>
-          <div>
-            <p class="font-medium">Ideation (Optional)</p>
-            <p class="text-slate-400 text-xs">Cari ide dari trend viral atau generate ide baru jika belum punya cerita</p>
-          </div>
-        </div>
-        
-        <div class="flex gap-3 items-start">
-          <span class="w-6 h-6 rounded-full bg-yellow-500 text-white text-xs flex items-center justify-center flex-shrink-0">2</span>
-          <div>
-            <p class="font-medium text-yellow-400">Synopsis Writer ⭐ WAJIB</p>
-            <p class="text-slate-400 text-xs">Tulis synopsis lengkap. AI akan generate karakter, lokasi, episode, dan scene otomatis!</p>
-          </div>
-        </div>
-        
-        <div class="flex gap-3 items-start">
-          <span class="w-6 h-6 rounded-full bg-cyan-500 text-white text-xs flex items-center justify-center flex-shrink-0">3</span>
-          <div>
-            <p class="font-medium">Breakdown Cerita</p>
-            <p class="text-slate-400 text-xs">Pecah synopsis jadi episode dan scene. Data dari synopsis otomatis terisi.</p>
-          </div>
-        </div>
-        
-        <div class="flex gap-3 items-start">
-          <span class="w-6 h-6 rounded-full bg-cyan-500 text-white text-xs flex items-center justify-center flex-shrink-0">4-6</span>
-          <div>
-            <p class="font-medium">Pre-Production & Production</p>
-            <p class="text-slate-400 text-xs">Pilih scene/karakter, form otomatis terisi. Generate gambar, video, audio dengan Opal.</p>
-          </div>
-        </div>
-        
-        <div class="flex gap-3 items-start">
-          <span class="w-6 h-6 rounded-full bg-cyan-500 text-white text-xs flex items-center justify-center flex-shrink-0">7-8</span>
-          <div>
-            <p class="font-medium">Post-Production & Distribution</p>
-            <p class="text-slate-400 text-xs">Edit, pilih momen viral, buat thumbnail & trailer, siap publish!</p>
-          </div>
-        </div>
-      </div>
-      
-      <div class="p-3 rounded-lg bg-cyan-500/10 border border-cyan-500/30">
-        <h4 class="font-bold text-cyan-400 mb-2">💡 Tips</h4>
-        <ul class="text-slate-300 text-xs space-y-1">
-          <li>• Setiap tool yang ada tanda 🔗 bisa auto-fill dari Production Bible</li>
-          <li>• Klik "Auto-Fill Form" untuk mengisi form otomatis</li>
-          <li>• Gunakan tombol "Open in Opal" untuk generate dengan AI</li>
-          <li>• Save hasil ke History untuk referensi nanti</li>
-        </ul>
-      </div>
-    </div>
-  `, null, 'Mengerti!');
-}
-
-// Parse AI-generated production bible response
-function parseProductionBibleResponse(response) {
-  // This would parse the AI response and extract structured data
-  // For now, we'll store the raw response and let users manually organize
-  const bible = state.productionBible;
-  
-  // Try to extract characters
-  const charMatch = response.match(/## 2\. CHARACTERS([\s\S]*?)## 3\./);
-  if (charMatch) {
-    // Parse character data
-    const charSection = charMatch[1];
-    const charBlocks = charSection.split(/\n(?=- Name:|Character \d)/);
-    bible.characters = charBlocks.filter(b => b.trim()).map(block => {
-      const nameMatch = block.match(/Name[:\s]+([^\n]+)/i);
-      const ageMatch = block.match(/Age[:\s]+([^\n]+)/i);
-      const physicalMatch = block.match(/Physical[:\s]+([^\n]+)/i);
-      const costumeMatch = block.match(/Costume[:\s]+([^\n]+)/i);
-      return {
-        name: nameMatch ? nameMatch[1].trim() : '',
-        age: ageMatch ? ageMatch[1].trim() : '',
-        physical: physicalMatch ? physicalMatch[1].trim() : '',
-        costume: costumeMatch ? costumeMatch[1].trim() : ''
-      };
-    });
-  }
-  
-  // Try to extract locations
-  const locMatch = response.match(/## 3\. LOCATIONS([\s\S]*?)## 4\./);
-  if (locMatch) {
-    const locSection = locMatch[1];
-    const locBlocks = locSection.split(/\n(?=- Name:|Location \d)/);
-    bible.locations = locBlocks.filter(b => b.trim()).map(block => {
-      const nameMatch = block.match(/Name[:\s]+([^\n]+)/i);
-      const typeMatch = block.match(/Type[:\s]+([^\n]+)/i);
-      const descMatch = block.match(/Description[:\s]+([^\n]+)/i);
-      return {
-        name: nameMatch ? nameMatch[1].trim() : '',
-        type: typeMatch ? typeMatch[1].trim() : '',
-        description: descMatch ? descMatch[1].trim() : ''
-      };
-    });
-  }
-  
-  // Try to extract episodes
-  const epMatch = response.match(/## 4\. EPISODE BREAKDOWN([\s\S]*?)## 5\./);
-  if (epMatch) {
-    const epSection = epMatch[1];
-    const epBlocks = epSection.split(/\n(?=Episode \d|Ep \d)/i);
-    bible.episodes = epBlocks.filter(b => b.trim()).map(block => {
-      const titleMatch = block.match(/(?:Episode \d+[:\s]+|Title[:\s]+)([^\n]+)/i);
-      const synMatch = block.match(/Synopsis[:\s]+([^\n]+)/i);
-      return {
-        title: titleMatch ? titleMatch[1].trim() : '',
-        synopsis: synMatch ? synMatch[1].trim() : '',
-        scenes: []
-      };
-    });
-  }
-  
-  // Save parsed data
-  localStorage.setItem('productionBible', JSON.stringify(bible));
-  showToast(t('bibleSaved'), 'success');
-}
-
-function copyPrompt() {
-  const text = document.getElementById('prompt-output').textContent;
-  navigator.clipboard.writeText(text);
-  const btn = document.getElementById('copy-btn');
-  btn.textContent = '✅ Copied!';
-  setTimeout(() => btn.textContent = '📋 Copy', 2000);
-}
-
-async function saveToHistory() {
-  const prompt = document.getElementById('prompt-output').textContent;
-  if (!prompt || prompt.includes('Fill in')) { alert('Generate a prompt first!'); return; }
-  
-  const historyItem = {
-    user_id: state.user.id,
-    project_id: state.currentProject || null,
-    app_id: state.currentApp,
-    prompt: prompt,
-    form_data: {}
-  };
-  
-  try {
-    const saved = await DB.createHistory(historyItem);
-    state.history.unshift(saved);
-    updateHistoryCount();
-    alert('Saved to history!');
-  } catch (error) { alert('Error: ' + error.message); }
-}
-
-function copyAndOpenOpal() {
-  copyPrompt();
-  const opalUrl = getEffectiveOpalLink(state.currentApp) || 'https://opal.google';
-  window.open(opalUrl, '_blank');
-}
-
-function setOutputCount(count) {
-  state.outputCount = count;
-  localStorage.setItem('outputCount', count);
-  renderPage();
-}
-
-function updateCharacterMode(mode) {
-  // Store character mode for prompt generation
-  localStorage.setItem('characterMode', mode);
-}
-
-function quickInsertCharacter(id) {
-  const char = state.characters.find(c => c.id === id);
-  if (!char) return;
-  const desc = `${char.name}, ${char.age}, ${char.gender}, ${char.physical}, wearing ${char.costume}`;
-  const el = document.querySelector('#app-form textarea');
-  if (el) el.value = (el.value ? el.value + '\n' : '') + desc;
-}
-
-function quickInsertLocation(id) {
-  const loc = state.locations.find(l => l.id === id);
-  if (!loc) return;
-  const desc = `${loc.name}: ${loc.description}, ${loc.mood} mood, ${loc.time_of_day}`;
-  const el = document.querySelector('#app-form textarea');
-  if (el) el.value = (el.value ? el.value + '\n' : '') + desc;
-}
-
-
-// ============ CHARACTERS PAGE ============
-function renderCharactersPage() {
-  const chars = state.characters.filter(c => !state.currentProject || c.project_id === state.currentProject);
-  return `
-    <div class="w-full">
-      <div class="flex items-center justify-between mb-6">
-        <div>
-          <h2 class="text-2xl font-bold">👤 Characters</h2>
-          <p class="text-slate-400 text-sm">Manage your film characters</p>
-        </div>
-        <button onclick="showCharacterModal()" class="btn-primary px-4 py-2 rounded-xl">+ New Character</button>
-      </div>
-      
-      ${chars.length === 0 ? `
-        <div class="glass rounded-2xl p-8 text-center">
-          <p class="text-slate-400 mb-4">No characters yet.</p>
-          <button onclick="showCharacterModal()" class="btn-primary px-6 py-2 rounded-xl">+ Create Character</button>
-        </div>
-      ` : `
-        <div class="grid gap-4">
-          ${chars.map(char => `
-            <div class="glass rounded-2xl p-5">
-              <div class="flex items-start justify-between">
-                <div class="flex-1">
-                  <div class="flex items-center gap-3 mb-2">
-                    <span class="text-2xl">👤</span>
-                    <div>
-                      <h3 class="font-semibold text-lg">${char.name}</h3>
-                      <p class="text-sm text-slate-400">${char.age || ''} • ${char.gender || ''} • ${char.role || ''}</p>
-                    </div>
-                  </div>
-                  <p class="text-sm text-slate-300 mb-2">${char.physical || ''}</p>
-                  <p class="text-sm text-slate-500">Costume: ${char.costume || 'N/A'}</p>
-                </div>
-                <div class="flex gap-2">
-                  <button onclick="copyCharacterPrompt('${char.id}')" class="bg-blue-500/20 px-3 py-1.5 rounded-lg text-sm">Copy Prompt</button>
-                  <button onclick="deleteCharacter('${char.id}')" class="bg-red-500/20 px-3 py-1.5 rounded-lg text-sm">Delete</button>
-                </div>
-              </div>
+            <div class="flex items-center gap-2 mb-1">
+              <span class="tag text-xs">${project.type || 'Project'}</span>
+              <span class="tag text-xs">${project.genre || ''}</span>
             </div>
-          `).join('')}
-        </div>
-      `}
-    </div>
-  `;
-}
-
-function showCharacterModal() {
-  showModal('New Character', `
-    <div class="space-y-4">
-      <div><label class="block text-sm text-slate-400 mb-1">Name</label>
-        <input type="text" id="char-name" class="w-full rounded-lg px-3 py-2" placeholder="Character name"></div>
-      <div class="grid grid-cols-3 gap-3">
-        <div><label class="block text-sm text-slate-400 mb-1">Age</label>
-          <input type="text" id="char-age" class="w-full rounded-lg px-3 py-2" placeholder="25"></div>
-        <div><label class="block text-sm text-slate-400 mb-1">Gender</label>
-          <select id="char-gender" class="w-full rounded-lg px-3 py-2">
-            <option>Male</option><option>Female</option><option>Non-binary</option>
-          </select></div>
-        <div><label class="block text-sm text-slate-400 mb-1">Role</label>
-          <select id="char-role" class="w-full rounded-lg px-3 py-2">
-            ${OPTIONS.characterRole.map(r => `<option>${r}</option>`).join('')}
-          </select></div>
-      </div>
-      <div><label class="block text-sm text-slate-400 mb-1">Physical Description</label>
-        <textarea id="char-physical" class="w-full rounded-lg px-3 py-2 h-20" placeholder="Height, build, hair, eyes..."></textarea></div>
-      <div><label class="block text-sm text-slate-400 mb-1">Costume</label>
-        <input type="text" id="char-costume" class="w-full rounded-lg px-3 py-2" placeholder="What they wear"></div>
-    </div>
-  `, async () => {
-    const character = {
-      user_id: state.user.id,
-      project_id: state.currentProject || null,
-      name: document.getElementById('char-name').value || 'Unnamed',
-      age: document.getElementById('char-age').value,
-      gender: document.getElementById('char-gender').value,
-      role: document.getElementById('char-role').value,
-      physical: document.getElementById('char-physical').value,
-      costume: document.getElementById('char-costume').value
-    };
-    try {
-      const saved = await DB.createCharacter(character);
-      state.characters.unshift(saved);
-      hideModal();
-      renderSidebar();
-      renderPage();
-    } catch (error) { alert('Error: ' + error.message); }
-  });
-}
-
-async function deleteCharacter(id) {
-  if (!confirm('Delete this character?')) return;
-  try {
-    await DB.deleteCharacter(id);
-    state.characters = state.characters.filter(c => c.id !== id);
-    renderSidebar();
-    renderPage();
-  } catch (error) { alert('Error: ' + error.message); }
-}
-
-function copyCharacterPrompt(id) {
-  const char = state.characters.find(c => c.id === id);
-  if (!char) return;
-  const prompt = `Character: ${char.name}, ${char.age} years old ${char.gender}, ${char.role}. Physical: ${char.physical}. Wearing: ${char.costume}.`;
-  navigator.clipboard.writeText(prompt);
-  alert('Character prompt copied!');
-}
-
-// ============ LOCATIONS PAGE ============
-function renderLocationsPage() {
-  const locs = state.locations.filter(l => !state.currentProject || l.project_id === state.currentProject);
-  return `
-    <div class="w-full">
-      <div class="flex items-center justify-between mb-6">
-        <div>
-          <h2 class="text-2xl font-bold">🎭 Locations</h2>
-          <p class="text-slate-400 text-sm">Manage your film locations</p>
-        </div>
-        <button onclick="showLocationModal()" class="btn-primary px-4 py-2 rounded-xl">+ New Location</button>
-      </div>
-      
-      ${locs.length === 0 ? `
-        <div class="glass rounded-2xl p-8 text-center">
-          <p class="text-slate-400 mb-4">No locations yet.</p>
-          <button onclick="showLocationModal()" class="btn-primary px-6 py-2 rounded-xl">+ Create Location</button>
-        </div>
-      ` : `
-        <div class="grid gap-4">
-          ${locs.map(loc => `
-            <div class="glass rounded-2xl p-5">
-              <div class="flex items-start justify-between">
-                <div class="flex-1">
-                  <div class="flex items-center gap-3 mb-2">
-                    <span class="text-2xl">🎭</span>
-                    <div>
-                      <h3 class="font-semibold text-lg">${loc.name}</h3>
-                      <p class="text-sm text-slate-400">${loc.type || ''} • ${loc.mood || ''} • ${loc.time_of_day || ''}</p>
-                    </div>
-                  </div>
-                  <p class="text-sm text-slate-300">${loc.description || ''}</p>
-                </div>
-                <div class="flex gap-2">
-                  <button onclick="copyLocationPrompt('${loc.id}')" class="bg-blue-500/20 px-3 py-1.5 rounded-lg text-sm">Copy Prompt</button>
-                  <button onclick="deleteLocation('${loc.id}')" class="bg-red-500/20 px-3 py-1.5 rounded-lg text-sm">Delete</button>
-                </div>
-              </div>
-            </div>
-          `).join('')}
-        </div>
-      `}
-    </div>
-  `;
-}
-
-function showLocationModal() {
-  showModal('New Location', `
-    <div class="space-y-4">
-      <div><label class="block text-sm text-slate-400 mb-1">Name</label>
-        <input type="text" id="loc-name" class="w-full rounded-lg px-3 py-2" placeholder="Location name"></div>
-      <div class="grid grid-cols-3 gap-3">
-        <div><label class="block text-sm text-slate-400 mb-1">Type</label>
-          <select id="loc-type" class="w-full rounded-lg px-3 py-2">
-            ${OPTIONS.locationType.map(t => `<option>${t}</option>`).join('')}
-          </select></div>
-        <div><label class="block text-sm text-slate-400 mb-1">Mood</label>
-          <select id="loc-mood" class="w-full rounded-lg px-3 py-2">
-            ${OPTIONS.mood.map(m => `<option>${m}</option>`).join('')}
-          </select></div>
-        <div><label class="block text-sm text-slate-400 mb-1">Time of Day</label>
-          <select id="loc-time" class="w-full rounded-lg px-3 py-2">
-            ${OPTIONS.timeOfDay.map(t => `<option>${t}</option>`).join('')}
-          </select></div>
-      </div>
-      <div><label class="block text-sm text-slate-400 mb-1">Description</label>
-        <textarea id="loc-desc" class="w-full rounded-lg px-3 py-2 h-20" placeholder="Describe the location..."></textarea></div>
-    </div>
-  `, async () => {
-    const location = {
-      user_id: state.user.id,
-      project_id: state.currentProject || null,
-      name: document.getElementById('loc-name').value || 'Unnamed',
-      type: document.getElementById('loc-type').value,
-      mood: document.getElementById('loc-mood').value,
-      time_of_day: document.getElementById('loc-time').value,
-      description: document.getElementById('loc-desc').value
-    };
-    try {
-      const saved = await DB.createLocation(location);
-      state.locations.unshift(saved);
-      hideModal();
-      renderSidebar();
-      renderPage();
-    } catch (error) { alert('Error: ' + error.message); }
-  });
-}
-
-async function deleteLocation(id) {
-  if (!confirm('Delete this location?')) return;
-  try {
-    await DB.deleteLocation(id);
-    state.locations = state.locations.filter(l => l.id !== id);
-    renderSidebar();
-    renderPage();
-  } catch (error) { alert('Error: ' + error.message); }
-}
-
-function copyLocationPrompt(id) {
-  const loc = state.locations.find(l => l.id === id);
-  if (!loc) return;
-  const prompt = `Location: ${loc.name}, ${loc.type}. ${loc.description}. Mood: ${loc.mood}. Time: ${loc.time_of_day}.`;
-  navigator.clipboard.writeText(prompt);
-  alert('Location prompt copied!');
-}
-
-
-// ============ WORKFLOW PAGE ============
-function renderWorkflowPage() {
-  return `
-    <div class="w-full">
-      <div class="mb-6">
-        <h2 class="text-2xl font-bold">${t('workflowTitle')}</h2>
-        <p class="text-slate-400 text-sm">${t('workflowSubtitle')}</p>
-      </div>
-      
-      <div class="space-y-4">
-        ${PHASES.map((phase, idx) => {
-          const configuredApps = phase.apps.filter(a => getEffectiveOpalLink(a.id));
-          const progress = Math.round((configuredApps.length / phase.apps.length) * 100);
-          return `
-          <div class="glass rounded-2xl p-5 card-hover">
-            <div class="flex items-center justify-between mb-4">
-              <div class="flex items-center gap-3">
-                <div class="w-12 h-12 rounded-xl ${progress === 100 ? 'bg-green-500/20' : 'bg-cyan-500/20'} flex items-center justify-center text-2xl">
-                  ${phase.icon}
-                </div>
-                <div>
-                  <h3 class="font-semibold">${getLang() === 'id' ? 'Fase' : 'Phase'} ${idx + 1}: ${phase.name}</h3>
-                  <p class="text-xs text-slate-500">${phase.apps.length} tools • ${configuredApps.length} ${t('ready')}</p>
-                </div>
-              </div>
-              <div class="text-right">
-                <span class="text-2xl font-bold ${progress === 100 ? 'text-green-400' : 'text-cyan-400'}">${progress}%</span>
-                <p class="text-xs text-slate-500">${t('complete')}</p>
-              </div>
-            </div>
-            
-            <!-- Progress bar -->
-            <div class="h-1.5 bg-slate-700 rounded-full overflow-hidden mb-4">
-              <div class="h-full ${progress === 100 ? 'bg-green-500' : 'bg-gradient-to-r from-cyan-500 to-blue-500'} transition-all" style="width: ${progress}%"></div>
-            </div>
-            
-            <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-2">
-              ${phase.apps.map(app => {
-                const hasLink = getEffectiveOpalLink(app.id);
-                return `
-                <div class="flex items-center gap-3 p-3 rounded-xl ${hasLink ? 'bg-cyan-500/10 border border-cyan-500/20' : 'bg-white/5'} hover:bg-white/10 cursor-pointer transition-all" onclick="navigateTo('app', '${app.id}')">
-                  <span class="text-lg">${app.icon}</span>
-                  <div class="flex-1 min-w-0">
-                    <p class="text-sm font-medium truncate">${app.name}</p>
-                    <p class="text-[10px] text-slate-500 truncate">${app.desc}</p>
-                  </div>
-                  ${hasLink ? '<span class="text-green-400 text-xs">✓</span>' : '<span class="text-slate-600 text-xs">○</span>'}
-                </div>
-              `}).join('')}
-            </div>
-          </div>
-        `}).join('')}
-      </div>
-    </div>
-  `;
-}
-
-// ============ OPAL LINKS PAGE ============
-function renderOpalLinksPage() {
-  const globalLinksCount = Object.keys(state.globalOpalLinks).filter(k => state.globalOpalLinks[k]).length;
-  const personalLinksCount = Object.keys(state.opalLinks).filter(k => state.opalLinks[k]).length;
-  
-  return `
-    <div class="w-full">
-      <div class="mb-6">
-        <h2 class="text-2xl font-bold">🔗 Opal Links</h2>
-        <p class="text-slate-400 text-sm">Quick access to Google Opal tools</p>
-      </div>
-      
-      <!-- Status Cards -->
-      <div class="grid grid-cols-2 gap-4 mb-6">
-        <div class="glass rounded-2xl p-5">
-          <div class="flex items-center gap-3 mb-2">
-            <span class="text-2xl">🌐</span>
-            <div>
-              <h4 class="font-semibold">Global Links</h4>
-              <p class="text-xs text-slate-500">Pre-configured by admin</p>
-            </div>
-          </div>
-          <p class="text-3xl font-bold text-green-400">${globalLinksCount}</p>
-          <p class="text-xs text-slate-500 mt-1">Ready to use</p>
-        </div>
-        <div class="glass rounded-2xl p-5">
-          <div class="flex items-center gap-3 mb-2">
-            <span class="text-2xl">👤</span>
-            <div>
-              <h4 class="font-semibold">Personal Links</h4>
-              <p class="text-xs text-slate-500">Your custom overrides</p>
-            </div>
-          </div>
-          <p class="text-3xl font-bold text-cyan-400">${personalLinksCount}</p>
-          <p class="text-xs text-slate-500 mt-1">Custom links</p>
-        </div>
-      </div>
-      
-      <!-- Quick Access Section -->
-      ${globalLinksCount > 0 ? `
-        <div class="glass rounded-2xl p-6 mb-6 gradient-card">
-          <h3 class="font-semibold mb-4 flex items-center gap-2">
-            <span>🚀</span> Quick Access (Click to Open)
-          </h3>
-          <div class="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-3">
-            ${PHASES.flatMap(phase => phase.apps.filter(app => getEffectiveOpalLink(app.id)).map(app => `
-              <a href="${getEffectiveOpalLink(app.id)}" target="_blank" 
-                class="glass glass-hover rounded-xl p-3 text-center cursor-pointer block">
-                <span class="text-2xl block mb-1">${app.icon}</span>
-                <span class="text-xs">${app.name}</span>
-                ${state.globalOpalLinks[app.id] && !state.opalLinks[app.id] ? '<span class="block text-[10px] text-green-400 mt-1">✓ Global</span>' : ''}
-              </a>
-            `)).join('')}
+            <h2 class="text-lg font-bold">${project.name}</h2>
+            <p class="text-slate-500 text-xs mt-1">${project.description || ''}</p>
           </div>
         </div>
-      ` : ''}
-      
-      <!-- Personal Links Override Section -->
-      <div class="glass rounded-2xl p-6 mb-6">
-        <h3 class="font-semibold mb-4">📝 Personal Link Overrides (Optional)</h3>
-        <p class="text-sm text-slate-400 mb-4">Add your own links to override global settings, or leave empty to use global links.</p>
-        <ol class="text-sm text-slate-500 space-y-1 mb-4">
-          <li>1. Go to <a href="https://opal.google" target="_blank" class="text-cyan-400 hover:underline">opal.google</a></li>
-          <li>2. Open the specific tool you want</li>
-          <li>3. Copy the URL and paste below</li>
-        </ol>
-      </div>
-      
-      <div class="space-y-4">
-        ${PHASES.map(phase => `
-          <div class="glass rounded-2xl p-5">
-            <h3 class="font-semibold mb-4">${phase.icon} ${phase.name}</h3>
-            <div class="space-y-3">
-              ${phase.apps.map(app => {
-                const hasGlobal = !!state.globalOpalLinks[app.id];
-                const hasPersonal = !!state.opalLinks[app.id];
-                return `
-                <div class="flex items-center gap-3">
-                  <span class="w-8">${app.icon}</span>
-                  <span class="w-40 text-sm">${app.name}</span>
-                  ${hasGlobal ? '<span class="text-xs text-green-400 w-16">✓ Global</span>' : '<span class="w-16"></span>'}
-                  <input type="text" id="opal-${app.id}" value="${state.opalLinks[app.id] || ''}" 
-                    class="flex-1 rounded-lg px-3 py-2 text-sm" placeholder="${hasGlobal ? 'Using global link (optional override)' : 'https://opal.google/...'}">
-                  <button onclick="saveOpalLink('${app.id}')" class="btn-secondary px-3 py-2 rounded-lg text-sm">Save</button>
-                </div>
-              `}).join('')}
-            </div>
-          </div>
-        `).join('')}
-      </div>
-    </div>
-  `;
-}
-
-async function saveOpalLink(appId) {
-  const url = document.getElementById('opal-' + appId).value;
-  try {
-    await DB.upsertOpalLink(state.user.id, appId, url);
-    state.opalLinks[appId] = url;
-    alert('Saved!');
-  } catch (error) { alert('Error: ' + error.message); }
-}
-
-// ============ HISTORY PANEL ============
-function showHistoryPanel() {
-  document.getElementById('history-panel').classList.remove('hidden');
-  renderHistoryList();
-}
-
-function hideHistoryPanel() {
-  document.getElementById('history-panel').classList.add('hidden');
-}
-
-function renderHistoryList() {
-  const list = document.getElementById('history-list');
-  const filtered = state.history.filter(h => !state.currentProject || h.project_id === state.currentProject);
-  
-  if (filtered.length === 0) {
-    list.innerHTML = '<p class="text-slate-500 text-center p-4">No history yet</p>';
-    return;
-  }
-  
-  list.innerHTML = filtered.map(h => {
-    const app = findApp(h.app_id);
-    return `
-      <div class="glass rounded-xl p-4 mb-3">
-        <div class="flex items-center justify-between mb-2">
-          <span class="text-xs text-cyan-400">${app ? app.name : h.app_id}</span>
-          <span class="text-xs text-slate-500">${new Date(h.created_at).toLocaleString()}</span>
-        </div>
-        <p class="text-xs text-slate-300 line-clamp-3 mb-2">${h.prompt.substring(0, 150)}...</p>
         <div class="flex gap-2">
-          <button onclick="copyHistoryPrompt('${h.id}')" class="text-xs text-slate-400 hover:text-white">📋 Copy</button>
-          <button onclick="deleteHistoryItem('${h.id}')" class="text-xs text-red-400 hover:text-red-300">🗑️ Delete</button>
+          <button onclick="showEditProjectModal('${project.id}')" class="btn-secondary px-3 py-1.5 rounded-lg text-xs">✏️ ${t('edit')}</button>
         </div>
       </div>
-    `;
-  }).join('');
+    </div>
+  `;
 }
 
-function copyHistoryPrompt(id) {
-  const item = state.history.find(h => h.id === id);
-  if (item) {
-    navigator.clipboard.writeText(item.prompt);
-    alert('Copied!');
-  }
+function renderNoProject() {
+  return `
+    <div class="glass rounded-xl p-6 mb-6 text-center gradient-card">
+      <div class="text-3xl mb-2">🎬</div>
+      <h3 class="text-base font-semibold mb-1">${t('bibleStart')}</h3>
+      <p class="text-slate-500 text-xs mb-4">${t('bibleStartDesc')}</p>
+      <button onclick="showNewProjectModal()" class="btn-primary px-5 py-2 rounded-lg text-sm font-semibold">+ ${t('newProject')}</button>
+    </div>
+  `;
 }
 
-async function deleteHistoryItem(id) {
-  if (!confirm('Delete this history item?')) return;
-  try {
-    await DB.deleteHistory(id);
-    state.history = state.history.filter(h => h.id !== id);
-    updateHistoryCount();
-    renderHistoryList();
-  } catch (error) { alert('Error: ' + error.message); }
-}
-
-function updateHistoryCount() {
-  const count = state.history.filter(h => !state.currentProject || h.project_id === state.currentProject).length;
-  document.getElementById('history-count').textContent = count;
-}
-
-// ============ MODAL ============
-function showModal(title, content, onSave, saveButtonText = 'Save') {
-  const container = document.getElementById('modal-container');
-  const hasCallback = typeof onSave === 'function';
+function renderWorkflowStep(phase, currentStep) {
+  const isCompleted = isPhaseCompleted(phase.id);
+  const isCurrent = phase.step === currentStep;
+  const isLocked = isPhaseLocked(phase.id);
+  const completionPercent = getPhaseCompletionPercent(phase.id);
+  const completedToolCount = phase.tools.filter(t => isToolCompleted(t)).length;
   
-  container.innerHTML = `
-    <div class="fixed inset-0 bg-black/70 flex items-center justify-center z-50 p-4" onclick="hideModal()">
-      <div class="glass rounded-2xl p-6 w-full max-w-lg max-h-[90vh] overflow-y-auto fade-in" onclick="event.stopPropagation()">
-        <div class="flex items-center justify-between mb-4">
-          <h3 class="text-lg font-semibold">${title}</h3>
-          <button onclick="hideModal()" class="text-slate-400 hover:text-white text-xl">&times;</button>
+  const stepNames = {
+    'ideation': { name: t('step1Name'), desc: t('step1Desc'), tip: t('step1Tip') },
+    'story-development': { name: t('step2Name'), desc: t('step2Desc'), tip: t('step2Tip') },
+    'pre-production': { name: t('step3Name'), desc: t('step3Desc'), tip: t('step3Tip') },
+    'production-image': { name: t('step4Name'), desc: t('step4Desc'), tip: t('step4Tip') },
+    'production-video': { name: t('step5Name'), desc: t('step5Desc'), tip: t('step5Tip') },
+    'production-audio': { name: t('step6Name'), desc: t('step6Desc'), tip: t('step6Tip') },
+    'post-production': { name: t('step7Name'), desc: t('step7Desc'), tip: t('step7Tip') },
+    'distribution': { name: t('step8Name'), desc: t('step8Desc'), tip: t('step8Tip') }
+  };
+  
+  const info = stepNames[phase.id] || { name: phase.id, desc: '', tip: '' };
+  
+  return `
+    <div class="workflow-step ${isCurrent ? 'current' : ''} ${isCompleted ? 'completed' : ''} ${isLocked ? 'locked' : ''} 
+                rounded-xl p-4 border ${isCurrent ? 'border-cyan-500 bg-cyan-500/10' : isCompleted ? 'border-green-500/30 bg-green-500/5' : 'border-slate-700 bg-slate-800/50'}
+                ${isLocked ? 'opacity-50 cursor-not-allowed' : 'cursor-pointer hover:border-cyan-500/50'}"
+         onclick="${isLocked ? '' : `navigateTo('app', '${phase.tools[0]}')`}">
+      <div class="flex items-start gap-4">
+        <div class="flex-shrink-0 w-10 h-10 rounded-full flex items-center justify-center text-lg font-bold
+                    ${isCompleted ? 'bg-green-500 text-white' : isCurrent ? 'bg-cyan-500 text-white' : 'bg-slate-700 text-slate-400'}">
+          ${isCompleted ? '✓' : phase.step}
         </div>
-        <div class="mb-6">${content}</div>
-        <div class="flex gap-3 justify-end">
-          ${hasCallback ? `
-            <button onclick="hideModal()" class="btn-secondary px-4 py-2 rounded-lg">Cancel</button>
-            <button onclick="window.modalSave()" class="btn-primary px-4 py-2 rounded-lg">${saveButtonText}</button>
+        
+        <div class="flex-1 min-w-0">
+          <div class="flex items-center gap-2 mb-1 flex-wrap">
+            <span class="text-xl">${phase.icon}</span>
+            <h3 class="font-semibold ${isCurrent ? 'text-cyan-400' : isCompleted ? 'text-green-400' : 'text-white'}">${info.name}</h3>
+            ${phase.required ? `<span class="text-[10px] bg-red-500/20 text-red-400 px-1.5 py-0.5 rounded">${t('required')}</span>` : `<span class="text-[10px] bg-slate-600 text-slate-400 px-1.5 py-0.5 rounded">${t('optional')}</span>`}
+            ${phase.isCore ? `<span class="text-[10px] bg-yellow-500/20 text-yellow-400 px-1.5 py-0.5 rounded">⭐ Core</span>` : ''}
+            ${isLocked ? `<span class="text-[10px] bg-slate-600 text-slate-400 px-1.5 py-0.5 rounded">🔒 ${t('locked')}</span>` : ''}
+          </div>
+          <p class="text-sm text-slate-400 mb-2">${info.desc}</p>
+          
+          <div class="flex items-center gap-2 mb-2">
+            <div class="flex-1 h-1.5 bg-slate-700 rounded-full overflow-hidden">
+              <div class="h-full ${isCompleted ? 'bg-green-500' : 'bg-cyan-500'} transition-all" style="width: ${completionPercent}%"></div>
+            </div>
+            <span class="text-[10px] ${isCompleted ? 'text-green-400' : 'text-slate-500'}">${completedToolCount}/${phase.tools.length} tools</span>
+          </div>
+          
+          <p class="text-xs text-slate-500 italic">💡 ${info.tip}</p>
+        </div>
+        
+        <div class="flex-shrink-0">
+          ${isCurrent ? `
+            <button onclick="event.stopPropagation(); navigateTo('app', '${phase.tools[0]}')" 
+                    class="btn-primary px-4 py-2 rounded-lg text-sm font-semibold">
+              ${t('start')} →
+            </button>
+          ` : isCompleted ? `
+            <button onclick="event.stopPropagation(); navigateTo('app', '${phase.tools[0]}')" 
+                    class="btn-secondary px-3 py-1.5 rounded-lg text-xs">
+              ${t('edit')}
+            </button>
+          ` : isLocked ? `
+            <span class="text-slate-500 text-xs">🔒</span>
           ` : `
-            <button onclick="hideModal()" class="btn-primary px-6 py-2 rounded-lg">${saveButtonText}</button>
+            <button onclick="event.stopPropagation(); navigateTo('app', '${phase.tools[0]}')" 
+                    class="btn-secondary px-3 py-1.5 rounded-lg text-xs">
+              ${t('next')}
+            </button>
           `}
         </div>
       </div>
     </div>
   `;
-  window.modalSave = onSave || hideModal;
 }
 
-function hideModal() {
-  document.getElementById('modal-container').innerHTML = '';
-  window.modalSave = null;
-}
-
-function showSettingsModal() {
-  showModal('Settings', `
-    <div class="space-y-4">
-      <p class="text-slate-400">Logged in as: <span class="text-white">${state.user?.email}</span></p>
-      <p class="text-slate-400">Role: <span class="text-white ${isAdmin() ? 'text-yellow-400' : ''}">${isAdmin() ? '👑 Admin' : '👤 User'}</span></p>
-      <button onclick="handleLogout()" class="btn-secondary w-full py-2 rounded-lg text-red-400">Logout</button>
+function renderQuickStat(icon, count, label, page) {
+  return `
+    <div class="glass rounded-xl p-4 card-hover cursor-pointer" onclick="navigateTo('${page}')">
+      <div class="flex items-center gap-3">
+        <div class="text-2xl">${icon}</div>
+        <div>
+          <div class="text-xl font-bold">${count}</div>
+          <div class="text-xs text-slate-500">${label}</div>
+        </div>
+      </div>
     </div>
-  `, hideModal);
+  `;
 }
 
-// ============ ADMIN: GLOBAL OPAL LINKS PAGE ============
-function renderAdminOpalLinksPage() {
-  if (!isAdmin()) return '<p>Access denied</p>';
+
+// ============ APP PAGE (Tool Page) ============
+function renderAppPage() {
+  const app = findApp(state.currentApp);
+  if (!app) return '<p class="text-slate-400">Tool not found</p>';
   
-  const totalApps = PHASES.reduce((sum, p) => sum + p.apps.length, 0);
-  const configuredCount = Object.keys(state.globalOpalLinks).filter(k => state.globalOpalLinks[k]).length;
+  const phase = findPhase(state.currentApp);
+  const opalLink = getEffectiveOpalLink(state.currentApp);
+  const isCompleted = isToolCompleted(state.currentApp);
   
   return `
-    <div class="w-full">
-      <div class="mb-6">
-        <div class="flex items-center gap-3 mb-2">
-          <span class="text-3xl">👑</span>
-          <div>
-            <h2 class="text-2xl font-bold">Manage Global Opal Links</h2>
-            <p class="text-slate-400 text-sm">Configure links that ALL users can access</p>
+    <div class="max-w-4xl mx-auto">
+      <!-- Tool Header -->
+      <div class="glass rounded-xl p-5 mb-5">
+        <div class="flex items-start justify-between flex-wrap gap-3">
+          <div class="flex items-center gap-3">
+            <div class="w-12 h-12 rounded-xl bg-cyan-500/20 flex items-center justify-center text-2xl">${app.icon}</div>
+            <div>
+              <div class="flex items-center gap-2 mb-1">
+                <span class="tag">${phase?.name || ''}</span>
+                ${isCompleted ? '<span class="tag bg-green-500/20 border-green-500/30 text-green-400">✓ Completed</span>' : ''}
+              </div>
+              <h1 class="text-xl font-bold">${app.name}</h1>
+              <p class="text-slate-400 text-sm mt-1">${app.description || ''}</p>
+            </div>
           </div>
+          ${opalLink ? `
+            <a href="${opalLink}" target="_blank" class="btn-primary px-4 py-2 rounded-lg text-sm flex items-center gap-2">
+              🔗 ${t('openOpal')}
+            </a>
+          ` : ''}
         </div>
       </div>
       
-      <!-- Stats -->
-      <div class="glass rounded-2xl p-5 mb-6 gradient-card">
-        <div class="flex items-center justify-between">
-          <div>
-            <p class="text-sm text-slate-400">Global Links Configured</p>
-            <p class="text-3xl font-bold text-green-400">${configuredCount} / ${totalApps}</p>
-          </div>
-          <div class="text-right">
-            <p class="text-sm text-slate-400">Coverage</p>
-            <p class="text-3xl font-bold text-cyan-400">${Math.round(configuredCount/totalApps*100)}%</p>
-          </div>
-        </div>
-        <div class="mt-4 bg-dark-800 rounded-full h-2 overflow-hidden">
-          <div class="bg-gradient-to-r from-purple-500 to-green-500 h-full" style="width: ${configuredCount/totalApps*100}%"></div>
+      <!-- Tool Form -->
+      <div class="glass rounded-xl p-5 mb-5">
+        <h3 class="font-semibold mb-4 flex items-center gap-2">📝 Input Form</h3>
+        <div class="space-y-4" id="tool-form">
+          ${renderToolForm(app)}
         </div>
       </div>
       
-      <!-- Instructions -->
-      <div class="glass rounded-2xl p-6 mb-6">
-        <h3 class="font-semibold mb-3 text-yellow-400">⚠️ Admin Instructions</h3>
-        <ol class="text-sm text-slate-400 space-y-2">
-          <li>1. Go to <a href="https://opal.google" target="_blank" class="text-cyan-400 hover:underline">opal.google</a> and open each tool</li>
-          <li>2. Copy the URL with the flow parameter (e.g., <code class="text-xs bg-dark-800 px-2 py-1 rounded">https://opal.google/?flow=drive:/...</code>)</li>
-          <li>3. Paste below and click Save - this link will be available to ALL users</li>
-          <li>4. Users can still override with their own personal links if needed</li>
-        </ol>
+      <!-- Generate Button -->
+      <div class="flex gap-3 mb-5">
+        <button onclick="generatePrompt('${app.id}')" class="btn-primary px-6 py-3 rounded-xl font-semibold flex-1">
+          ✨ ${t('generatePrompt')}
+        </button>
+        <div class="flex items-center gap-2 glass rounded-xl px-4">
+          <span class="text-xs text-slate-400">Output:</span>
+          <select id="output-count" class="bg-transparent border-none text-sm" onchange="state.outputCount = parseInt(this.value); localStorage.setItem('outputCount', this.value)">
+            ${[1,2,3,4,5].map(n => `<option value="${n}" ${state.outputCount === n ? 'selected' : ''}>${n}x</option>`).join('')}
+          </select>
+        </div>
       </div>
       
-      <!-- Links Configuration -->
-      <div class="space-y-4">
-        ${PHASES.map(phase => `
-          <div class="glass rounded-2xl p-5">
-            <h3 class="font-semibold mb-4 flex items-center gap-2">
-              ${phase.icon} ${phase.name}
-              <span class="text-xs text-slate-500">(${phase.apps.filter(a => state.globalOpalLinks[a.id]).length}/${phase.apps.length} configured)</span>
-            </h3>
-            <div class="space-y-3">
-              ${phase.apps.map(app => {
-                const hasLink = !!state.globalOpalLinks[app.id];
-                return `
-                <div class="flex items-center gap-3 ${hasLink ? 'bg-green-500/5 -mx-2 px-2 py-1 rounded-lg' : ''}">
-                  <span class="w-8">${app.icon}</span>
-                  <span class="w-40 text-sm font-medium">${app.name}</span>
-                  ${hasLink ? '<span class="text-xs text-green-400 w-12">✓ Live</span>' : '<span class="text-xs text-slate-500 w-12">Empty</span>'}
-                  <input type="text" id="global-opal-${app.id}" value="${state.globalOpalLinks[app.id] || ''}" 
-                    class="flex-1 rounded-lg px-3 py-2 text-sm" placeholder="https://opal.google/?flow=drive:/...">
-                  <button onclick="saveGlobalOpalLink('${app.id}')" class="btn-primary px-3 py-2 rounded-lg text-sm">Save</button>
-                  ${hasLink ? `<button onclick="deleteGlobalOpalLink('${app.id}')" class="bg-red-500/20 px-3 py-2 rounded-lg text-sm text-red-400">×</button>` : ''}
+      <!-- Output Area -->
+      <div id="prompt-output" class="hidden glass rounded-xl p-5 mb-5">
+        <div class="flex items-center justify-between mb-3">
+          <h3 class="font-semibold flex items-center gap-2">📋 Generated Prompt</h3>
+          <div class="flex gap-2">
+            <button onclick="copyPrompt()" class="btn-secondary px-3 py-1.5 rounded-lg text-xs">📋 ${t('copyPrompt')}</button>
+            ${opalLink ? `<a href="${opalLink}" target="_blank" class="btn-secondary px-3 py-1.5 rounded-lg text-xs">🔗 ${t('openOpal')}</a>` : ''}
+          </div>
+        </div>
+        <div id="prompt-text" class="prompt-output rounded-lg p-4 text-sm whitespace-pre-wrap font-mono"></div>
+        
+        <!-- Save Actions -->
+        <div class="flex gap-3 mt-4">
+          <button onclick="saveAndMarkComplete('${app.id}')" class="btn-primary px-4 py-2 rounded-lg text-sm flex-1">
+            ✅ ${t('saveComplete')}
+          </button>
+          <button onclick="saveToHistory('${app.id}')" class="btn-secondary px-4 py-2 rounded-lg text-sm">
+            📜 ${t('saveHistory')}
+          </button>
+        </div>
+      </div>
+      
+      <!-- Checklist Info -->
+      <div class="glass rounded-xl p-4 bg-blue-500/5 border border-blue-500/20">
+        <p class="text-xs text-blue-400">💡 ${t('checklistInfo')}</p>
+      </div>
+    </div>
+  `;
+}
+
+function renderToolForm(app) {
+  // Get form definition from APP_FORMS in data.js
+  const formDef = typeof APP_FORMS !== 'undefined' ? APP_FORMS[app.id] : null;
+  const fields = formDef?.inputs || app.fields || [];
+  
+  if (!fields || fields.length === 0) {
+    return '<p class="text-slate-500 text-sm">No form fields defined for this tool.</p>';
+  }
+  
+  return fields.map(field => {
+    const fieldId = `field-${field.id}`;
+    const label = field.label || field.name || field.id;
+    const placeholder = field.placeholder || '';
+    const rows = field.rows || 4;
+    
+    if (field.type === 'textarea') {
+      return `
+        <div>
+          <label class="block text-sm text-slate-400 mb-1">${label}</label>
+          <textarea id="${fieldId}" class="w-full rounded-lg px-3 py-2" style="min-height: ${rows * 24}px" placeholder="${placeholder}"></textarea>
+        </div>
+      `;
+    } else if (field.type === 'select') {
+      // Get options from OPTIONS object in data.js
+      const optionsList = typeof OPTIONS !== 'undefined' && field.options ? OPTIONS[field.options] || [] : [];
+      return `
+        <div>
+          <label class="block text-sm text-slate-400 mb-1">${label}</label>
+          <select id="${fieldId}" class="w-full rounded-lg px-3 py-2">
+            ${optionsList.map(opt => `<option>${opt}</option>`).join('')}
+          </select>
+        </div>
+      `;
+    } else {
+      return `
+        <div>
+          <label class="block text-sm text-slate-400 mb-1">${label}</label>
+          <input type="text" id="${fieldId}" class="w-full rounded-lg px-3 py-2" placeholder="${placeholder}">
+        </div>
+      `;
+    }
+  }).join('');
+}
+
+function generatePrompt(appId) {
+  const app = findApp(appId);
+  if (!app) return;
+  
+  // Get form definition from APP_FORMS
+  const formDef = typeof APP_FORMS !== 'undefined' ? APP_FORMS[appId] : null;
+  const fields = formDef?.inputs || app.fields || [];
+  
+  // Collect form data
+  const formData = {};
+  fields.forEach(field => {
+    const fieldId = `field-${field.id}`;
+    const el = document.getElementById(fieldId);
+    if (el) formData[field.id] = el.value;
+  });
+  
+  // Get prompt template
+  let prompt = formDef?.promptTemplate || app.promptTemplate || '';
+  
+  // Replace placeholders with form data
+  Object.keys(formData).forEach(key => {
+    const placeholder = new RegExp(`\\{${key}\\}`, 'gi');
+    prompt = prompt.replace(placeholder, formData[key] || '');
+  });
+  
+  // Add production bible data if available
+  if (state.productionBible.synopsis) {
+    prompt = prompt.replace(/\{synopsis\}/gi, state.productionBible.synopsis);
+    prompt = prompt.replace(/\{title\}/gi, state.productionBible.title || '');
+    prompt = prompt.replace(/\{genre\}/gi, state.productionBible.genre || '');
+    prompt = prompt.replace(/\{style\}/gi, state.productionBible.style || '');
+    prompt = prompt.replace(/\{mood\}/gi, state.productionBible.mood || '');
+    prompt = prompt.replace(/\{setting\}/gi, state.productionBible.setting || '');
+  }
+  
+  // Clean up empty placeholders
+  prompt = prompt.replace(/\{[^}]+\}/g, '');
+  
+  // Generate multiple outputs if needed
+  let finalPrompt = prompt.trim();
+  if (state.outputCount > 1) {
+    finalPrompt = `Generate ${state.outputCount} variations:\n\n${finalPrompt}`;
+  }
+  
+  // Show output
+  document.getElementById('prompt-output').classList.remove('hidden');
+  document.getElementById('prompt-text').textContent = finalPrompt;
+  
+  // Store for later use
+  state.lastGeneratedPrompt = finalPrompt;
+  state.lastFormData = formData;
+  
+  // Save to sessionStorage so it persists when switching tabs
+  saveToolState(appId, formData, finalPrompt);
+}
+
+// ============ SESSION STATE PERSISTENCE ============
+// Save form data and generated prompt to sessionStorage
+function saveToolState(toolId, formData, generatedPrompt) {
+  const toolState = {
+    toolId,
+    formData,
+    generatedPrompt,
+    timestamp: Date.now()
+  };
+  sessionStorage.setItem(`tool_state_${toolId}`, JSON.stringify(toolState));
+  
+  // Also save current tool ID
+  sessionStorage.setItem('currentToolId', toolId);
+}
+
+// Restore form data and prompt when returning to a tool
+function restoreToolState(toolId) {
+  const saved = sessionStorage.getItem(`tool_state_${toolId}`);
+  if (!saved) return null;
+  
+  try {
+    const toolState = JSON.parse(saved);
+    // Only restore if less than 1 hour old
+    if (Date.now() - toolState.timestamp < 3600000) {
+      return toolState;
+    }
+  } catch (e) {
+    console.error('Error restoring tool state:', e);
+  }
+  return null;
+}
+
+// Apply restored state to form
+function applyRestoredState(toolId) {
+  const savedState = restoreToolState(toolId);
+  if (!savedState) return;
+  
+  // Restore form values
+  if (savedState.formData) {
+    Object.keys(savedState.formData).forEach(fieldId => {
+      const el = document.getElementById(`field-${fieldId}`);
+      if (el) {
+        el.value = savedState.formData[fieldId];
+      }
+    });
+  }
+  
+  // Restore generated prompt
+  if (savedState.generatedPrompt) {
+    const outputEl = document.getElementById('prompt-output');
+    const textEl = document.getElementById('prompt-text');
+    if (outputEl && textEl) {
+      outputEl.classList.remove('hidden');
+      textEl.textContent = savedState.generatedPrompt;
+      state.lastGeneratedPrompt = savedState.generatedPrompt;
+      state.lastFormData = savedState.formData;
+    }
+  }
+}
+
+function copyPrompt() {
+  const promptText = document.getElementById('prompt-text').textContent;
+  navigator.clipboard.writeText(promptText).then(() => {
+    showToast(t('copiedToClipboard'), 'success');
+  });
+}
+
+async function saveAndMarkComplete(appId) {
+  if (!state.currentProject) {
+    showToast(t('selectProjectFirst'), 'warning');
+    return;
+  }
+  
+  try {
+    await markToolAsCompleted(appId, state.lastFormData, state.lastGeneratedPrompt);
+    await saveToHistory(appId);
+  } catch (error) {
+    console.error('Error in saveAndMarkComplete:', error);
+    // Still show success if at least the prompt was generated
+    if (state.lastGeneratedPrompt) {
+      showToast(t('savedSuccessfully') + ' (local)', 'success');
+    }
+  }
+}
+
+async function saveToHistory(appId) {
+  if (!state.user) {
+    // Save to local storage if not logged in
+    saveToLocalHistory(appId);
+    return;
+  }
+  
+  const app = findApp(appId);
+  const promptText = document.getElementById('prompt-text')?.textContent;
+  
+  if (!promptText) {
+    showToast('Generate a prompt first', 'warning');
+    return;
+  }
+  
+  try {
+    const historyEntry = {
+      user_id: state.user.id,
+      project_id: state.currentProject,
+      tool_id: appId,
+      tool_name: app?.name || appId,
+      prompt: promptText,
+      form_data: state.lastFormData
+    };
+    
+    await DB.saveToHistory(historyEntry);
+    state.history = await DB.getHistory(state.user.id);
+    updateHistoryCount();
+    showToast(t('savedSuccessfully'), 'success');
+  } catch (error) {
+    console.error('Error saving to history:', error);
+    // Fallback to local storage
+    saveToLocalHistory(appId);
+    showToast(t('savedSuccessfully') + ' (local)', 'success');
+  }
+}
+
+// Fallback: Save to localStorage if database fails
+function saveToLocalHistory(appId) {
+  const app = findApp(appId);
+  const promptText = document.getElementById('prompt-text')?.textContent;
+  if (!promptText) return;
+  
+  const localHistory = JSON.parse(localStorage.getItem('localHistory') || '[]');
+  localHistory.unshift({
+    id: Date.now().toString(),
+    tool_id: appId,
+    tool_name: app?.name || appId,
+    prompt: promptText,
+    form_data: state.lastFormData,
+    created_at: new Date().toISOString()
+  });
+  
+  // Keep only last 50 entries
+  if (localHistory.length > 50) localHistory.pop();
+  localStorage.setItem('localHistory', JSON.stringify(localHistory));
+  
+  // Update state
+  state.history = [...localHistory, ...state.history.filter(h => h.user_id)];
+  updateHistoryCount();
+}
+
+// ============ CHARACTERS PAGE ============
+function renderCharactersPage() {
+  const chars = state.characters.filter(c => !state.currentProject || c.project_id === state.currentProject);
+  
+  return `
+    <div class="max-w-4xl mx-auto">
+      <div class="flex items-center justify-between mb-5">
+        <h1 class="text-xl font-bold">👤 ${t('characters')}</h1>
+        <button onclick="showNewCharacterModal()" class="btn-primary px-4 py-2 rounded-lg text-sm">+ ${t('add')}</button>
+      </div>
+      
+      ${chars.length === 0 ? `
+        <div class="glass rounded-xl p-8 text-center">
+          <div class="text-4xl mb-3">👤</div>
+          <p class="text-slate-400">No characters yet. Create your first character!</p>
+        </div>
+      ` : `
+        <div class="grid gap-4 md:grid-cols-2">
+          ${chars.map(char => `
+            <div class="glass rounded-xl p-4 card-hover">
+              <div class="flex items-start gap-3">
+                <div class="w-12 h-12 rounded-full bg-gradient-to-br from-cyan-500 to-blue-500 flex items-center justify-center text-xl font-bold">
+                  ${char.name?.charAt(0) || '?'}
                 </div>
-              `}).join('')}
+                <div class="flex-1">
+                  <h3 class="font-semibold">${char.name}</h3>
+                  <p class="text-xs text-slate-500">${char.role || 'Character'}</p>
+                  <p class="text-sm text-slate-400 mt-2 line-clamp-2">${char.description || ''}</p>
+                </div>
+                <div class="flex gap-1">
+                  <button onclick="showEditCharacterModal('${char.id}')" class="btn-secondary p-2 rounded-lg text-xs">✏️</button>
+                  <button onclick="deleteCharacter('${char.id}')" class="btn-secondary p-2 rounded-lg text-xs text-red-400">🗑️</button>
+                </div>
+              </div>
+            </div>
+          `).join('')}
+        </div>
+      `}
+    </div>
+  `;
+}
+
+function showNewCharacterModal() {
+  showModal(t('add') + ' ' + t('characters'), `
+    <div class="space-y-4">
+      <div>
+        <label class="block text-sm text-slate-400 mb-1">Name</label>
+        <input type="text" id="char-name" class="w-full rounded-lg px-3 py-2" placeholder="Character name">
+      </div>
+      <div>
+        <label class="block text-sm text-slate-400 mb-1">Role</label>
+        <select id="char-role" class="w-full rounded-lg px-3 py-2">
+          ${OPTIONS.characterRole.map(r => `<option>${r}</option>`).join('')}
+        </select>
+      </div>
+      <div>
+        <label class="block text-sm text-slate-400 mb-1">Description</label>
+        <textarea id="char-desc" class="w-full rounded-lg px-3 py-2 h-24" placeholder="Character description..."></textarea>
+      </div>
+      <div>
+        <label class="block text-sm text-slate-400 mb-1">Visual Description</label>
+        <textarea id="char-visual" class="w-full rounded-lg px-3 py-2 h-20" placeholder="Physical appearance for AI generation..."></textarea>
+      </div>
+    </div>
+  `, async () => {
+    const character = {
+      user_id: state.user.id,
+      project_id: state.currentProject,
+      name: document.getElementById('char-name').value,
+      role: document.getElementById('char-role').value,
+      description: document.getElementById('char-desc').value,
+      visual_description: document.getElementById('char-visual').value
+    };
+    try {
+      const newChar = await DB.createCharacter(character);
+      state.characters.push(newChar);
+      hideModal();
+      renderPage();
+      showToast(t('savedSuccessfully'), 'success');
+    } catch (error) {
+      showToast(error.message, 'error');
+    }
+  });
+}
+
+async function deleteCharacter(charId) {
+  if (!confirm('Delete this character?')) return;
+  try {
+    await DB.deleteCharacter(charId);
+    state.characters = state.characters.filter(c => c.id !== charId);
+    renderPage();
+    showToast(t('deletedSuccessfully'), 'success');
+  } catch (error) {
+    showToast(error.message, 'error');
+  }
+}
+
+// ============ LOCATIONS PAGE ============
+function renderLocationsPage() {
+  const locs = state.locations.filter(l => !state.currentProject || l.project_id === state.currentProject);
+  
+  return `
+    <div class="max-w-4xl mx-auto">
+      <div class="flex items-center justify-between mb-5">
+        <h1 class="text-xl font-bold">🎭 ${t('locations')}</h1>
+        <button onclick="showNewLocationModal()" class="btn-primary px-4 py-2 rounded-lg text-sm">+ ${t('add')}</button>
+      </div>
+      
+      ${locs.length === 0 ? `
+        <div class="glass rounded-xl p-8 text-center">
+          <div class="text-4xl mb-3">🎭</div>
+          <p class="text-slate-400">No locations yet. Create your first location!</p>
+        </div>
+      ` : `
+        <div class="grid gap-4 md:grid-cols-2">
+          ${locs.map(loc => `
+            <div class="glass rounded-xl p-4 card-hover">
+              <div class="flex items-start gap-3">
+                <div class="w-12 h-12 rounded-xl bg-gradient-to-br from-purple-500 to-pink-500 flex items-center justify-center text-xl">
+                  🏠
+                </div>
+                <div class="flex-1">
+                  <h3 class="font-semibold">${loc.name}</h3>
+                  <p class="text-xs text-slate-500">${loc.type || 'Location'}</p>
+                  <p class="text-sm text-slate-400 mt-2 line-clamp-2">${loc.description || ''}</p>
+                </div>
+                <div class="flex gap-1">
+                  <button onclick="showEditLocationModal('${loc.id}')" class="btn-secondary p-2 rounded-lg text-xs">✏️</button>
+                  <button onclick="deleteLocation('${loc.id}')" class="btn-secondary p-2 rounded-lg text-xs text-red-400">🗑️</button>
+                </div>
+              </div>
+            </div>
+          `).join('')}
+        </div>
+      `}
+    </div>
+  `;
+}
+
+function showNewLocationModal() {
+  showModal(t('add') + ' ' + t('locations'), `
+    <div class="space-y-4">
+      <div>
+        <label class="block text-sm text-slate-400 mb-1">Name</label>
+        <input type="text" id="loc-name" class="w-full rounded-lg px-3 py-2" placeholder="Location name">
+      </div>
+      <div>
+        <label class="block text-sm text-slate-400 mb-1">Type</label>
+        <select id="loc-type" class="w-full rounded-lg px-3 py-2">
+          ${OPTIONS.locationType.map(t => `<option>${t}</option>`).join('')}
+        </select>
+      </div>
+      <div>
+        <label class="block text-sm text-slate-400 mb-1">Description</label>
+        <textarea id="loc-desc" class="w-full rounded-lg px-3 py-2 h-24" placeholder="Location description..."></textarea>
+      </div>
+      <div>
+        <label class="block text-sm text-slate-400 mb-1">Visual Description</label>
+        <textarea id="loc-visual" class="w-full rounded-lg px-3 py-2 h-20" placeholder="Visual details for AI generation..."></textarea>
+      </div>
+    </div>
+  `, async () => {
+    const location = {
+      user_id: state.user.id,
+      project_id: state.currentProject,
+      name: document.getElementById('loc-name').value,
+      type: document.getElementById('loc-type').value,
+      description: document.getElementById('loc-desc').value,
+      visual_description: document.getElementById('loc-visual').value
+    };
+    try {
+      const newLoc = await DB.createLocation(location);
+      state.locations.push(newLoc);
+      hideModal();
+      renderPage();
+      showToast(t('savedSuccessfully'), 'success');
+    } catch (error) {
+      showToast(error.message, 'error');
+    }
+  });
+}
+
+async function deleteLocation(locId) {
+  if (!confirm('Delete this location?')) return;
+  try {
+    await DB.deleteLocation(locId);
+    state.locations = state.locations.filter(l => l.id !== locId);
+    renderPage();
+    showToast(t('deletedSuccessfully'), 'success');
+  } catch (error) {
+    showToast(error.message, 'error');
+  }
+}
+
+
+// ============ SCENES PAGE ============
+function renderScenesPage() {
+  return `
+    <div class="max-w-4xl mx-auto">
+      <div class="flex items-center justify-between mb-5">
+        <h1 class="text-xl font-bold">🎬 Scenes</h1>
+        <button onclick="showNewSceneModal()" class="btn-primary px-4 py-2 rounded-lg text-sm">+ ${t('add')}</button>
+      </div>
+      
+      ${state.scenes.length === 0 ? `
+        <div class="glass rounded-xl p-8 text-center">
+          <div class="text-4xl mb-3">🎬</div>
+          <p class="text-slate-400">No scenes yet. Create your first scene!</p>
+        </div>
+      ` : `
+        <div class="space-y-3">
+          ${state.scenes.map((scene, idx) => `
+            <div class="glass rounded-xl p-4 card-hover">
+              <div class="flex items-start gap-3">
+                <div class="w-10 h-10 rounded-lg bg-cyan-500/20 flex items-center justify-center text-sm font-bold text-cyan-400">
+                  ${idx + 1}
+                </div>
+                <div class="flex-1">
+                  <h3 class="font-semibold">${scene.title || 'Scene ' + (idx + 1)}</h3>
+                  <p class="text-xs text-slate-500">${scene.location_name || ''} • ${scene.time_of_day || ''}</p>
+                  <p class="text-sm text-slate-400 mt-2 line-clamp-2">${scene.description || ''}</p>
+                </div>
+                <div class="flex gap-1">
+                  <button onclick="showEditSceneModal('${scene.id}')" class="btn-secondary p-2 rounded-lg text-xs">✏️</button>
+                  <button onclick="deleteScene('${scene.id}')" class="btn-secondary p-2 rounded-lg text-xs text-red-400">🗑️</button>
+                </div>
+              </div>
+            </div>
+          `).join('')}
+        </div>
+      `}
+    </div>
+  `;
+}
+
+function showNewSceneModal() {
+  if (!state.currentProject) {
+    showToast(t('selectProjectFirst'), 'warning');
+    return;
+  }
+  
+  showModal('Add Scene', `
+    <div class="space-y-4">
+      <div>
+        <label class="block text-sm text-slate-400 mb-1">Scene Title</label>
+        <input type="text" id="scene-title" class="w-full rounded-lg px-3 py-2" placeholder="Scene title">
+      </div>
+      <div class="grid grid-cols-2 gap-3">
+        <div>
+          <label class="block text-sm text-slate-400 mb-1">Location</label>
+          <select id="scene-location" class="w-full rounded-lg px-3 py-2">
+            <option value="">Select location</option>
+            ${state.locations.map(l => `<option value="${l.id}">${l.name}</option>`).join('')}
+          </select>
+        </div>
+        <div>
+          <label class="block text-sm text-slate-400 mb-1">Time of Day</label>
+          <select id="scene-time" class="w-full rounded-lg px-3 py-2">
+            <option>Day</option>
+            <option>Night</option>
+            <option>Dawn</option>
+            <option>Dusk</option>
+          </select>
+        </div>
+      </div>
+      <div>
+        <label class="block text-sm text-slate-400 mb-1">Description</label>
+        <textarea id="scene-desc" class="w-full rounded-lg px-3 py-2 h-24" placeholder="What happens in this scene..."></textarea>
+      </div>
+      <div>
+        <label class="block text-sm text-slate-400 mb-1">Dialogue/Script</label>
+        <textarea id="scene-script" class="w-full rounded-lg px-3 py-2 h-32" placeholder="Scene dialogue and action..."></textarea>
+      </div>
+    </div>
+  `, async () => {
+    const scene = {
+      project_id: state.currentProject,
+      user_id: state.user.id,
+      title: document.getElementById('scene-title').value,
+      location_id: document.getElementById('scene-location').value || null,
+      time_of_day: document.getElementById('scene-time').value,
+      description: document.getElementById('scene-desc').value,
+      script: document.getElementById('scene-script').value,
+      sort_order: state.scenes.length
+    };
+    try {
+      const newScene = await DB.createScene(scene);
+      state.scenes.push(newScene);
+      hideModal();
+      renderPage();
+      showToast(t('savedSuccessfully'), 'success');
+    } catch (error) {
+      showToast(error.message, 'error');
+    }
+  });
+}
+
+async function deleteScene(sceneId) {
+  if (!confirm('Delete this scene?')) return;
+  try {
+    await DB.deleteScene(sceneId);
+    state.scenes = state.scenes.filter(s => s.id !== sceneId);
+    renderPage();
+    showToast(t('deletedSuccessfully'), 'success');
+  } catch (error) {
+    showToast(error.message, 'error');
+  }
+}
+
+// ============ ASSETS PAGE ============
+function renderAssetsPage() {
+  const assets = state.generatedAssets.filter(a => !state.currentProject || a.project_id === state.currentProject);
+  
+  return `
+    <div class="max-w-6xl mx-auto">
+      <div class="flex items-center justify-between mb-5">
+        <h1 class="text-xl font-bold">🖼️ ${t('generatedAssets')}</h1>
+        <div class="flex gap-2">
+          <select id="asset-filter" class="rounded-lg px-3 py-2 text-sm" onchange="filterAssets(this.value)">
+            <option value="">All Types</option>
+            <option value="image">Images</option>
+            <option value="video">Videos</option>
+            <option value="audio">Audio</option>
+          </select>
+        </div>
+      </div>
+      
+      ${assets.length === 0 ? `
+        <div class="glass rounded-xl p-8 text-center">
+          <div class="text-4xl mb-3">🖼️</div>
+          <p class="text-slate-400">No generated assets yet. Use the tools to generate content!</p>
+        </div>
+      ` : `
+        <div class="grid gap-4 grid-cols-2 md:grid-cols-3 lg:grid-cols-4">
+          ${assets.map(asset => `
+            <div class="glass rounded-xl overflow-hidden card-hover">
+              <div class="aspect-video bg-slate-800 flex items-center justify-center">
+                ${asset.asset_type === 'image' ? `
+                  <img src="${asset.url || ''}" alt="${asset.name}" class="w-full h-full object-cover" onerror="this.src='data:image/svg+xml,<svg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 100 100%22><text y=%22.9em%22 font-size=%2290%22>🖼️</text></svg>'">
+                ` : asset.asset_type === 'video' ? `
+                  <span class="text-4xl">🎬</span>
+                ` : `
+                  <span class="text-4xl">🎵</span>
+                `}
+              </div>
+              <div class="p-3">
+                <h4 class="text-sm font-medium truncate">${asset.name || 'Untitled'}</h4>
+                <p class="text-xs text-slate-500">${asset.tool_used || ''}</p>
+                <div class="flex items-center justify-between mt-2">
+                  <span class="tag text-[10px]">${asset.asset_type}</span>
+                  <button onclick="deleteAsset('${asset.id}')" class="text-red-400 text-xs hover:text-red-300">🗑️</button>
+                </div>
+              </div>
+            </div>
+          `).join('')}
+        </div>
+      `}
+    </div>
+  `;
+}
+
+async function deleteAsset(assetId) {
+  if (!confirm('Delete this asset?')) return;
+  try {
+    await DB.deleteAsset(assetId);
+    state.generatedAssets = state.generatedAssets.filter(a => a.id !== assetId);
+    renderPage();
+    showToast(t('deletedSuccessfully'), 'success');
+  } catch (error) {
+    showToast(error.message, 'error');
+  }
+}
+
+// ============ ADMIN OPAL LINKS PAGE ============
+function renderAdminOpalLinksPage() {
+  const allTools = [];
+  PHASES.forEach(phase => {
+    phase.apps.forEach(app => {
+      allTools.push({
+        ...app,
+        phaseName: phase.name,
+        phaseIcon: phase.icon,
+        globalLink: state.globalOpalLinks[app.id] || '',
+        defaultLink: DEFAULT_OPAL_LINKS[app.id] || ''
+      });
+    });
+  });
+  
+  return `
+    <div class="max-w-4xl mx-auto">
+      <div class="mb-5">
+        <h1 class="text-xl font-bold">⚙️ Global Opal Links</h1>
+        <p class="text-slate-400 text-sm mt-1">Manage default Opal links for all users</p>
+      </div>
+      
+      <div class="space-y-3">
+        ${allTools.map(tool => `
+          <div class="glass rounded-xl p-4">
+            <div class="flex items-center gap-3 mb-3">
+              <span class="text-xl">${tool.icon}</span>
+              <div class="flex-1">
+                <h3 class="font-medium">${tool.name}</h3>
+                <p class="text-xs text-slate-500">${tool.phaseIcon} ${tool.phaseName}</p>
+              </div>
+              ${tool.globalLink ? '<span class="tag bg-green-500/20 border-green-500/30 text-green-400 text-[10px]">Active</span>' : ''}
+            </div>
+            <div class="flex gap-2">
+              <input type="text" id="global-link-${tool.id}" class="flex-1 rounded-lg px-3 py-2 text-sm" 
+                     placeholder="https://opal.google.com/..." value="${tool.globalLink || tool.defaultLink}">
+              <button onclick="saveGlobalOpalLink('${tool.id}')" class="btn-primary px-4 py-2 rounded-lg text-sm">${t('save')}</button>
             </div>
           </div>
         `).join('')}
@@ -2309,72 +1644,370 @@ function renderAdminOpalLinksPage() {
 }
 
 async function saveGlobalOpalLink(appId) {
-  if (!isAdmin()) { alert('Admin access required'); return; }
-  const url = document.getElementById('global-opal-' + appId).value;
-  if (!url) { alert('Please enter a URL'); return; }
+  const url = document.getElementById(`global-link-${appId}`).value;
   try {
-    await DB.upsertGlobalOpalLink(appId, url, state.user.id);
+    await DB.setGlobalOpalLink(appId, url);
     state.globalOpalLinks[appId] = url;
-    alert('Global link saved! All users can now access this.');
-    renderPage();
-  } catch (error) { alert('Error: ' + error.message); }
+    showToast(t('savedSuccessfully'), 'success');
+  } catch (error) {
+    showToast(error.message, 'error');
+  }
 }
 
-async function deleteGlobalOpalLink(appId) {
-  if (!isAdmin()) { alert('Admin access required'); return; }
-  if (!confirm('Remove this global link? Users will need to set their own.')) return;
-  try {
-    await DB.deleteGlobalOpalLink(appId);
-    delete state.globalOpalLinks[appId];
-    renderPage();
-  } catch (error) { alert('Error: ' + error.message); }
+// ============ HISTORY PANEL ============
+function showHistoryPanel() {
+  const panel = document.getElementById('history-panel');
+  panel.classList.remove('hidden');
+  renderHistoryList();
 }
 
-// ============ ADMIN: USER MANAGEMENT PAGE ============
-function renderAdminUsersPage() {
-  if (!isAdmin()) return '<p>Access denied</p>';
+function hideHistoryPanel() {
+  document.getElementById('history-panel').classList.add('hidden');
+}
+
+function renderHistoryList() {
+  const list = document.getElementById('history-list');
+  const projectHistory = state.history.filter(h => !state.currentProject || h.project_id === state.currentProject);
   
-  return `
-    <div class="w-full">
-      <div class="mb-6">
-        <div class="flex items-center gap-3 mb-2">
-          <span class="text-3xl">👥</span>
-          <div>
-            <h2 class="text-2xl font-bold">User Management</h2>
-            <p class="text-slate-400 text-sm">Manage user roles and permissions</p>
-          </div>
+  if (projectHistory.length === 0) {
+    list.innerHTML = '<p class="text-slate-500 text-sm text-center py-8">No history yet</p>';
+    return;
+  }
+  
+  list.innerHTML = projectHistory.map(h => `
+    <div class="glass rounded-lg p-3 mb-2 card-hover">
+      <div class="flex items-start justify-between mb-2">
+        <div>
+          <h4 class="text-sm font-medium">${h.tool_name || h.tool_id}</h4>
+          <p class="text-xs text-slate-500">${new Date(h.created_at).toLocaleString()}</p>
         </div>
+        <button onclick="deleteHistoryItem('${h.id}')" class="text-red-400 text-xs">🗑️</button>
       </div>
-      
-      <div class="glass rounded-2xl p-6 mb-6">
-        <h3 class="font-semibold mb-4">Make User Admin</h3>
-        <p class="text-sm text-slate-400 mb-4">Enter the user's email to grant admin access. They must have already signed up.</p>
-        <div class="flex gap-3">
-          <input type="email" id="admin-email-input" class="flex-1 rounded-lg px-4 py-2" placeholder="user@email.com">
-          <button onclick="makeUserAdmin()" class="btn-primary px-6 py-2 rounded-lg">Grant Admin</button>
+      <p class="text-xs text-slate-400 line-clamp-3">${h.prompt || ''}</p>
+      <button onclick="copyHistoryPrompt('${h.id}')" class="btn-secondary px-2 py-1 rounded text-[10px] mt-2">📋 Copy</button>
+    </div>
+  `).join('');
+}
+
+function updateHistoryCount() {
+  const count = state.history.filter(h => !state.currentProject || h.project_id === state.currentProject).length;
+  document.getElementById('history-count').textContent = count;
+}
+
+async function deleteHistoryItem(historyId) {
+  try {
+    await DB.deleteHistory(historyId);
+    state.history = state.history.filter(h => h.id !== historyId);
+    renderHistoryList();
+    updateHistoryCount();
+  } catch (error) {
+    showToast(error.message, 'error');
+  }
+}
+
+function copyHistoryPrompt(historyId) {
+  const item = state.history.find(h => h.id === historyId);
+  if (item?.prompt) {
+    navigator.clipboard.writeText(item.prompt).then(() => {
+      showToast(t('copiedToClipboard'), 'success');
+    });
+  }
+}
+
+// ============ MODALS ============
+function showModal(title, content, onConfirm) {
+  const container = document.getElementById('modal-container');
+  container.innerHTML = `
+    <div class="fixed inset-0 bg-black/70 flex items-center justify-center z-50 p-4" onclick="hideModal()">
+      <div class="glass rounded-2xl w-full max-w-lg max-h-[90vh] overflow-y-auto fade-in" onclick="event.stopPropagation()">
+        <div class="p-5 border-b border-cyan-500/10 flex items-center justify-between">
+          <h2 class="text-lg font-bold">${title}</h2>
+          <button onclick="hideModal()" class="text-slate-400 hover:text-white text-xl">&times;</button>
         </div>
-      </div>
-      
-      <div class="glass rounded-2xl p-6">
-        <h3 class="font-semibold mb-4">Current Admin</h3>
-        <div class="flex items-center gap-3 p-3 bg-yellow-500/10 rounded-xl">
-          <span class="text-2xl">👑</span>
-          <div>
-            <p class="font-medium">${state.user?.email}</p>
-            <p class="text-xs text-yellow-400">You (Admin)</p>
-          </div>
+        <div class="p-5">${content}</div>
+        <div class="p-5 border-t border-cyan-500/10 flex justify-end gap-3">
+          <button onclick="hideModal()" class="btn-secondary px-4 py-2 rounded-lg">${t('cancel')}</button>
+          <button onclick="window.modalConfirm()" class="btn-primary px-4 py-2 rounded-lg">${t('confirm')}</button>
         </div>
-        <p class="text-xs text-slate-500 mt-4">Note: To manage other admins, use Supabase dashboard directly.</p>
       </div>
     </div>
   `;
+  window.modalConfirm = onConfirm;
 }
 
-async function makeUserAdmin() {
-  if (!isAdmin()) { alert('Admin access required'); return; }
-  const email = document.getElementById('admin-email-input').value;
-  if (!email) { alert('Please enter an email'); return; }
-  alert('To add admin users, please use Supabase dashboard:\n\n1. Go to your Supabase project\n2. Open Table Editor > user_roles\n3. Find the user by their user_id\n4. Set role to "admin"\n\nThis ensures proper security.');
+function hideModal() {
+  document.getElementById('modal-container').innerHTML = '';
+  window.modalConfirm = null;
 }
 
-console.log('✅ App initialized');
+// ============ TOAST NOTIFICATIONS ============
+function showToast(message, type = 'info') {
+  const container = document.getElementById('toast-container');
+  const colors = {
+    success: 'bg-green-500/20 border-green-500/30 text-green-400',
+    error: 'bg-red-500/20 border-red-500/30 text-red-400',
+    warning: 'bg-yellow-500/20 border-yellow-500/30 text-yellow-400',
+    info: 'bg-cyan-500/20 border-cyan-500/30 text-cyan-400'
+  };
+  
+  const toast = document.createElement('div');
+  toast.className = `glass rounded-xl px-4 py-3 border ${colors[type]} toast`;
+  toast.innerHTML = `<p class="text-sm">${message}</p>`;
+  container.appendChild(toast);
+  
+  setTimeout(() => {
+    toast.remove();
+  }, 3000);
+}
+
+// ============ SETTINGS MODAL ============
+function showSettingsModal() {
+  showModal(t('settings'), `
+    <div class="space-y-4">
+      <div>
+        <label class="block text-sm text-slate-400 mb-2">Language</label>
+        <div class="flex gap-2">
+          <button onclick="switchLang('id'); hideModal();" class="flex-1 btn-secondary px-4 py-3 rounded-lg ${getLang() === 'id' ? 'ring-2 ring-cyan-500' : ''}">
+            🇮🇩 Bahasa Indonesia
+          </button>
+          <button onclick="switchLang('en'); hideModal();" class="flex-1 btn-secondary px-4 py-3 rounded-lg ${getLang() === 'en' ? 'ring-2 ring-cyan-500' : ''}">
+            🇺🇸 English
+          </button>
+        </div>
+      </div>
+      <div>
+        <label class="block text-sm text-slate-400 mb-2">Default Output Count</label>
+        <select id="settings-output" class="w-full rounded-lg px-3 py-2">
+          ${[1,2,3,4,5].map(n => `<option value="${n}" ${state.outputCount === n ? 'selected' : ''}>${n}x</option>`).join('')}
+        </select>
+      </div>
+    </div>
+  `, () => {
+    state.outputCount = parseInt(document.getElementById('settings-output').value);
+    localStorage.setItem('outputCount', state.outputCount);
+    hideModal();
+    showToast(t('savedSuccessfully'), 'success');
+  });
+}
+
+// ============ WORKFLOW HELP ============
+function showWorkflowHelp() {
+  showModal(t('helpTitle'), `
+    <div class="space-y-4">
+      <div class="p-4 rounded-lg bg-cyan-500/10 border border-cyan-500/20">
+        <h4 class="font-semibold text-cyan-400 mb-2">📋 ${t('checklistInfo')}</h4>
+        <p class="text-sm text-slate-400">${t('completionMeaning')}</p>
+      </div>
+      
+      <div class="space-y-3">
+        ${WORKFLOW_PHASES.map(phase => `
+          <div class="flex items-start gap-3">
+            <div class="w-8 h-8 rounded-full bg-slate-700 flex items-center justify-center text-sm">${phase.step}</div>
+            <div>
+              <h4 class="font-medium">${phase.icon} ${getWorkflowPhaseName(phase.id)}</h4>
+              <p class="text-xs text-slate-500">${phase.tools.length} tools • ${phase.required ? t('required') : t('optional')}</p>
+            </div>
+          </div>
+        `).join('')}
+      </div>
+      
+      <div class="p-4 rounded-lg bg-blue-500/10 border border-blue-500/20">
+        <p class="text-xs text-blue-400">💡 ${t('opalLinkInfo')}</p>
+      </div>
+    </div>
+  `, hideModal);
+}
+
+// ============ EDIT MODALS ============
+function showEditProjectModal(projectId) {
+  const project = state.projects.find(p => p.id === projectId);
+  if (!project) return;
+  
+  showModal(t('edit') + ' Project', `
+    <div class="space-y-4">
+      <div>
+        <label class="block text-sm text-slate-400 mb-1">${t('projectName')}</label>
+        <input type="text" id="edit-project-name" class="w-full rounded-lg px-3 py-2" value="${project.name || ''}">
+      </div>
+      <div>
+        <label class="block text-sm text-slate-400 mb-1">${t('projectType')}</label>
+        <select id="edit-project-type" class="w-full rounded-lg px-3 py-2">
+          ${OPTIONS.projectType.map(t => `<option ${project.type === t ? 'selected' : ''}>${t}</option>`).join('')}
+        </select>
+      </div>
+      <div>
+        <label class="block text-sm text-slate-400 mb-1">Genre</label>
+        <select id="edit-project-genre" class="w-full rounded-lg px-3 py-2">
+          ${OPTIONS.genre.map(g => `<option ${project.genre === g ? 'selected' : ''}>${g}</option>`).join('')}
+        </select>
+      </div>
+      <div>
+        <label class="block text-sm text-slate-400 mb-1">Description</label>
+        <textarea id="edit-project-desc" class="w-full rounded-lg px-3 py-2 h-20">${project.description || ''}</textarea>
+      </div>
+    </div>
+  `, async () => {
+    const updates = {
+      name: document.getElementById('edit-project-name').value,
+      type: document.getElementById('edit-project-type').value,
+      genre: document.getElementById('edit-project-genre').value,
+      description: document.getElementById('edit-project-desc').value
+    };
+    try {
+      await DB.updateProject(projectId, updates);
+      const idx = state.projects.findIndex(p => p.id === projectId);
+      if (idx >= 0) state.projects[idx] = { ...state.projects[idx], ...updates };
+      hideModal();
+      updateProjectSelector();
+      renderPage();
+      showToast(t('savedSuccessfully'), 'success');
+    } catch (error) {
+      showToast(error.message, 'error');
+    }
+  });
+}
+
+function showEditCharacterModal(charId) {
+  const char = state.characters.find(c => c.id === charId);
+  if (!char) return;
+  
+  showModal(t('edit') + ' Character', `
+    <div class="space-y-4">
+      <div>
+        <label class="block text-sm text-slate-400 mb-1">Name</label>
+        <input type="text" id="edit-char-name" class="w-full rounded-lg px-3 py-2" value="${char.name || ''}">
+      </div>
+      <div>
+        <label class="block text-sm text-slate-400 mb-1">Role</label>
+        <select id="edit-char-role" class="w-full rounded-lg px-3 py-2">
+          ${OPTIONS.characterRole.map(r => `<option ${char.role === r ? 'selected' : ''}>${r}</option>`).join('')}
+        </select>
+      </div>
+      <div>
+        <label class="block text-sm text-slate-400 mb-1">Description</label>
+        <textarea id="edit-char-desc" class="w-full rounded-lg px-3 py-2 h-24">${char.description || ''}</textarea>
+      </div>
+      <div>
+        <label class="block text-sm text-slate-400 mb-1">Visual Description</label>
+        <textarea id="edit-char-visual" class="w-full rounded-lg px-3 py-2 h-20">${char.visual_description || ''}</textarea>
+      </div>
+    </div>
+  `, async () => {
+    const updates = {
+      name: document.getElementById('edit-char-name').value,
+      role: document.getElementById('edit-char-role').value,
+      description: document.getElementById('edit-char-desc').value,
+      visual_description: document.getElementById('edit-char-visual').value
+    };
+    try {
+      await DB.updateCharacter(charId, updates);
+      const idx = state.characters.findIndex(c => c.id === charId);
+      if (idx >= 0) state.characters[idx] = { ...state.characters[idx], ...updates };
+      hideModal();
+      renderPage();
+      showToast(t('savedSuccessfully'), 'success');
+    } catch (error) {
+      showToast(error.message, 'error');
+    }
+  });
+}
+
+function showEditLocationModal(locId) {
+  const loc = state.locations.find(l => l.id === locId);
+  if (!loc) return;
+  
+  showModal(t('edit') + ' Location', `
+    <div class="space-y-4">
+      <div>
+        <label class="block text-sm text-slate-400 mb-1">Name</label>
+        <input type="text" id="edit-loc-name" class="w-full rounded-lg px-3 py-2" value="${loc.name || ''}">
+      </div>
+      <div>
+        <label class="block text-sm text-slate-400 mb-1">Type</label>
+        <select id="edit-loc-type" class="w-full rounded-lg px-3 py-2">
+          ${OPTIONS.locationType.map(t => `<option ${loc.type === t ? 'selected' : ''}>${t}</option>`).join('')}
+        </select>
+      </div>
+      <div>
+        <label class="block text-sm text-slate-400 mb-1">Description</label>
+        <textarea id="edit-loc-desc" class="w-full rounded-lg px-3 py-2 h-24">${loc.description || ''}</textarea>
+      </div>
+      <div>
+        <label class="block text-sm text-slate-400 mb-1">Visual Description</label>
+        <textarea id="edit-loc-visual" class="w-full rounded-lg px-3 py-2 h-20">${loc.visual_description || ''}</textarea>
+      </div>
+    </div>
+  `, async () => {
+    const updates = {
+      name: document.getElementById('edit-loc-name').value,
+      type: document.getElementById('edit-loc-type').value,
+      description: document.getElementById('edit-loc-desc').value,
+      visual_description: document.getElementById('edit-loc-visual').value
+    };
+    try {
+      await DB.updateLocation(locId, updates);
+      const idx = state.locations.findIndex(l => l.id === locId);
+      if (idx >= 0) state.locations[idx] = { ...state.locations[idx], ...updates };
+      hideModal();
+      renderPage();
+      showToast(t('savedSuccessfully'), 'success');
+    } catch (error) {
+      showToast(error.message, 'error');
+    }
+  });
+}
+
+function showEditSceneModal(sceneId) {
+  const scene = state.scenes.find(s => s.id === sceneId);
+  if (!scene) return;
+  
+  showModal('Edit Scene', `
+    <div class="space-y-4">
+      <div>
+        <label class="block text-sm text-slate-400 mb-1">Scene Title</label>
+        <input type="text" id="edit-scene-title" class="w-full rounded-lg px-3 py-2" value="${scene.title || ''}">
+      </div>
+      <div class="grid grid-cols-2 gap-3">
+        <div>
+          <label class="block text-sm text-slate-400 mb-1">Location</label>
+          <select id="edit-scene-location" class="w-full rounded-lg px-3 py-2">
+            <option value="">Select location</option>
+            ${state.locations.map(l => `<option value="${l.id}" ${scene.location_id === l.id ? 'selected' : ''}>${l.name}</option>`).join('')}
+          </select>
+        </div>
+        <div>
+          <label class="block text-sm text-slate-400 mb-1">Time of Day</label>
+          <select id="edit-scene-time" class="w-full rounded-lg px-3 py-2">
+            ${['Day', 'Night', 'Dawn', 'Dusk'].map(t => `<option ${scene.time_of_day === t ? 'selected' : ''}>${t}</option>`).join('')}
+          </select>
+        </div>
+      </div>
+      <div>
+        <label class="block text-sm text-slate-400 mb-1">Description</label>
+        <textarea id="edit-scene-desc" class="w-full rounded-lg px-3 py-2 h-24">${scene.description || ''}</textarea>
+      </div>
+      <div>
+        <label class="block text-sm text-slate-400 mb-1">Dialogue/Script</label>
+        <textarea id="edit-scene-script" class="w-full rounded-lg px-3 py-2 h-32">${scene.script || ''}</textarea>
+      </div>
+    </div>
+  `, async () => {
+    const updates = {
+      title: document.getElementById('edit-scene-title').value,
+      location_id: document.getElementById('edit-scene-location').value || null,
+      time_of_day: document.getElementById('edit-scene-time').value,
+      description: document.getElementById('edit-scene-desc').value,
+      script: document.getElementById('edit-scene-script').value
+    };
+    try {
+      await DB.updateScene(sceneId, updates);
+      const idx = state.scenes.findIndex(s => s.id === sceneId);
+      if (idx >= 0) state.scenes[idx] = { ...state.scenes[idx], ...updates };
+      hideModal();
+      renderPage();
+      showToast(t('savedSuccessfully'), 'success');
+    } catch (error) {
+      showToast(error.message, 'error');
+    }
+  });
+}
