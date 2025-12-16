@@ -97,28 +97,6 @@ const WORKFLOW_PHASES = [
 // Legacy compatibility
 const PRODUCTION_PHASES = WORKFLOW_PHASES;
 const INSIGHT_SECTION = INSIGHT_TOOLS;
-      name: { id: 'Image Generator', en: 'Image Generator' },
-      icon: '🖼️',
-      tools: ['05', '06', '07'] // Reuse production tools
-    },
-    {
-      id: 'audio',
-      name: { id: 'Audio Generator', en: 'Audio Generator' },
-      icon: '🎵',
-      tools: ['audio-01', 'audio-02', 'audio-03']
-    },
-    {
-      id: 'video',
-      name: { id: 'Video Generator', en: 'Video Generator' },
-      icon: '🎬',
-      tools: ['08', '09', '10', '11']
-    }
-  ]
-};
-
-// Legacy compatibility
-const WORKFLOW_PHASES = PRODUCTION_PHASES;
-const INSIGHT_TOOLS = INSIGHT_SECTION;
 
 // ============ APP STATE ============
 let state = {
