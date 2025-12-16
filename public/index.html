@@ -195,7 +195,7 @@
       to { opacity: 1; transform: translateY(0); }
     }
     
-    /* Step connector line */
+    /* Step connector line - only visible inside workflow */
     .workflow-connector {
       position: absolute;
       left: 20px;
@@ -203,6 +203,7 @@
       bottom: -10px;
       width: 2px;
       background: linear-gradient(to bottom, rgba(34,211,238,0.3), transparent);
+      pointer-events: none;
     }
     
     /* Modern Phase Pipeline */
