@@ -1,0 +1,98 @@
+{
+  "name": "Synopsis Writer",
+  "description": "⭐ CORE TOOL: Create master synopsis that auto-populates all production phases",
+  "version": "1.0",
+  "author": "raymAIzing film",
+  "category": "Story Development",
+  "icon": "📖",
+  "isCore": true,
+  "inputs": [
+    {
+      "id": "title",
+      "type": "text",
+      "label": "Project Title",
+      "placeholder": "The Last Detective"
+    },
+    {
+      "id": "logline",
+      "type": "text",
+      "label": "Logline",
+      "multiline": true,
+      "placeholder": "A one-sentence summary of your story..."
+    },
+    {
+      "id": "genre",
+      "type": "select",
+      "label": "Genre",
+      "options": ["Drama", "Thriller", "Horror", "Comedy", "Romance", "Action", "Sci-Fi", "Fantasy", "Mystery", "Adventure"]
+    },
+    {
+      "id": "projectType",
+      "type": "select",
+      "label": "Format",
+      "options": ["Short Film", "Feature Film", "Web Series", "Drama Series", "Music Video", "Commercial", "Documentary", "Animation"]
+    },
+    {
+      "id": "episodes",
+      "type": "select",
+      "label": "Number of Episodes",
+      "options": ["1 (Short Film)", "3 (Mini Series)", "6 (Limited Series)", "8 (Standard)", "10 (Full Season)", "12 (Extended)"]
+    },
+    {
+      "id": "episodeLength",
+      "type": "select",
+      "label": "Episode Length",
+      "options": ["15 minutes", "22 minutes", "30 minutes", "45 minutes", "60 minutes"]
+    },
+    {
+      "id": "style",
+      "type": "select",
+      "label": "Visual Style",
+      "options": ["Photorealistic", "Cinematic", "Anime/Manga", "Digital Art", "Concept Art", "Fantasy Art"]
+    },
+    {
+      "id": "mood",
+      "type": "select",
+      "label": "Overall Mood",
+      "options": ["Epic/Grand", "Mysterious", "Tense/Suspenseful", "Romantic", "Melancholic", "Action/Intense", "Peaceful/Serene", "Horror/Dark"]
+    },
+    {
+      "id": "setting",
+      "type": "text",
+      "label": "Setting/World",
+      "multiline": true,
+      "placeholder": "Neo-Tokyo, 2089, after the great flood..."
+    },
+    {
+      "id": "themes",
+      "type": "text",
+      "label": "Themes",
+      "multiline": true,
+      "placeholder": "Identity, redemption, found family..."
+    },
+    {
+      "id": "synopsis",
+      "type": "text",
+      "label": "Full Synopsis",
+      "multiline": true,
+      "rows": 10,
+      "placeholder": "Write your complete story synopsis here... This will auto-populate all production phases."
+    }
+  ],
+  "steps": [
+    {
+      "id": "generateBible",
+      "type": "gemini",
+      "model": "gemini-2.0-flash",
+      "prompt": "Create a COMPLETE PRODUCTION BIBLE for:\n\nTITLE: {{title}}\nLOGLINE: {{logline}}\nGENRE: {{genre}}\nFORMAT: {{projectType}} - {{episodes}} x {{episodeLength}}\nVISUAL STYLE: {{style}}\nMOOD: {{mood}}\nSETTING: {{setting}}\nTHEMES: {{themes}}\n\nSYNOPSIS:\n{{synopsis}}\n\nGenerate a comprehensive production bible including:\n\n## 1. STORY OVERVIEW\n- Expanded synopsis (500 words)\n- Three-act structure breakdown\n- Key plot points and twists\n- Emotional journey map\n\n## 2. CHARACTERS\nFor each main character provide:\n- Name, Age, Gender\n- Physical description (detailed for AI image generation)\n- Costume/wardrobe description\n- Personality traits\n- Character arc (start → end)\n- Key relationships\n- Signature dialogue style\n\n## 3. LOCATIONS\nFor each key location provide:\n- Name and type\n- Detailed visual description\n- Time of day typically used\n- Mood/atmosphere\n- Key props\n\n## 4. EPISODE BREAKDOWN\nFor each episode:\n- Episode title\n- Synopsis (100 words)\n- Key scenes list\n- Characters involved\n- Locations used\n- Emotional arc\n\n## 5. SCENE LIST\nFor each scene:\n- Scene number\n- Location (INT/EXT)\n- Time of day\n- Characters present\n- Brief action description\n- Key dialogue snippets\n- Mood/tone\n- Suggested shots\n\n## 6. PRODUCTION NOTES\n- Visual style guide\n- Color palette\n- Lighting approach\n- Music/audio direction\n\nThis will be used to auto-populate all production tools."
+    }
+  ],
+  "outputs": [
+    {
+      "id": "productionBible",
+      "type": "text",
+      "label": "Production Bible",
+      "source": "generateBible"
+    }
+  ]
+}

@@ -1,0 +1,51 @@
+{
+  "name": "Genre Mixer",
+  "description": "Combine genres for unique story concepts",
+  "version": "1.0",
+  "author": "raymAIzing film",
+  "category": "Ideation",
+  "icon": "🎲",
+  "inputs": [
+    {
+      "id": "genre1",
+      "type": "select",
+      "label": "Primary Genre",
+      "options": ["Drama", "Thriller", "Horror", "Comedy", "Romance", "Action", "Sci-Fi", "Fantasy", "Mystery", "Adventure"]
+    },
+    {
+      "id": "genre2",
+      "type": "select",
+      "label": "Secondary Genre",
+      "options": ["Drama", "Thriller", "Horror", "Comedy", "Romance", "Action", "Sci-Fi", "Fantasy", "Mystery", "Adventure"]
+    },
+    {
+      "id": "era",
+      "type": "select",
+      "label": "Era/Period",
+      "options": ["Contemporary", "Near Future", "Far Future", "1990s", "1980s", "1970s", "Victorian Era", "Medieval", "Ancient", "Alternate History"]
+    },
+    {
+      "id": "uniqueElement",
+      "type": "text",
+      "label": "Unique Element",
+      "multiline": true,
+      "placeholder": "Time loop, unreliable narrator, found footage..."
+    }
+  ],
+  "steps": [
+    {
+      "id": "mixGenres",
+      "type": "gemini",
+      "model": "gemini-2.0-flash",
+      "prompt": "Create genre-blending story concepts:\n\nPrimary Genre: {{genre1}}\nSecondary Genre: {{genre2}}\nEra: {{era}}\nUnique Element: {{uniqueElement}}\n\nGenerate 3 innovative concepts that blend these genres in unexpected ways:\n\n## CONCEPT 1\n- **Title**: [Catchy title]\n- **High Concept Pitch**: One sentence that sells it\n- **Logline**: 2-3 sentence summary\n- **Full Synopsis**: 200 words\n- **Why This Combination Works**: Genre synergy explanation\n- **Target Audience**: Who would love this\n- **Comparable Films/Shows**: Similar successful projects\n- **Unique Selling Point**: What makes it stand out\n- **Viral Potential**: Score 1-10\n\n[Repeat for concepts 2-3]\n\n## RECOMMENDATION\nWhich concept is most commercially viable and why."
+    }
+  ],
+  "outputs": [
+    {
+      "id": "genreMixConcepts",
+      "type": "text",
+      "label": "Genre Mix Concepts",
+      "source": "mixGenres"
+    }
+  ]
+}

@@ -1,0 +1,65 @@
+{
+  "name": "Thumbnail Generator",
+  "description": "Create eye-catching thumbnails for YouTube and social media",
+  "version": "1.0",
+  "author": "raymAIzing film",
+  "category": "Distribution",
+  "icon": "🖼️",
+  "inputs": [
+    {
+      "id": "concept",
+      "type": "text",
+      "label": "Thumbnail Concept",
+      "multiline": true,
+      "placeholder": "Shocked face reaction, bright colorful background..."
+    },
+    {
+      "id": "expression",
+      "type": "select",
+      "label": "Expression (if face)",
+      "options": ["Neutral", "Shocked/Surprised", "Happy/Excited", "Angry", "Scared", "Mysterious", "Determined"]
+    },
+    {
+      "id": "colorPalette",
+      "type": "select",
+      "label": "Color Scheme",
+      "options": ["Vibrant", "High Contrast", "Warm Tones", "Cool Tones", "Neon", "Monochrome", "Red/Yellow Alert"]
+    },
+    {
+      "id": "style",
+      "type": "select",
+      "label": "Style",
+      "options": ["Photorealistic", "Cinematic", "Anime/Manga", "Digital Art", "3D Render", "Comic Book"]
+    },
+    {
+      "id": "mood",
+      "type": "select",
+      "label": "Mood",
+      "options": ["Epic/Grand", "Mysterious", "Tense/Suspenseful", "Exciting", "Horror/Dark", "Cheerful", "Dramatic"]
+    },
+    {
+      "id": "textOverlay",
+      "type": "text",
+      "label": "Text Overlay (optional)",
+      "placeholder": "SHOCKING ENDING!"
+    }
+  ],
+  "steps": [
+    {
+      "id": "generateThumbnail",
+      "type": "imagen",
+      "model": "imagen-3",
+      "prompt": "YouTube thumbnail: {{concept}}. Expression: {{expression}}. Colors: {{colorPalette}}. Style: {{style}}. Mood: {{mood}}. 16:9 aspect ratio, eye-catching, high contrast, click-worthy thumbnail, professional quality, space for text overlay.",
+      "aspectRatio": "16:9",
+      "numberOfImages": 4
+    }
+  ],
+  "outputs": [
+    {
+      "id": "thumbnails",
+      "type": "imageGallery",
+      "label": "Generated Thumbnails",
+      "source": "generateThumbnail"
+    }
+  ]
+}

@@ -1,0 +1,63 @@
+{
+  "name": "Audio Mixer",
+  "description": "Get mixing guide for dialogue, music, and SFX",
+  "version": "1.0",
+  "author": "raymAIzing film",
+  "category": "Production - Audio",
+  "icon": "🎚️",
+  "inputs": [
+    {
+      "id": "dialogueLevel",
+      "type": "select",
+      "label": "Dialogue Level",
+      "options": ["Silent", "Very Low", "Low", "Medium", "High", "Very High", "Dominant"]
+    },
+    {
+      "id": "musicLevel",
+      "type": "select",
+      "label": "Music Level",
+      "options": ["Silent", "Very Low", "Low", "Medium", "High", "Very High", "Dominant"]
+    },
+    {
+      "id": "sfxLevel",
+      "type": "select",
+      "label": "SFX Level",
+      "options": ["Silent", "Very Low", "Low", "Medium", "High", "Very High", "Dominant"]
+    },
+    {
+      "id": "ambientLevel",
+      "type": "select",
+      "label": "Ambient Level",
+      "options": ["Silent", "Very Low", "Low", "Medium", "High", "Very High", "Dominant"]
+    },
+    {
+      "id": "sceneDescription",
+      "type": "text",
+      "label": "Scene Description",
+      "multiline": true,
+      "placeholder": "Quiet conversation interrupted by explosion..."
+    },
+    {
+      "id": "mixStyle",
+      "type": "select",
+      "label": "Mix Style",
+      "options": ["Dialogue Focus", "Music Focus", "Ambient Focus", "Balanced", "Dynamic", "Minimalist"]
+    }
+  ],
+  "steps": [
+    {
+      "id": "createMixGuide",
+      "type": "gemini",
+      "model": "gemini-2.0-flash",
+      "prompt": "Create audio mix guide:\n\nDIALOGUE: {{dialogueLevel}}\nMUSIC: {{musicLevel}}\nSFX: {{sfxLevel}}\nAMBIENT: {{ambientLevel}}\nMIX STYLE: {{mixStyle}}\n\nSCENE: {{sceneDescription}}\n\nProvide:\n\n## LEVEL SETTINGS (dB)\n| Track | Base Level | Peak Level |\n|-------|------------|------------|\n| Dialogue | -12dB | -6dB |\n| Music | -18dB | -12dB |\n| SFX | -15dB | -6dB |\n| Ambient | -24dB | -18dB |\n\n## LEVEL AUTOMATION\nTimeline of level changes:\n- 0:00-0:05: [Levels and reason]\n- 0:05-0:15: [Levels and reason]\n[Continue]\n\n## EQ SUGGESTIONS\n### Dialogue\n- High-pass: [Hz]\n- Presence boost: [Hz, dB]\n- De-ess: [Hz]\n\n### Music\n- Low cut: [Hz]\n- Duck under dialogue: [dB]\n\n### SFX\n- Frequency range: [Hz-Hz]\n- Compression: [Ratio]\n\n## COMPRESSION SETTINGS\n| Track | Ratio | Attack | Release | Threshold |\n|-------|-------|--------|---------|----------|\n| Dialogue | 3:1 | 10ms | 100ms | -18dB |\n[Continue]\n\n## SPATIAL POSITIONING\n- Dialogue: [Center/L/R]\n- Music: [Stereo width]\n- SFX: [Positioning]\n- Ambient: [Surround]\n\n## TRANSITION POINTS\n- Crossfade locations\n- Volume automation curves\n\n## FINAL MIX TARGETS\n- Integrated loudness: -14 LUFS\n- True peak: -1dB\n- Dynamic range: [LU]"
+    }
+  ],
+  "outputs": [
+    {
+      "id": "mixGuide",
+      "type": "text",
+      "label": "Audio Mix Guide",
+      "source": "createMixGuide"
+    }
+  ]
+}

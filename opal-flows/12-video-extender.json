@@ -1,0 +1,67 @@
+{
+  "name": "Video Extender",
+  "description": "Extend video clips seamlessly",
+  "version": "1.0",
+  "author": "raymAIzing film",
+  "category": "Post-Production",
+  "icon": "➕",
+  "inputs": [
+    {
+      "id": "sourceVideo",
+      "type": "video",
+      "label": "Source Video",
+      "required": true
+    },
+    {
+      "id": "originalDesc",
+      "type": "text",
+      "label": "Original Scene Description",
+      "multiline": true,
+      "placeholder": "Describe the original video scene..."
+    },
+    {
+      "id": "continuation",
+      "type": "text",
+      "label": "What Happens Next",
+      "multiline": true,
+      "placeholder": "She continues walking, then stops and turns..."
+    },
+    {
+      "id": "camera",
+      "type": "select",
+      "label": "Camera Behavior",
+      "options": ["Continue Same", "Pan Left", "Pan Right", "Zoom In", "Zoom Out", "Static"]
+    },
+    {
+      "id": "speed",
+      "type": "select",
+      "label": "Pacing",
+      "options": ["Slow Motion", "Normal Speed", "Fast"]
+    },
+    {
+      "id": "duration",
+      "type": "select",
+      "label": "Extension Length",
+      "options": ["3 seconds", "5 seconds", "8 seconds", "10 seconds"]
+    }
+  ],
+  "steps": [
+    {
+      "id": "extendVideo",
+      "type": "veo",
+      "model": "veo-3",
+      "mode": "extend",
+      "sourceVideo": "{{sourceVideo}}",
+      "prompt": "Extend this video scene. Original: {{originalDesc}}. Continuation: {{continuation}}. Camera: {{camera}}. Pacing: {{speed}}. Seamless continuation, match original style, lighting, and quality.",
+      "duration": "{{duration}}"
+    }
+  ],
+  "outputs": [
+    {
+      "id": "extendedVideo",
+      "type": "video",
+      "label": "Extended Video",
+      "source": "extendVideo"
+    }
+  ]
+}

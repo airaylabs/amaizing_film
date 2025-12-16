@@ -1,0 +1,58 @@
+{
+  "name": "Sound Effects",
+  "description": "Generate realistic sound effects for scenes",
+  "version": "1.0",
+  "author": "raymAIzing film",
+  "category": "Production - Audio",
+  "icon": "🔉",
+  "inputs": [
+    {
+      "id": "sfxType",
+      "type": "select",
+      "label": "SFX Category",
+      "options": ["Ambient/Nature", "Weather", "Footsteps", "Doors/Windows", "Vehicles", "Weapons", "Impacts", "Electronic", "Crowd/People", "Animals", "Sci-Fi", "Horror"]
+    },
+    {
+      "id": "description",
+      "type": "text",
+      "label": "Sound Description",
+      "multiline": true,
+      "placeholder": "Heavy rain on window, distant thunder..."
+    },
+    {
+      "id": "intensity",
+      "type": "select",
+      "label": "Intensity",
+      "options": ["Minimal", "Subtle", "Moderate", "Dynamic", "Dramatic"]
+    },
+    {
+      "id": "environment",
+      "type": "select",
+      "label": "Environment",
+      "options": ["Indoor Small", "Indoor Large", "Outdoor Open", "Outdoor Urban", "Underground", "Underwater", "Space", "Forest"]
+    },
+    {
+      "id": "duration",
+      "type": "select",
+      "label": "Duration",
+      "options": ["1 second", "3 seconds", "5 seconds", "10 seconds", "30 seconds", "1 minute"]
+    }
+  ],
+  "steps": [
+    {
+      "id": "generateSFX",
+      "type": "audiogen",
+      "model": "audiogen",
+      "prompt": "{{sfxType}} sound effect: {{description}}. Intensity: {{intensity}}. Environment: {{environment}}. Realistic, high-quality sound effect suitable for film production.",
+      "duration": "{{duration}}"
+    }
+  ],
+  "outputs": [
+    {
+      "id": "soundEffect",
+      "type": "audio",
+      "label": "Sound Effect",
+      "source": "generateSFX"
+    }
+  ]
+}

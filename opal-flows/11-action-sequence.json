@@ -1,0 +1,89 @@
+{
+  "name": "Action Sequence",
+  "description": "Generate dynamic action scenes",
+  "version": "1.0",
+  "author": "raymAIzing film",
+  "category": "Production - Video",
+  "icon": "⚔️",
+  "inputs": [
+    {
+      "id": "description",
+      "type": "text",
+      "label": "Action Description",
+      "multiline": true,
+      "placeholder": "A martial artist performs a spinning kick..."
+    },
+    {
+      "id": "actionType",
+      "type": "select",
+      "label": "Action Type",
+      "options": ["Hand-to-Hand Combat", "Sword/Melee Fight", "Gun Fight", "Car Chase", "Foot Chase/Parkour", "Explosion", "Fall/Jump Stunt", "Superhero Action", "Dance/Choreographed"]
+    },
+    {
+      "id": "motionIntensity",
+      "type": "select",
+      "label": "Intensity",
+      "options": ["Minimal", "Subtle", "Moderate", "Dynamic", "Dramatic"]
+    },
+    {
+      "id": "speed",
+      "type": "select",
+      "label": "Speed",
+      "options": ["Slow Motion", "Normal Speed", "Fast"]
+    },
+    {
+      "id": "camera",
+      "type": "select",
+      "label": "Camera Style",
+      "options": ["Static", "Tracking Shot", "Handheld", "Orbit", "Crane", "Drone"]
+    },
+    {
+      "id": "shotType",
+      "type": "select",
+      "label": "Shot Type",
+      "options": ["Wide Shot", "Medium Shot", "Close-Up", "Extreme Close-Up"]
+    },
+    {
+      "id": "lighting",
+      "type": "select",
+      "label": "Lighting",
+      "options": ["Natural Daylight", "Golden Hour", "Dramatic Side Light", "Neon/Cyberpunk", "Moonlight", "Fire/Explosion Light"]
+    },
+    {
+      "id": "style",
+      "type": "select",
+      "label": "Visual Style",
+      "options": ["Photorealistic", "Cinematic", "Anime/Manga", "Digital Art"]
+    },
+    {
+      "id": "duration",
+      "type": "select",
+      "label": "Duration",
+      "options": ["3 seconds", "5 seconds", "8 seconds", "10 seconds"]
+    },
+    {
+      "id": "aspectRatio",
+      "type": "select",
+      "label": "Aspect Ratio",
+      "options": ["16:9 Landscape", "21:9 Cinematic", "9:16 Portrait"]
+    }
+  ],
+  "steps": [
+    {
+      "id": "generateAction",
+      "type": "veo",
+      "model": "veo-3",
+      "prompt": "Action sequence: {{actionType}}. {{description}}. Intensity: {{motionIntensity}}. Speed: {{speed}}. Camera: {{camera}}. Shot: {{shotType}}. Lighting: {{lighting}}. Style: {{style}}. Dynamic action, debris and effects, cinematic quality, professional stunt choreography.",
+      "duration": "{{duration}}",
+      "aspectRatio": "{{aspectRatio}}"
+    }
+  ],
+  "outputs": [
+    {
+      "id": "actionVideo",
+      "type": "video",
+      "label": "Action Sequence Video",
+      "source": "generateAction"
+    }
+  ]
+}

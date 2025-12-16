@@ -1,0 +1,84 @@
+{
+  "name": "Character Arc",
+  "description": "Define detailed character journeys",
+  "version": "1.0",
+  "author": "raymAIzing film",
+  "category": "Story Development",
+  "icon": "👥",
+  "inputs": [
+    {
+      "id": "characterName",
+      "type": "text",
+      "label": "Character Name",
+      "placeholder": "Maya Chen"
+    },
+    {
+      "id": "role",
+      "type": "select",
+      "label": "Story Role",
+      "options": ["Protagonist", "Antagonist", "Supporting", "Love Interest", "Mentor", "Comic Relief", "Mysterious Stranger"]
+    },
+    {
+      "id": "physical",
+      "type": "text",
+      "label": "Physical Description",
+      "multiline": true,
+      "placeholder": "Short black hair, brown eyes, athletic build..."
+    },
+    {
+      "id": "startingPoint",
+      "type": "text",
+      "label": "Starting Point",
+      "multiline": true,
+      "placeholder": "Cynical, isolated, afraid of connection..."
+    },
+    {
+      "id": "endingPoint",
+      "type": "text",
+      "label": "Ending Point",
+      "multiline": true,
+      "placeholder": "Hopeful, connected, willing to trust..."
+    },
+    {
+      "id": "flaw",
+      "type": "text",
+      "label": "Fatal Flaw",
+      "multiline": true,
+      "placeholder": "Cannot forgive herself for past mistake..."
+    },
+    {
+      "id": "want",
+      "type": "text",
+      "label": "External Want",
+      "placeholder": "Solve the case"
+    },
+    {
+      "id": "need",
+      "type": "text",
+      "label": "Internal Need",
+      "placeholder": "Self-forgiveness"
+    },
+    {
+      "id": "episodes",
+      "type": "text",
+      "label": "Number of Episodes",
+      "placeholder": "8"
+    }
+  ],
+  "steps": [
+    {
+      "id": "designArc",
+      "type": "gemini",
+      "model": "gemini-2.0-flash",
+      "prompt": "Design complete character arc for {{characterName}}:\n\nROLE: {{role}}\nPHYSICAL: {{physical}}\nSTARTING POINT: {{startingPoint}}\nENDING POINT: {{endingPoint}}\nFATAL FLAW: {{flaw}}\nWANT: {{want}}\nNEED: {{need}}\nEPISODES: {{episodes}}\n\nGenerate:\n\n## CHARACTER BIOGRAPHY\n- Full backstory (200 words)\n- Key formative events\n- Relationships before story begins\n\n## EPISODE-BY-EPISODE ARC\nFor each episode:\n- Episode X: [Title]\n  - Where character starts emotionally\n  - Key challenge/conflict\n  - Growth moment\n  - Where character ends\n  - Key dialogue that shows growth\n\n## KEY TRANSFORMATION MOMENTS\n1. Inciting incident - what starts the change\n2. First test - initial challenge to beliefs\n3. Midpoint shift - major realization\n4. Dark night - lowest point\n5. Climactic choice - defining decision\n6. Resolution - new equilibrium\n\n## RELATIONSHIPS THAT DRIVE CHANGE\n- Character A: How they challenge/support growth\n- Character B: How they challenge/support growth\n\n## INTERNAL VS EXTERNAL CONFLICT\n- External obstacles\n- Internal resistance\n- How they mirror each other\n\n## SYMBOLIC ELEMENTS\n- Visual motifs tied to arc\n- Recurring imagery\n- Costume evolution\n\n## DIALOGUE EVOLUTION\n- Early dialogue style\n- Mid-story dialogue style\n- End dialogue style\n- Example lines showing progression"
+    }
+  ],
+  "outputs": [
+    {
+      "id": "characterArc",
+      "type": "text",
+      "label": "Character Arc",
+      "source": "designArc"
+    }
+  ]
+}

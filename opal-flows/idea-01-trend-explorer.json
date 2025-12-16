@@ -1,0 +1,56 @@
+{
+  "name": "Trend Explorer",
+  "description": "Discover viral trends and content opportunities for your story",
+  "version": "1.0",
+  "author": "raymAIzing film",
+  "category": "Ideation",
+  "icon": "🔥",
+  "inputs": [
+    {
+      "id": "platform",
+      "type": "select",
+      "label": "Platform",
+      "options": ["YouTube", "TikTok", "Instagram Reels", "Netflix", "Amazon Prime", "Disney+", "Hulu", "HBO Max"]
+    },
+    {
+      "id": "category",
+      "type": "select",
+      "label": "Content Category",
+      "options": ["Entertainment", "Education", "Documentary", "News", "Gaming", "Lifestyle", "Tech", "Music", "Sports", "Comedy", "Drama"]
+    },
+    {
+      "id": "targetAudience",
+      "type": "select",
+      "label": "Target Audience",
+      "options": ["Gen Z (13-24)", "Millennials (25-40)", "Gen X (41-56)", "Boomers (57-75)", "Family/All Ages", "Young Adults", "Teens"]
+    },
+    {
+      "id": "region",
+      "type": "select",
+      "label": "Region",
+      "options": ["Global", "North America", "Europe", "Asia Pacific", "Latin America", "Middle East", "Southeast Asia"]
+    },
+    {
+      "id": "timeframe",
+      "type": "select",
+      "label": "Timeframe",
+      "options": ["Last 24 Hours", "Last 7 Days", "Last 30 Days", "Last 3 Months", "Last Year"]
+    }
+  ],
+  "steps": [
+    {
+      "id": "analyzeTrends",
+      "type": "gemini",
+      "model": "gemini-2.0-flash",
+      "prompt": "Analyze current viral trends and content opportunities:\n\nPlatform: {{platform}}\nCategory: {{category}}\nTarget Audience: {{targetAudience}}\nRegion: {{region}}\nTimeframe: {{timeframe}}\n\nProvide:\n\n## 1. TOP 10 TRENDING TOPICS\nList the top 10 trending topics/themes with viral potential. For each:\n- Topic name\n- Why it's trending\n- Viral potential score (1-10)\n- Story angle suggestion\n\n## 2. EMERGING STORYTELLING FORMATS\n- New formats gaining traction\n- Why they work\n- How to adapt for film\n\n## 3. CONTENT GAP OPPORTUNITIES\n- Underserved niches\n- Audience demand vs supply\n- Recommended approaches\n\n## 4. HASHTAG RECOMMENDATIONS\n- Top 20 relevant hashtags\n- Engagement rates\n\n## 5. BEST POSTING TIMES\n- Optimal days and times\n- Platform-specific recommendations\n\n## 6. STORY IDEAS\nGenerate 5 story concepts based on these trends:\n- Title\n- Logline\n- Why it would go viral\n- Target platform"
+    }
+  ],
+  "outputs": [
+    {
+      "id": "trendAnalysis",
+      "type": "text",
+      "label": "Trend Analysis",
+      "source": "analyzeTrends"
+    }
+  ]
+}

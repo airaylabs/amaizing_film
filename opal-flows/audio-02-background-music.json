@@ -1,0 +1,71 @@
+{
+  "name": "Background Music",
+  "description": "Generate scene background music with AI",
+  "version": "1.0",
+  "author": "raymAIzing film",
+  "category": "Production - Audio",
+  "icon": "🎵",
+  "inputs": [
+    {
+      "id": "sceneType",
+      "type": "select",
+      "label": "Scene Type",
+      "options": ["Action", "Romance", "Suspense", "Horror", "Comedy", "Drama", "Chase", "Fight", "Emotional", "Montage", "Flashback", "Dream"]
+    },
+    {
+      "id": "mood",
+      "type": "select",
+      "label": "Mood",
+      "options": ["Epic/Grand", "Mysterious", "Tense/Suspenseful", "Romantic", "Melancholic", "Action/Intense", "Peaceful/Serene", "Horror/Dark", "Cheerful", "Nostalgic"]
+    },
+    {
+      "id": "genre",
+      "type": "select",
+      "label": "Music Genre",
+      "options": ["Orchestral", "Electronic", "Ambient", "Rock", "Hip Hop", "Jazz", "Classical", "Folk", "World", "Synthwave", "Lo-Fi", "Cinematic"]
+    },
+    {
+      "id": "tempo",
+      "type": "select",
+      "label": "Tempo",
+      "options": ["Very Slow (40-60 BPM)", "Slow (60-80 BPM)", "Moderate (80-100 BPM)", "Upbeat (100-120 BPM)", "Fast (120-140 BPM)", "Very Fast (140+ BPM)"]
+    },
+    {
+      "id": "instruments",
+      "type": "text",
+      "label": "Key Instruments",
+      "multiline": true,
+      "placeholder": "Piano, strings, synth pads..."
+    },
+    {
+      "id": "duration",
+      "type": "select",
+      "label": "Duration",
+      "options": ["15 seconds", "30 seconds", "1 minute", "2 minutes", "3 minutes", "5 minutes"]
+    },
+    {
+      "id": "reference",
+      "type": "text",
+      "label": "Reference (optional)",
+      "multiline": true,
+      "placeholder": "Similar to Hans Zimmer Interstellar..."
+    }
+  ],
+  "steps": [
+    {
+      "id": "generateMusic",
+      "type": "musicgen",
+      "model": "musiclm",
+      "prompt": "{{genre}} music for {{sceneType}} scene. Mood: {{mood}}. Tempo: {{tempo}}. Instruments: {{instruments}}. Reference: {{reference}}. Cinematic background music that enhances emotional impact. Include dynamic progression with appropriate crescendos and diminuendos.",
+      "duration": "{{duration}}"
+    }
+  ],
+  "outputs": [
+    {
+      "id": "backgroundMusic",
+      "type": "audio",
+      "label": "Background Music",
+      "source": "generateMusic"
+    }
+  ]
+}

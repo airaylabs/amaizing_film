@@ -1,0 +1,57 @@
+{
+  "name": "Script to Treatment",
+  "description": "Convert script or story idea to comprehensive visual treatment",
+  "version": "1.0",
+  "author": "raymAIzing film",
+  "category": "Pre-Production",
+  "icon": "📝",
+  "inputs": [
+    {
+      "id": "script",
+      "type": "text",
+      "label": "Script or Story Idea",
+      "required": true,
+      "multiline": true
+    },
+    {
+      "id": "projectType",
+      "type": "select",
+      "label": "Project Type",
+      "options": ["Short Film", "Feature Film", "Web Series", "Drama Series", "Music Video", "Commercial", "Documentary", "Animation"]
+    },
+    {
+      "id": "genre",
+      "type": "select",
+      "label": "Genre",
+      "options": ["Drama", "Thriller", "Horror", "Comedy", "Romance", "Action", "Sci-Fi", "Fantasy", "Mystery", "Adventure"]
+    },
+    {
+      "id": "style",
+      "type": "select",
+      "label": "Visual Style",
+      "options": ["Photorealistic", "Cinematic", "Anime/Manga", "Digital Art", "Concept Art", "Fantasy Art", "3D Render"]
+    },
+    {
+      "id": "mood",
+      "type": "select",
+      "label": "Overall Mood",
+      "options": ["Epic/Grand", "Mysterious", "Tense/Suspenseful", "Romantic", "Melancholic", "Action/Intense", "Peaceful/Serene", "Horror/Dark", "Cheerful"]
+    }
+  ],
+  "steps": [
+    {
+      "id": "analyze",
+      "type": "gemini",
+      "model": "gemini-2.0-flash",
+      "prompt": "Analyze this script/story and create a comprehensive VISUAL TREATMENT:\n\nSTORY/SCRIPT:\n{{script}}\n\nProject Type: {{projectType}}\nGenre: {{genre}}\nVisual Style: {{style}}\nMood: {{mood}}\n\nProvide detailed treatment including:\n1. Project Overview (title, logline, visual approach)\n2. Scene-by-Scene Breakdown (location, time, characters, shots, lighting)\n3. Character Visual Notes (appearance, costume, expressions)\n4. Shot List Suggestions\n5. Technical Recommendations\n6. Color Palette Specifications"
+    }
+  ],
+  "outputs": [
+    {
+      "id": "treatment",
+      "type": "text",
+      "label": "Visual Treatment",
+      "source": "analyze"
+    }
+  ]
+}

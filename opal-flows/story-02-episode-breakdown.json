@@ -1,0 +1,66 @@
+{
+  "name": "Episode Breakdown",
+  "description": "Break synopsis into detailed episodes",
+  "version": "1.0",
+  "author": "raymAIzing film",
+  "category": "Story Development",
+  "icon": "📑",
+  "inputs": [
+    {
+      "id": "synopsis",
+      "type": "text",
+      "label": "Story Synopsis",
+      "multiline": true,
+      "rows": 6,
+      "placeholder": "Paste your full synopsis here..."
+    },
+    {
+      "id": "episodeNumber",
+      "type": "text",
+      "label": "Episode Number",
+      "placeholder": "1"
+    },
+    {
+      "id": "episodeTitle",
+      "type": "text",
+      "label": "Episode Title",
+      "placeholder": "Pilot: The Beginning"
+    },
+    {
+      "id": "focusCharacter",
+      "type": "text",
+      "label": "Focus Character",
+      "placeholder": "Maya"
+    },
+    {
+      "id": "mainConflict",
+      "type": "text",
+      "label": "Main Conflict",
+      "multiline": true,
+      "placeholder": "Maya discovers the first clue..."
+    },
+    {
+      "id": "endHook",
+      "type": "text",
+      "label": "Episode End Hook",
+      "multiline": true,
+      "placeholder": "Cliffhanger or revelation..."
+    }
+  ],
+  "steps": [
+    {
+      "id": "breakdownEpisode",
+      "type": "gemini",
+      "model": "gemini-2.0-flash",
+      "prompt": "Break down Episode {{episodeNumber}}: {{episodeTitle}}\n\nSERIES SYNOPSIS:\n{{synopsis}}\n\nFOCUS CHARACTER: {{focusCharacter}}\nMAIN CONFLICT: {{mainConflict}}\nEND HOOK: {{endHook}}\n\nGenerate detailed episode breakdown:\n\n## EPISODE OVERVIEW\n- Title: {{episodeTitle}}\n- Runtime: Estimated minutes\n- Tone: Overall emotional tone\n\n## COLD OPEN (2-3 minutes)\n- Scene description\n- Hook to grab attention\n- Characters involved\n\n## ACT 1 - SETUP (First 25%)\n### Scene 1\n- Location: INT/EXT, Place, Time\n- Characters: Who's present\n- Action: What happens\n- Dialogue snippet: Key line\n- Duration: Estimated time\n\n[Continue for 2-3 more scenes]\n\n## ACT 2 - CONFRONTATION (Middle 50%)\n[4-6 scenes with same detail]\n\n## ACT 3 - RESOLUTION (Final 25%)\n[2-3 scenes leading to cliffhanger]\n\n## B-PLOT\n- Subplot description\n- How it weaves into main plot\n\n## CHARACTER DEVELOPMENT\n- {{focusCharacter}}'s arc this episode\n- Key growth moments\n\n## CLIFFHANGER/HOOK\n- Final scene description\n- What question it raises\n- Setup for next episode"
+    }
+  ],
+  "outputs": [
+    {
+      "id": "episodeBreakdown",
+      "type": "text",
+      "label": "Episode Breakdown",
+      "source": "breakdownEpisode"
+    }
+  ]
+}

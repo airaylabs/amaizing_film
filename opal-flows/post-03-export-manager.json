@@ -1,0 +1,56 @@
+{
+  "name": "Export Manager",
+  "description": "Get optimal export settings for all platforms",
+  "version": "1.0",
+  "author": "raymAIzing film",
+  "category": "Post-Production",
+  "icon": "📤",
+  "inputs": [
+    {
+      "id": "projectName",
+      "type": "text",
+      "label": "Project Name",
+      "placeholder": "The Last Detective"
+    },
+    {
+      "id": "exportType",
+      "type": "select",
+      "label": "Export Type",
+      "options": ["Full Episode", "Scene", "Clip", "Trailer", "Teaser", "Behind the Scenes"]
+    },
+    {
+      "id": "resolution",
+      "type": "select",
+      "label": "Resolution",
+      "options": ["720p HD", "1080p Full HD", "2K", "4K UHD", "8K"]
+    },
+    {
+      "id": "format",
+      "type": "select",
+      "label": "Format",
+      "options": ["MP4 (H.264)", "MP4 (H.265/HEVC)", "MOV (ProRes)", "WebM", "AVI", "MKV"]
+    },
+    {
+      "id": "platform",
+      "type": "select",
+      "label": "Destination Platform",
+      "options": ["YouTube", "TikTok", "Instagram", "Netflix", "Amazon Prime", "Vimeo", "Local Storage", "Broadcast TV"]
+    }
+  ],
+  "steps": [
+    {
+      "id": "getExportSettings",
+      "type": "gemini",
+      "model": "gemini-2.0-flash",
+      "prompt": "Export settings for {{projectName}}:\n\nTYPE: {{exportType}}\nRESOLUTION: {{resolution}}\nFORMAT: {{format}}\nPLATFORM: {{platform}}\n\nProvide:\n\n## OPTIMAL EXPORT SETTINGS\n\n### Video Settings\n- Codec: [Recommended codec]\n- Resolution: [Exact pixels]\n- Frame Rate: [fps]\n- Bitrate: [Mbps]\n- Profile: [High/Main/etc]\n- Level: [4.1/5.1/etc]\n\n### Audio Settings\n- Codec: [AAC/etc]\n- Sample Rate: [48kHz/etc]\n- Bitrate: [kbps]\n- Channels: [Stereo/5.1]\n\n### Container Settings\n- Format: [.mp4/.mov/etc]\n- Muxing: [Fast start enabled]\n\n## PLATFORM-SPECIFIC REQUIREMENTS\n- Max file size: [GB]\n- Max duration: [minutes]\n- Aspect ratio: [16:9/etc]\n- Thumbnail specs: [Resolution]\n- Caption format: [SRT/VTT]\n\n## FILE NAMING CONVENTION\n{{projectName}}_{{exportType}}_{{resolution}}_v[version].[ext]\n\nExample: The_Last_Detective_Episode01_1080p_v1.mp4\n\n## METADATA\n- Title: {{projectName}}\n- Description: [Template]\n- Tags: [Suggested]\n- Copyright: [Template]\n\n## QUALITY CHECK\n- [ ] Audio levels normalized (-14 LUFS)\n- [ ] No clipping\n- [ ] Color space correct\n- [ ] Aspect ratio correct\n- [ ] No black frames\n- [ ] Captions synced\n\n## ESTIMATED FILE SIZE\n- Approximate: [GB/MB]"
+    }
+  ],
+  "outputs": [
+    {
+      "id": "exportSettings",
+      "type": "text",
+      "label": "Export Settings",
+      "source": "getExportSettings"
+    }
+  ]
+}

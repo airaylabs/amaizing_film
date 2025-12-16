@@ -1,0 +1,67 @@
+{
+  "name": "Character Transform",
+  "description": "Transform photos into character designs (Whisk-style)",
+  "version": "1.0",
+  "author": "raymAIzing film",
+  "category": "Production - Image",
+  "icon": "🔄",
+  "inputs": [
+    {
+      "id": "sourceImage",
+      "type": "image",
+      "label": "Reference Photo",
+      "required": true
+    },
+    {
+      "id": "transformation",
+      "type": "text",
+      "label": "Transformation Description",
+      "multiline": true,
+      "placeholder": "Transform into a cyberpunk warrior with neon armor..."
+    },
+    {
+      "id": "style",
+      "type": "select",
+      "label": "Output Style",
+      "options": ["Photorealistic", "Cinematic", "Anime/Manga", "Digital Art", "Fantasy Art", "3D Render"]
+    },
+    {
+      "id": "expression",
+      "type": "select",
+      "label": "Expression",
+      "options": ["Neutral", "Happy/Smiling", "Sad/Tearful", "Angry/Furious", "Surprised", "Scared", "Determined"]
+    },
+    {
+      "id": "lighting",
+      "type": "select",
+      "label": "Lighting",
+      "options": ["Natural Daylight", "Golden Hour", "Studio Lighting", "Dramatic Side Light", "Neon/Cyberpunk", "Moonlight"]
+    },
+    {
+      "id": "mood",
+      "type": "select",
+      "label": "Mood",
+      "options": ["Epic/Grand", "Mysterious", "Tense/Suspenseful", "Romantic", "Action/Intense", "Horror/Dark"]
+    }
+  ],
+  "steps": [
+    {
+      "id": "transformCharacter",
+      "type": "imagen",
+      "model": "imagen-3",
+      "mode": "edit",
+      "sourceImage": "{{sourceImage}}",
+      "prompt": "Transform this person: {{transformation}}. Style: {{style}}. Expression: {{expression}}. Lighting: {{lighting}}. Mood: {{mood}}. Maintain face similarity, highly detailed transformation, professional quality.",
+      "preserveFace": true,
+      "numberOfImages": 4
+    }
+  ],
+  "outputs": [
+    {
+      "id": "transformedImages",
+      "type": "imageGallery",
+      "label": "Transformed Characters",
+      "source": "transformCharacter"
+    }
+  ]
+}

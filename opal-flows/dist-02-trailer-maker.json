@@ -1,0 +1,58 @@
+{
+  "name": "Trailer Maker",
+  "description": "Generate movie trailers from synopsis",
+  "version": "1.0",
+  "author": "raymAIzing film",
+  "category": "Distribution",
+  "icon": "🎥",
+  "inputs": [
+    {
+      "id": "synopsis",
+      "type": "text",
+      "label": "Full Synopsis",
+      "multiline": true,
+      "rows": 6,
+      "placeholder": "Complete story synopsis..."
+    },
+    {
+      "id": "trailerLength",
+      "type": "select",
+      "label": "Trailer Length",
+      "options": ["15 seconds (Teaser)", "30 seconds (Short)", "60 seconds (Standard)", "90 seconds (Extended)", "2-3 minutes (Full)"]
+    },
+    {
+      "id": "trailerType",
+      "type": "select",
+      "label": "Trailer Type",
+      "options": ["Teaser", "Theatrical", "TV Spot", "Character Spotlight", "Behind the Scenes", "Final Trailer"]
+    },
+    {
+      "id": "mood",
+      "type": "select",
+      "label": "Mood",
+      "options": ["Epic/Grand", "Mysterious", "Tense/Suspenseful", "Romantic", "Melancholic", "Action/Intense", "Horror/Dark", "Cheerful"]
+    },
+    {
+      "id": "targetAudience",
+      "type": "select",
+      "label": "Target Audience",
+      "options": ["Gen Z (13-24)", "Millennials (25-40)", "Gen X (41-56)", "Family/All Ages", "Young Adults", "Teens"]
+    }
+  ],
+  "steps": [
+    {
+      "id": "createTrailerPlan",
+      "type": "gemini",
+      "model": "gemini-2.0-flash",
+      "prompt": "Create a detailed trailer plan for:\n\nSYNOPSIS:\n{{synopsis}}\n\nTRAILER LENGTH: {{trailerLength}}\nTRAILER TYPE: {{trailerType}}\nMOOD: {{mood}}\nTARGET AUDIENCE: {{targetAudience}}\n\nProvide:\n\n## TRAILER STRUCTURE\n\n### OPENING (First 5 seconds)\n- Hook shot description\n- Opening text card (if any)\n- Sound design\n\n### ACT 1 - SETUP (Next 15-20%)\n- Shot 1: [Description, duration, dialogue/VO]\n- Shot 2: [Description, duration, dialogue/VO]\n- Shot 3: [Description, duration, dialogue/VO]\n- Music cue\n\n### ACT 2 - RISING ACTION (Next 40%)\n- Shot sequence with increasing intensity\n- Key dialogue moments\n- Music builds\n\n### ACT 3 - CLIMAX (Next 30%)\n- Most intense/exciting shots\n- Peak music moment\n- Key reveal or twist hint\n\n### ENDING (Final 10%)\n- Title card\n- Release date\n- Final hook shot\n- Call to action\n\n## SHOT-BY-SHOT BREAKDOWN\nFor each shot:\n- Shot number\n- Duration (seconds)\n- Visual description\n- Dialogue/VO text\n- Sound/music note\n- Transition type\n\n## MUSIC GUIDE\n- Opening music mood\n- Build points\n- Climax music\n- Ending sting\n\n## TEXT CARDS\n- All text that appears on screen\n- Font style suggestions\n- Timing\n\n## VOICEOVER SCRIPT\n- Full VO script if applicable\n- Delivery notes\n\n## THUMBNAIL SUGGESTION\n- Best frame for thumbnail\n- Text overlay suggestion"
+    }
+  ],
+  "outputs": [
+    {
+      "id": "trailerPlan",
+      "type": "text",
+      "label": "Trailer Plan",
+      "source": "createTrailerPlan"
+    }
+  ]
+}

@@ -1,0 +1,71 @@
+{
+  "name": "Scene Planner",
+  "description": "Plan detailed scenes with shots and dialogue",
+  "version": "1.0",
+  "author": "raymAIzing film",
+  "category": "Story Development",
+  "icon": "🎬",
+  "inputs": [
+    {
+      "id": "episodeContext",
+      "type": "text",
+      "label": "Episode Context",
+      "multiline": true,
+      "placeholder": "Brief episode summary..."
+    },
+    {
+      "id": "sceneNumber",
+      "type": "text",
+      "label": "Scene Number",
+      "placeholder": "1"
+    },
+    {
+      "id": "location",
+      "type": "text",
+      "label": "Location",
+      "placeholder": "INT. POLICE STATION - NIGHT"
+    },
+    {
+      "id": "characters",
+      "type": "text",
+      "label": "Characters in Scene",
+      "multiline": true,
+      "placeholder": "Maya, Jake, Captain Rodriguez"
+    },
+    {
+      "id": "objective",
+      "type": "text",
+      "label": "Scene Objective",
+      "multiline": true,
+      "placeholder": "Maya confronts Jake about the missing evidence"
+    },
+    {
+      "id": "emotion",
+      "type": "select",
+      "label": "Emotional Tone",
+      "options": ["Epic/Grand", "Mysterious", "Tense/Suspenseful", "Romantic", "Melancholic", "Action/Intense", "Peaceful/Serene", "Horror/Dark", "Cheerful"]
+    },
+    {
+      "id": "duration",
+      "type": "select",
+      "label": "Scene Duration",
+      "options": ["30 seconds", "1 minute", "2 minutes", "3 minutes", "5 minutes", "10 minutes"]
+    }
+  ],
+  "steps": [
+    {
+      "id": "planScene",
+      "type": "gemini",
+      "model": "gemini-2.0-flash",
+      "prompt": "Plan Scene {{sceneNumber}} in detail:\n\nEPISODE CONTEXT: {{episodeContext}}\nLOCATION: {{location}}\nCHARACTERS: {{characters}}\nOBJECTIVE: {{objective}}\nTONE: {{emotion}}\nDURATION: {{duration}}\n\nGenerate:\n\n## SCENE HEADING\n{{location}}\n\n## OPENING\n- Action/description (what we see)\n- Atmosphere setup\n\n## DIALOGUE\nWrite the full dialogue with:\n- Character name\n- Dialogue line\n- (Subtext note) - what they really mean\n- [Action] - physical actions during dialogue\n\n## KEY BEATS\n1. Opening beat - how scene starts\n2. Rising tension - conflict builds\n3. Turning point - something changes\n4. Resolution/cliffhanger - how it ends\n\n## SHOT LIST\n| Shot # | Type | Description | Duration |\n|--------|------|-------------|----------|\n| 1 | Wide | Establishing shot | 3s |\n[Continue with 5-10 shots]\n\n## VISUAL NOTES\n- Lighting setup\n- Color mood\n- Camera movement suggestions\n\n## AUDIO NOTES\n- Dialogue delivery style\n- Background music mood\n- Sound effects needed\n\n## PROPS & SET\n- Required props\n- Set dressing notes\n\n## TRANSITION\n- How to transition to next scene"
+    }
+  ],
+  "outputs": [
+    {
+      "id": "scenePlan",
+      "type": "text",
+      "label": "Scene Plan",
+      "source": "planScene"
+    }
+  ]
+}

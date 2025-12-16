@@ -1,0 +1,52 @@
+{
+  "name": "Social Clips",
+  "description": "Create viral short clips for social media",
+  "version": "1.0",
+  "author": "raymAIzing film",
+  "category": "Distribution",
+  "icon": "📱",
+  "inputs": [
+    {
+      "id": "sourceContent",
+      "type": "text",
+      "label": "Source Content Description",
+      "multiline": true,
+      "rows": 4,
+      "placeholder": "Describe the full video/episode..."
+    },
+    {
+      "id": "platform",
+      "type": "select",
+      "label": "Platform",
+      "options": ["TikTok (9:16)", "Instagram Reels (9:16)", "YouTube Shorts (9:16)", "YouTube (16:9)", "Twitter/X (16:9)", "Facebook (16:9)"]
+    },
+    {
+      "id": "clipCount",
+      "type": "text",
+      "label": "Number of Clips",
+      "placeholder": "5"
+    },
+    {
+      "id": "style",
+      "type": "select",
+      "label": "Edit Style",
+      "options": ["Fast Cuts", "Smooth Transitions", "Jump Cuts", "Montage", "Slow Motion Highlights", "Text Heavy", "Minimal"]
+    }
+  ],
+  "steps": [
+    {
+      "id": "createClipPlan",
+      "type": "gemini",
+      "model": "gemini-2.0-flash",
+      "prompt": "Create {{clipCount}} social media clips for {{platform}}:\n\nSOURCE CONTENT:\n{{sourceContent}}\n\nEDIT STYLE: {{style}}\n\nFor each clip provide:\n\n## CLIP 1\n- **Title**: Catchy title\n- **Duration**: Optimal length for platform\n- **Start Point**: Where to start in source\n- **End Point**: Where to end\n- **Hook (First 3 seconds)**: What grabs attention\n- **Caption**: Engaging caption text\n- **On-Screen Text**: Text overlays with timing\n- **Music/Sound**: Trending sound recommendation\n- **Hashtags**: 10-15 relevant hashtags\n- **Best Posting Time**: Day and time\n- **Viral Potential**: Score 1-10\n\n[Repeat for all clips]\n\n## POSTING SCHEDULE\n- Recommended order to post\n- Spacing between posts\n- Cross-platform strategy"
+    }
+  ],
+  "outputs": [
+    {
+      "id": "clipPlan",
+      "type": "text",
+      "label": "Social Clips Plan",
+      "source": "createClipPlan"
+    }
+  ]
+}

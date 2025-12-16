@@ -1,0 +1,77 @@
+{
+  "name": "Scene Generator",
+  "description": "Generate scene backgrounds and environments",
+  "version": "1.0",
+  "author": "raymAIzing film",
+  "category": "Production - Image",
+  "icon": "🎭",
+  "inputs": [
+    {
+      "id": "description",
+      "type": "text",
+      "label": "Scene Description",
+      "multiline": true,
+      "placeholder": "A cyberpunk city street at night with neon signs..."
+    },
+    {
+      "id": "locationType",
+      "type": "select",
+      "label": "Location Type",
+      "options": ["Urban - City Street", "Urban - Alley", "Urban - Rooftop", "Interior - Home", "Interior - Office", "Nature - Forest", "Nature - Beach", "Nature - Mountain", "Sci-Fi - Spaceship", "Fantasy - Castle", "Post-Apocalyptic"]
+    },
+    {
+      "id": "timeOfDay",
+      "type": "select",
+      "label": "Time of Day",
+      "options": ["Dawn", "Morning", "Midday", "Afternoon", "Golden Hour", "Sunset", "Blue Hour", "Night", "Midnight"]
+    },
+    {
+      "id": "weather",
+      "type": "select",
+      "label": "Weather",
+      "options": ["Clear/Sunny", "Cloudy", "Rainy", "Heavy Rain", "Foggy/Misty", "Snowy", "Stormy"]
+    },
+    {
+      "id": "mood",
+      "type": "select",
+      "label": "Mood",
+      "options": ["Epic/Grand", "Mysterious", "Tense/Suspenseful", "Romantic", "Melancholic", "Action/Intense", "Peaceful/Serene", "Horror/Dark"]
+    },
+    {
+      "id": "style",
+      "type": "select",
+      "label": "Style",
+      "options": ["Photorealistic", "Cinematic", "Anime/Manga", "Digital Art", "Concept Art", "Fantasy Art"]
+    },
+    {
+      "id": "shotType",
+      "type": "select",
+      "label": "Shot Type",
+      "options": ["Wide Establishing", "Long Shot", "Medium Shot", "Close-Up Detail"]
+    },
+    {
+      "id": "aspectRatio",
+      "type": "select",
+      "label": "Aspect Ratio",
+      "options": ["16:9 Landscape", "21:9 Cinematic", "9:16 Portrait", "1:1 Square"]
+    }
+  ],
+  "steps": [
+    {
+      "id": "generateScene",
+      "type": "imagen",
+      "model": "imagen-3",
+      "prompt": "{{locationType}}: {{description}}. Time: {{timeOfDay}}, {{weather}}. Mood: {{mood}}. {{style}} style, {{shotType}}, highly detailed environment, cinematic composition, no characters, professional concept art quality.",
+      "aspectRatio": "{{aspectRatio}}",
+      "numberOfImages": 4
+    }
+  ],
+  "outputs": [
+    {
+      "id": "sceneImages",
+      "type": "imageGallery",
+      "label": "Scene Backgrounds",
+      "source": "generateScene"
+    }
+  ]
+}

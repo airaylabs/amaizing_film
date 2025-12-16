@@ -1,0 +1,65 @@
+{
+  "name": "Transition Maker",
+  "description": "Create creative scene transitions",
+  "version": "1.0",
+  "author": "raymAIzing film",
+  "category": "Post-Production",
+  "icon": "🔀",
+  "inputs": [
+    {
+      "id": "sceneA",
+      "type": "text",
+      "label": "Scene A (From)",
+      "multiline": true,
+      "placeholder": "Close-up of eye with tear..."
+    },
+    {
+      "id": "sceneB",
+      "type": "text",
+      "label": "Scene B (To)",
+      "multiline": true,
+      "placeholder": "Wide shot of ocean waves..."
+    },
+    {
+      "id": "transitionType",
+      "type": "select",
+      "label": "Transition Type",
+      "options": ["Morph/Transform", "Match Cut", "Whip Pan", "Zoom Through", "Light Flash", "Dissolve", "Fade to Black", "Glitch", "Smoke/Fog", "Shatter"]
+    },
+    {
+      "id": "mood",
+      "type": "select",
+      "label": "Transition Mood",
+      "options": ["Epic/Grand", "Mysterious", "Tense/Suspenseful", "Romantic", "Melancholic", "Action/Intense", "Dreamy"]
+    },
+    {
+      "id": "speed",
+      "type": "select",
+      "label": "Speed",
+      "options": ["Slow", "Normal", "Fast"]
+    },
+    {
+      "id": "duration",
+      "type": "select",
+      "label": "Duration",
+      "options": ["1 second", "2 seconds", "3 seconds", "5 seconds"]
+    }
+  ],
+  "steps": [
+    {
+      "id": "createTransition",
+      "type": "veo",
+      "model": "veo-3",
+      "prompt": "Create {{transitionType}} transition between scenes. Scene A: {{sceneA}}. Scene B: {{sceneB}}. Mood: {{mood}}. Speed: {{speed}}. Smooth creative transition, cinematic quality, seamless blend between scenes.",
+      "duration": "{{duration}}"
+    }
+  ],
+  "outputs": [
+    {
+      "id": "transitionVideo",
+      "type": "video",
+      "label": "Transition Video",
+      "source": "createTransition"
+    }
+  ]
+}

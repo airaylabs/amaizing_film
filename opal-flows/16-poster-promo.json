@@ -1,0 +1,71 @@
+{
+  "name": "Poster & Promo",
+  "description": "Create movie posters and promotional materials",
+  "version": "1.0",
+  "author": "raymAIzing film",
+  "category": "Distribution",
+  "icon": "🎬",
+  "inputs": [
+    {
+      "id": "title",
+      "type": "text",
+      "label": "Project Title",
+      "placeholder": "THE LAST DETECTIVE"
+    },
+    {
+      "id": "tagline",
+      "type": "text",
+      "label": "Tagline (optional)",
+      "placeholder": "Some secrets are worth dying for..."
+    },
+    {
+      "id": "concept",
+      "type": "text",
+      "label": "Poster Concept",
+      "multiline": true,
+      "placeholder": "A lone detective in rain, neon city behind..."
+    },
+    {
+      "id": "posterStyle",
+      "type": "select",
+      "label": "Poster Style",
+      "options": ["Hollywood Blockbuster", "Minimalist", "Illustrated", "Noir/Classic", "Horror", "Comedy", "Romance", "Action", "Sci-Fi", "Fantasy", "Anime"]
+    },
+    {
+      "id": "posterComposition",
+      "type": "select",
+      "label": "Composition",
+      "options": ["Character Centered", "Silhouette", "Floating Heads", "Action Scene", "Symbolic", "Montage"]
+    },
+    {
+      "id": "colorPalette",
+      "type": "select",
+      "label": "Color Palette",
+      "options": ["Vibrant", "Muted/Desaturated", "Warm Tones", "Cool Tones", "Teal & Orange", "Monochrome", "Neon"]
+    },
+    {
+      "id": "mood",
+      "type": "select",
+      "label": "Mood",
+      "options": ["Epic/Grand", "Mysterious", "Tense/Suspenseful", "Romantic", "Melancholic", "Action/Intense", "Horror/Dark"]
+    }
+  ],
+  "steps": [
+    {
+      "id": "generatePoster",
+      "type": "imagen",
+      "model": "imagen-3",
+      "prompt": "Movie poster for '{{title}}'. Tagline: {{tagline}}. {{concept}}. Style: {{posterStyle}}. Composition: {{posterComposition}}. Colors: {{colorPalette}}. Mood: {{mood}}. Professional movie poster, space for title at bottom, cinematic, highly detailed, theatrical release quality.",
+      "aspectRatio": "2:3",
+      "numberOfImages": 4
+    }
+  ],
+  "outputs": [
+    {
+      "id": "posters",
+      "type": "imageGallery",
+      "label": "Generated Posters",
+      "source": "generatePoster"
+    }
+  ]
+}

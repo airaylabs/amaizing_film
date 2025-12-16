@@ -1,0 +1,78 @@
+{
+  "name": "Storyboard Creator",
+  "description": "Generate storyboard frames from shot descriptions",
+  "version": "1.0",
+  "author": "raymAIzing film",
+  "category": "Pre-Production",
+  "icon": "📋",
+  "inputs": [
+    {
+      "id": "shotDesc",
+      "type": "text",
+      "label": "Shot Description",
+      "required": true,
+      "multiline": true,
+      "placeholder": "INT. COFFEE SHOP - DAY. Close-up of Maya looking worried..."
+    },
+    {
+      "id": "shotNumber",
+      "type": "text",
+      "label": "Shot Number",
+      "placeholder": "1"
+    },
+    {
+      "id": "sceneHeading",
+      "type": "text",
+      "label": "Scene Heading",
+      "placeholder": "INT. COFFEE SHOP - DAY"
+    },
+    {
+      "id": "shotType",
+      "type": "select",
+      "label": "Shot Type",
+      "options": ["ECU - Extreme Close-Up", "CU - Close-Up", "MCU - Medium Close-Up", "MS - Medium Shot", "MLS - Medium Long Shot", "LS - Long Shot", "ELS - Extreme Long Shot", "OTS - Over The Shoulder", "POV - Point of View", "Two Shot", "Wide Establishing"]
+    },
+    {
+      "id": "cameraAngle",
+      "type": "select",
+      "label": "Camera Angle",
+      "options": ["Eye Level", "Low Angle", "High Angle", "Birds Eye", "Worms Eye", "Dutch Angle", "Profile"]
+    },
+    {
+      "id": "style",
+      "type": "select",
+      "label": "Storyboard Style",
+      "options": ["Sketch", "Digital Art", "Cinematic", "Anime/Manga", "Comic Book", "Minimalist"]
+    }
+  ],
+  "steps": [
+    {
+      "id": "generatePrompt",
+      "type": "gemini",
+      "model": "gemini-2.0-flash",
+      "prompt": "Create an image generation prompt for this storyboard frame:\n\nShot #{{shotNumber}} - {{sceneHeading}}\n{{shotDesc}}\nShot Type: {{shotType}}\nCamera Angle: {{cameraAngle}}\nStyle: {{style}} storyboard\n\nOutput a detailed image prompt optimized for Imagen 3."
+    },
+    {
+      "id": "generateImage",
+      "type": "imagen",
+      "model": "imagen-3",
+      "prompt": "{{generatePrompt.output}}",
+      "aspectRatio": "16:9",
+      "style": "storyboard sketch"
+    }
+  ],
+  "outputs": [
+    {
+      "id": "storyboardFrame",
+      "type": "image",
+      "label": "Storyboard Frame",
+      "source": "generateImage"
+    },
+    {
+      "id": "promptUsed",
+      "type": "text",
+      "label": "Prompt Used",
+      "source": "generatePrompt"
+    }
+  ]
+}

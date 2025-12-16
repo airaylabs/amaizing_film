@@ -1,0 +1,76 @@
+{
+  "name": "World Builder",
+  "description": "Design locations and environments for your film",
+  "version": "1.0",
+  "author": "raymAIzing film",
+  "category": "Pre-Production",
+  "icon": "🌍",
+  "inputs": [
+    {
+      "id": "locationName",
+      "type": "text",
+      "label": "Location Name",
+      "placeholder": "Maya's Apartment"
+    },
+    {
+      "id": "locationType",
+      "type": "select",
+      "label": "Location Type",
+      "options": ["Urban - City Street", "Urban - Alley", "Urban - Rooftop", "Interior - Home", "Interior - Office", "Interior - Restaurant", "Nature - Forest", "Nature - Beach", "Nature - Mountain", "Nature - Desert", "Sci-Fi - Spaceship", "Sci-Fi - Alien Planet", "Fantasy - Castle", "Fantasy - Enchanted Forest", "Post-Apocalyptic"]
+    },
+    {
+      "id": "description",
+      "type": "text",
+      "label": "Description",
+      "multiline": true,
+      "placeholder": "A cramped detective apartment with case files on walls..."
+    },
+    {
+      "id": "timeOfDay",
+      "type": "select",
+      "label": "Time of Day",
+      "options": ["Dawn", "Morning", "Midday", "Afternoon", "Golden Hour", "Sunset", "Blue Hour", "Night", "Midnight"]
+    },
+    {
+      "id": "weather",
+      "type": "select",
+      "label": "Weather",
+      "options": ["Clear/Sunny", "Cloudy", "Rainy", "Heavy Rain", "Foggy/Misty", "Snowy", "Stormy", "Windy"]
+    },
+    {
+      "id": "mood",
+      "type": "select",
+      "label": "Mood",
+      "options": ["Epic/Grand", "Mysterious", "Tense/Suspenseful", "Romantic", "Melancholic", "Action/Intense", "Peaceful/Serene", "Horror/Dark", "Cheerful"]
+    },
+    {
+      "id": "style",
+      "type": "select",
+      "label": "Visual Style",
+      "options": ["Photorealistic", "Cinematic", "Anime/Manga", "Digital Art", "Concept Art", "Fantasy Art", "3D Render"]
+    }
+  ],
+  "steps": [
+    {
+      "id": "generatePrompt",
+      "type": "template",
+      "template": "{{locationType}}: {{locationName}}. {{description}}. Time: {{timeOfDay}}, {{weather}}. Mood: {{mood}}. {{style}} style, highly detailed environment design, cinematic composition, wide establishing shot, no characters, professional concept art quality"
+    },
+    {
+      "id": "generateLocation",
+      "type": "imagen",
+      "model": "imagen-3",
+      "prompt": "{{generatePrompt.output}}",
+      "aspectRatio": "16:9",
+      "numberOfImages": 4
+    }
+  ],
+  "outputs": [
+    {
+      "id": "locationDesigns",
+      "type": "imageGallery",
+      "label": "Location Designs",
+      "source": "generateLocation"
+    }
+  ]
+}

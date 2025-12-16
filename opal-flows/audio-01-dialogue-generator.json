@@ -1,0 +1,77 @@
+{
+  "name": "Dialogue Generator",
+  "description": "Generate character voice lines with AI text-to-speech",
+  "version": "1.0",
+  "author": "raymAIzing film",
+  "category": "Production - Audio",
+  "icon": "🎙️",
+  "inputs": [
+    {
+      "id": "character",
+      "type": "text",
+      "label": "Character Name",
+      "placeholder": "Maya"
+    },
+    {
+      "id": "voiceType",
+      "type": "select",
+      "label": "Voice Type",
+      "options": ["Deep Male", "Warm Male", "Young Male", "Deep Female", "Warm Female", "Young Female", "Child", "Elderly Male", "Elderly Female", "Narrator"]
+    },
+    {
+      "id": "emotion",
+      "type": "select",
+      "label": "Emotion",
+      "options": ["Neutral", "Happy", "Sad", "Angry", "Surprised", "Scared", "Determined", "Confused", "Loving", "Excited"]
+    },
+    {
+      "id": "dialogue",
+      "type": "text",
+      "label": "Dialogue Text",
+      "multiline": true,
+      "rows": 4,
+      "placeholder": "The exact words the character says..."
+    },
+    {
+      "id": "context",
+      "type": "text",
+      "label": "Scene Context",
+      "multiline": true,
+      "placeholder": "Tense confrontation, whispered secret..."
+    },
+    {
+      "id": "accent",
+      "type": "select",
+      "label": "Accent",
+      "options": ["American", "British", "Australian", "Irish", "Scottish", "French", "German", "Spanish", "Italian", "Japanese", "Korean", "Indian", "Neutral"]
+    },
+    {
+      "id": "speed",
+      "type": "select",
+      "label": "Speaking Speed",
+      "options": ["Very Slow", "Slow", "Normal", "Fast", "Very Fast"]
+    }
+  ],
+  "steps": [
+    {
+      "id": "generateVoice",
+      "type": "tts",
+      "model": "google-tts-wavenet",
+      "text": "{{dialogue}}",
+      "voice": "{{voiceType}}",
+      "emotion": "{{emotion}}",
+      "speed": "{{speed}}",
+      "accent": "{{accent}}",
+      "ssml": true,
+      "prompt": "Character {{character}} speaking with {{emotion}} emotion. Context: {{context}}. Natural, emotionally authentic voice performance with appropriate pauses, emphasis, and breathing."
+    }
+  ],
+  "outputs": [
+    {
+      "id": "voiceAudio",
+      "type": "audio",
+      "label": "Generated Voice",
+      "source": "generateVoice"
+    }
+  ]
+}

@@ -1,0 +1,64 @@
+{
+  "name": "Idea Generator",
+  "description": "Generate unique story concepts with AI",
+  "version": "1.0",
+  "author": "raymAIzing film",
+  "category": "Ideation",
+  "icon": "💡",
+  "inputs": [
+    {
+      "id": "genre",
+      "type": "select",
+      "label": "Genre",
+      "options": ["Drama", "Thriller", "Horror", "Comedy", "Romance", "Action", "Sci-Fi", "Fantasy", "Mystery", "Adventure"]
+    },
+    {
+      "id": "tone",
+      "type": "select",
+      "label": "Tone",
+      "options": ["Epic/Grand", "Mysterious", "Tense/Suspenseful", "Romantic", "Melancholic", "Action/Intense", "Peaceful/Serene", "Horror/Dark", "Cheerful"]
+    },
+    {
+      "id": "setting",
+      "type": "select",
+      "label": "Setting",
+      "options": ["Urban - City", "Rural - Countryside", "Nature - Forest", "Nature - Beach", "Sci-Fi - Space", "Fantasy - Medieval", "Post-Apocalyptic", "Historical"]
+    },
+    {
+      "id": "targetAudience",
+      "type": "select",
+      "label": "Target Audience",
+      "options": ["Gen Z (13-24)", "Millennials (25-40)", "Gen X (41-56)", "Family/All Ages", "Young Adults", "Teens"]
+    },
+    {
+      "id": "theme",
+      "type": "text",
+      "label": "Theme/Message",
+      "multiline": true,
+      "placeholder": "Redemption, love conquers all, coming of age..."
+    },
+    {
+      "id": "constraints",
+      "type": "text",
+      "label": "Constraints",
+      "multiline": true,
+      "placeholder": "Low budget, single location, 2 actors max..."
+    }
+  ],
+  "steps": [
+    {
+      "id": "generateIdeas",
+      "type": "gemini",
+      "model": "gemini-2.0-flash",
+      "prompt": "Generate 5 unique story concepts:\n\nGenre: {{genre}}\nTone: {{tone}}\nSetting: {{setting}}\nTarget Audience: {{targetAudience}}\nTheme: {{theme}}\nConstraints: {{constraints}}\n\nFor each concept provide:\n\n## CONCEPT 1\n- **Title**: [Catchy title]\n- **Logline**: [One sentence hook]\n- **Synopsis**: [3-4 sentences]\n- **Main Characters**:\n  - Character 1: Name, role, brief description\n  - Character 2: Name, role, brief description\n- **Unique Hook**: What makes this different\n- **Viral Potential**: Score 1-10 with explanation\n- **Why It Works**: For the target audience\n\n[Repeat for concepts 2-5]\n\n## RECOMMENDATION\nWhich concept has the highest potential and why."
+    }
+  ],
+  "outputs": [
+    {
+      "id": "storyIdeas",
+      "type": "text",
+      "label": "Story Ideas",
+      "source": "generateIdeas"
+    }
+  ]
+}

@@ -1,0 +1,73 @@
+{
+  "name": "Image to Video Pro",
+  "description": "Animate images into video using VEO 3",
+  "version": "1.0",
+  "author": "raymAIzing film",
+  "category": "Production - Video",
+  "icon": "✨",
+  "inputs": [
+    {
+      "id": "sourceImage",
+      "type": "image",
+      "label": "Source Image",
+      "required": true
+    },
+    {
+      "id": "motion",
+      "type": "text",
+      "label": "Motion Description",
+      "multiline": true,
+      "placeholder": "Person slowly smiles, hair flows in wind..."
+    },
+    {
+      "id": "motionIntensity",
+      "type": "select",
+      "label": "Motion Intensity",
+      "options": ["Minimal", "Subtle", "Moderate", "Dynamic", "Dramatic"]
+    },
+    {
+      "id": "camera",
+      "type": "select",
+      "label": "Camera Effect",
+      "options": ["Static", "Slow Zoom In", "Slow Zoom Out", "Pan Left", "Pan Right", "Orbit", "Parallax"]
+    },
+    {
+      "id": "speed",
+      "type": "select",
+      "label": "Motion Speed",
+      "options": ["Slow Motion", "Normal Speed", "Fast"]
+    },
+    {
+      "id": "duration",
+      "type": "select",
+      "label": "Duration",
+      "options": ["3 seconds", "5 seconds", "8 seconds", "10 seconds"]
+    },
+    {
+      "id": "aspectRatio",
+      "type": "select",
+      "label": "Output Ratio",
+      "options": ["16:9 Landscape", "9:16 Portrait", "1:1 Square"]
+    }
+  ],
+  "steps": [
+    {
+      "id": "animateImage",
+      "type": "veo",
+      "model": "veo-3",
+      "mode": "image-to-video",
+      "sourceImage": "{{sourceImage}}",
+      "prompt": "Animate: {{motion}}. Motion intensity: {{motionIntensity}}. Camera: {{camera}}. Speed: {{speed}}. Smooth natural animation, maintain image quality, cinematic motion.",
+      "duration": "{{duration}}",
+      "aspectRatio": "{{aspectRatio}}"
+    }
+  ],
+  "outputs": [
+    {
+      "id": "animatedVideo",
+      "type": "video",
+      "label": "Animated Video",
+      "source": "animateImage"
+    }
+  ]
+}

@@ -1,0 +1,73 @@
+{
+  "name": "Dialogue Animator",
+  "description": "Animate talking characters with lip sync",
+  "version": "1.0",
+  "author": "raymAIzing film",
+  "category": "Production - Video",
+  "icon": "🗣️",
+  "inputs": [
+    {
+      "id": "characterImage",
+      "type": "image",
+      "label": "Character Image",
+      "required": true
+    },
+    {
+      "id": "dialogue",
+      "type": "text",
+      "label": "Dialogue Text",
+      "multiline": true,
+      "placeholder": "What the character is saying..."
+    },
+    {
+      "id": "speakingStyle",
+      "type": "select",
+      "label": "Speaking Style",
+      "options": ["Normal Conversation", "Whispering", "Shouting", "Emotional/Crying", "Laughing", "Angry", "Nervous", "Confident"]
+    },
+    {
+      "id": "expression",
+      "type": "select",
+      "label": "Expression",
+      "options": ["Neutral", "Happy/Smiling", "Sad/Tearful", "Angry/Furious", "Surprised", "Scared", "Determined"]
+    },
+    {
+      "id": "headMovement",
+      "type": "select",
+      "label": "Head Movement",
+      "options": ["Minimal", "Subtle Nods", "Natural", "Expressive", "Shaking No", "Nodding Yes"]
+    },
+    {
+      "id": "eyeMovement",
+      "type": "select",
+      "label": "Eye Movement",
+      "options": ["Looking at Camera", "Looking Away", "Looking Down", "Looking Up", "Shifting", "Intense Stare"]
+    },
+    {
+      "id": "duration",
+      "type": "select",
+      "label": "Duration",
+      "options": ["3 seconds", "5 seconds", "8 seconds", "10 seconds"]
+    }
+  ],
+  "steps": [
+    {
+      "id": "animateDialogue",
+      "type": "veo",
+      "model": "veo-3",
+      "mode": "image-to-video",
+      "sourceImage": "{{characterImage}}",
+      "prompt": "Animate character speaking: '{{dialogue}}'. Speaking style: {{speakingStyle}}. Expression: {{expression}}. Head movement: {{headMovement}}. Eye movement: {{eyeMovement}}. Natural talking animation, realistic lip sync, maintain character likeness.",
+      "duration": "{{duration}}",
+      "lipSync": true
+    }
+  ],
+  "outputs": [
+    {
+      "id": "talkingVideo",
+      "type": "video",
+      "label": "Talking Character Video",
+      "source": "animateDialogue"
+    }
+  ]
+}

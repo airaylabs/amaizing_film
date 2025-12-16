@@ -1,0 +1,79 @@
+{
+  "name": "Text to Image Pro",
+  "description": "Generate high-quality images from text descriptions",
+  "version": "1.0",
+  "author": "raymAIzing film",
+  "category": "Production - Image",
+  "icon": "🎨",
+  "inputs": [
+    {
+      "id": "subject",
+      "type": "text",
+      "label": "Image Description",
+      "required": true,
+      "multiline": true,
+      "placeholder": "A samurai warrior standing on a cliff at sunset..."
+    },
+    {
+      "id": "style",
+      "type": "select",
+      "label": "Style",
+      "options": ["Photorealistic", "Cinematic", "Anime/Manga", "Digital Art", "Oil Painting", "Watercolor", "Concept Art", "Fantasy Art", "Comic Book", "3D Render"]
+    },
+    {
+      "id": "lighting",
+      "type": "select",
+      "label": "Lighting",
+      "options": ["Natural Daylight", "Golden Hour", "Blue Hour", "Studio Lighting", "Dramatic Side Light", "Neon/Cyberpunk", "Backlit/Silhouette", "Moonlight"]
+    },
+    {
+      "id": "mood",
+      "type": "select",
+      "label": "Mood",
+      "options": ["Epic/Grand", "Mysterious", "Tense/Suspenseful", "Romantic", "Melancholic", "Action/Intense", "Peaceful/Serene", "Horror/Dark", "Cheerful"]
+    },
+    {
+      "id": "colorPalette",
+      "type": "select",
+      "label": "Color Palette",
+      "options": ["Vibrant", "Muted/Desaturated", "Warm Tones", "Cool Tones", "Teal & Orange", "Monochrome", "Pastel", "Neon"]
+    },
+    {
+      "id": "cameraAngle",
+      "type": "select",
+      "label": "Camera Angle",
+      "options": ["Eye Level", "Low Angle", "High Angle", "Birds Eye", "Worms Eye", "Dutch Angle", "Profile"]
+    },
+    {
+      "id": "aspectRatio",
+      "type": "select",
+      "label": "Aspect Ratio",
+      "options": ["16:9 Landscape", "9:16 Portrait", "1:1 Square", "21:9 Cinematic", "4:3 Classic"]
+    },
+    {
+      "id": "negative",
+      "type": "text",
+      "label": "Avoid (Negative Prompt)",
+      "placeholder": "blurry, watermark, text, low quality..."
+    }
+  ],
+  "steps": [
+    {
+      "id": "generateImage",
+      "type": "imagen",
+      "model": "imagen-3",
+      "prompt": "{{subject}}. {{style}} style, {{lighting}} lighting, {{mood}} atmosphere, {{colorPalette}} colors, {{cameraAngle}} angle, highly detailed, 8K quality, professional photography",
+      "negativePrompt": "{{negative}}",
+      "aspectRatio": "{{aspectRatio}}",
+      "numberOfImages": 4
+    }
+  ],
+  "outputs": [
+    {
+      "id": "generatedImages",
+      "type": "imageGallery",
+      "label": "Generated Images",
+      "source": "generateImage"
+    }
+  ]
+}

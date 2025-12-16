@@ -1,0 +1,90 @@
+{
+  "name": "Text to Video Pro",
+  "description": "Generate cinematic video clips from text using VEO 3",
+  "version": "1.0",
+  "author": "raymAIzing film",
+  "category": "Production - Video",
+  "icon": "🎬",
+  "inputs": [
+    {
+      "id": "description",
+      "type": "text",
+      "label": "Video Scene Description",
+      "required": true,
+      "multiline": true,
+      "placeholder": "A woman walks through neon-lit Tokyo streets at night..."
+    },
+    {
+      "id": "style",
+      "type": "select",
+      "label": "Visual Style",
+      "options": ["Photorealistic", "Cinematic", "Anime/Manga", "Digital Art", "Concept Art", "Fantasy Art"]
+    },
+    {
+      "id": "shotType",
+      "type": "select",
+      "label": "Shot Type",
+      "options": ["Close-Up", "Medium Shot", "Long Shot", "Extreme Long Shot", "Over The Shoulder", "POV", "Wide Establishing"]
+    },
+    {
+      "id": "camera",
+      "type": "select",
+      "label": "Camera Movement",
+      "options": ["Static", "Pan Left", "Pan Right", "Tilt Up", "Tilt Down", "Zoom In", "Zoom Out", "Dolly Forward", "Dolly Back", "Tracking Shot", "Drone Shot", "Handheld"]
+    },
+    {
+      "id": "speed",
+      "type": "select",
+      "label": "Motion Speed",
+      "options": ["Slow Motion", "Normal Speed", "Fast/Timelapse"]
+    },
+    {
+      "id": "duration",
+      "type": "select",
+      "label": "Duration",
+      "options": ["3 seconds", "5 seconds", "8 seconds", "10 seconds"]
+    },
+    {
+      "id": "mood",
+      "type": "select",
+      "label": "Mood",
+      "options": ["Epic/Grand", "Mysterious", "Tense/Suspenseful", "Romantic", "Melancholic", "Action/Intense", "Peaceful/Serene"]
+    },
+    {
+      "id": "lighting",
+      "type": "select",
+      "label": "Lighting",
+      "options": ["Natural Daylight", "Golden Hour", "Blue Hour", "Neon/Cyberpunk", "Moonlight", "Dramatic"]
+    },
+    {
+      "id": "colorGrade",
+      "type": "select",
+      "label": "Color Grade",
+      "options": ["Natural", "Teal & Orange", "Warm/Golden", "Cool/Blue", "Desaturated", "Vintage", "Neon/Vibrant"]
+    },
+    {
+      "id": "aspectRatio",
+      "type": "select",
+      "label": "Aspect Ratio",
+      "options": ["16:9 Landscape", "9:16 Portrait", "1:1 Square", "21:9 Cinematic"]
+    }
+  ],
+  "steps": [
+    {
+      "id": "generateVideo",
+      "type": "veo",
+      "model": "veo-3",
+      "prompt": "Cinematic video: {{description}}. Style: {{style}}. Shot Type: {{shotType}}. Camera: {{camera}}. Speed: {{speed}}. Lighting: {{lighting}}. Color Grade: {{colorGrade}}. Mood: {{mood}}. Smooth, cinematic quality, professional film production.",
+      "duration": "{{duration}}",
+      "aspectRatio": "{{aspectRatio}}"
+    }
+  ],
+  "outputs": [
+    {
+      "id": "generatedVideo",
+      "type": "video",
+      "label": "Generated Video",
+      "source": "generateVideo"
+    }
+  ]
+}

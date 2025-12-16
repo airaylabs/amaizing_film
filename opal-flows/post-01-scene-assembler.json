@@ -1,0 +1,52 @@
+{
+  "name": "Scene Assembler",
+  "description": "Combine scenes into episodes with optimal pacing",
+  "version": "1.0",
+  "author": "raymAIzing film",
+  "category": "Post-Production",
+  "icon": "🎬",
+  "inputs": [
+    {
+      "id": "episodeNumber",
+      "type": "text",
+      "label": "Episode Number",
+      "placeholder": "1"
+    },
+    {
+      "id": "sceneList",
+      "type": "text",
+      "label": "Scene List",
+      "multiline": true,
+      "rows": 6,
+      "placeholder": "Scene 1: INT. OFFICE - DAY\nScene 2: EXT. STREET - NIGHT..."
+    },
+    {
+      "id": "pacing",
+      "type": "select",
+      "label": "Overall Pacing",
+      "options": ["Very Slow/Contemplative", "Slow", "Moderate", "Fast", "Very Fast/Frenetic", "Variable"]
+    },
+    {
+      "id": "totalDuration",
+      "type": "text",
+      "label": "Target Duration",
+      "placeholder": "22 minutes"
+    }
+  ],
+  "steps": [
+    {
+      "id": "assembleEpisode",
+      "type": "gemini",
+      "model": "gemini-2.0-flash",
+      "prompt": "Assemble Episode {{episodeNumber}}:\n\nSCENES:\n{{sceneList}}\n\nPACING: {{pacing}}\nTARGET DURATION: {{totalDuration}}\n\nProvide:\n\n## OPTIMAL SCENE ORDER\n| Order | Scene | Duration | Cumulative |\n|-------|-------|----------|------------|\n| 1 | Scene X | 2:30 | 2:30 |\n[Continue for all scenes]\n\n## TRANSITION RECOMMENDATIONS\nBetween each scene:\n- Scene X → Scene Y: [Transition type] - [Reason]\n\n## PACING ADJUSTMENTS\n- Scenes to extend: [List with reasons]\n- Scenes to trim: [List with reasons]\n- Scenes to reorder: [If any]\n\n## CUT POINTS\nFor each scene:\n- Scene X: Cut at [timestamp] because [reason]\n\n## MUSIC CUE PLACEMENT\n| Timecode | Music Cue | Mood | Duration |\n|----------|-----------|------|----------|\n| 0:00 | Opening theme | Epic | 0:30 |\n[Continue]\n\n## TITLE CARD/CREDITS\n- Opening title: [Timing and style]\n- End credits: [Timing and style]\n\n## EPISODE FLOW DIAGRAM\n[Visual representation of emotional arc]\n\n## FINAL RUNTIME\n- Estimated total: [Time]\n- Adjustment needed: [If any]"
+    }
+  ],
+  "outputs": [
+    {
+      "id": "assemblyPlan",
+      "type": "text",
+      "label": "Assembly Plan",
+      "source": "assembleEpisode"
+    }
+  ]
+}

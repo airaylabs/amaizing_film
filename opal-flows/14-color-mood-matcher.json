@@ -1,0 +1,66 @@
+{
+  "name": "Color Mood Matcher",
+  "description": "Match colors and mood across scenes",
+  "version": "1.0",
+  "author": "raymAIzing film",
+  "category": "Post-Production",
+  "icon": "🎨",
+  "inputs": [
+    {
+      "id": "sourceImage",
+      "type": "image",
+      "label": "Image to Transform",
+      "required": true
+    },
+    {
+      "id": "referenceImage",
+      "type": "image",
+      "label": "Reference Image (optional)"
+    },
+    {
+      "id": "targetDesc",
+      "type": "text",
+      "label": "Target Look Description",
+      "multiline": true,
+      "placeholder": "Describe the color/mood you want..."
+    },
+    {
+      "id": "colorGrade",
+      "type": "select",
+      "label": "Target Color Grade",
+      "options": ["Natural", "Teal & Orange", "Warm/Golden", "Cool/Blue", "Desaturated", "Vintage", "Neon/Vibrant", "Black & White"]
+    },
+    {
+      "id": "mood",
+      "type": "select",
+      "label": "Target Mood",
+      "options": ["Epic/Grand", "Mysterious", "Tense/Suspenseful", "Romantic", "Melancholic", "Action/Intense", "Peaceful/Serene", "Horror/Dark"]
+    },
+    {
+      "id": "lighting",
+      "type": "select",
+      "label": "Lighting Style",
+      "options": ["Natural Daylight", "Golden Hour", "Blue Hour", "Dramatic Side Light", "Neon/Cyberpunk", "Moonlight", "High Key", "Low Key"]
+    }
+  ],
+  "steps": [
+    {
+      "id": "colorMatch",
+      "type": "imagen",
+      "model": "imagen-3",
+      "mode": "edit",
+      "sourceImage": "{{sourceImage}}",
+      "referenceImage": "{{referenceImage}}",
+      "prompt": "Color grade this image: {{targetDesc}}. Color Grade: {{colorGrade}}. Mood: {{mood}}. Lighting: {{lighting}}. Match colors and atmosphere while preserving content, professional color grading, cinematic look.",
+      "preserveContent": true
+    }
+  ],
+  "outputs": [
+    {
+      "id": "colorMatchedImage",
+      "type": "image",
+      "label": "Color Matched Image",
+      "source": "colorMatch"
+    }
+  ]
+}
