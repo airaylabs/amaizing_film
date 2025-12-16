@@ -101,31 +101,17 @@ const TRANSLATIONS = {
     completionMeaning: 'Tanda ✓ berarti Anda sudah menyelesaikan langkah ini',
     opalLinkInfo: 'Link Opal hanya untuk membuka tool AI, tidak mempengaruhi progress',
     
-    // Workflow Steps
-    step1Name: 'Cari Ide',
-    step1Desc: 'Temukan ide cerita dari trend viral atau generate ide baru',
-    step1Tip: 'Optional: Gunakan jika belum punya ide cerita',
-    step2Name: 'Story Development',
-    step2Desc: 'Tulis synopsis, breakdown episode & scene - INI YANG PALING PENTING!',
-    step2Tip: 'Wajib: Synopsis akan mengisi otomatis semua tools lainnya',
-    step3Name: 'Pre-Production',
-    step3Desc: 'Buat treatment, storyboard, design karakter & lokasi',
-    step3Tip: 'Pilih scene/karakter untuk auto-fill',
-    step4Name: 'Produksi Gambar',
-    step4Desc: 'Generate gambar untuk setiap scene dan karakter',
-    step4Tip: 'Gunakan Opal untuk generate dengan AI',
-    step5Name: 'Produksi Video',
-    step5Desc: 'Generate video untuk setiap scene dengan VEO 3',
-    step5Tip: 'Text to Video dan Image to Video',
-    step6Name: 'Produksi Audio',
-    step6Desc: 'Generate dialog, musik, dan sound effect',
-    step6Tip: 'Dialog otomatis dari scene script',
-    step7Name: 'Post-Production',
-    step7Desc: 'Edit, gabungkan scene, pilih momen viral',
-    step7Tip: 'Viral Picker akan pilih momen terbaik',
-    step8Name: 'Distribution',
-    step8Desc: 'Buat thumbnail, poster, trailer untuk publish',
-    step8Tip: 'Siap publish ke platform!'
+    // Insight (not a phase)
+    insightTitle: 'Cari Ide',
+    insightDesc: 'Inspirasi & riset ide cerita (opsional)',
+    
+    // Synopsis is CORE
+    synopsisCore: '⭐ CORE: Isi synopsis, SEMUA otomatis terisi!',
+    autoFillEnabled: '🔗 Auto-fill dari Synopsis aktif',
+    autoFillTip: 'Otomatis terisi dari Synopsis',
+    
+    // Phase descriptions
+    phaseProduction: 'Fase Produksi'
   },
   
   en: {
@@ -227,31 +213,17 @@ const TRANSLATIONS = {
     completionMeaning: 'The ✓ mark means you have completed this step',
     opalLinkInfo: 'Opal link is only for opening AI tool, does not affect progress',
     
-    // Workflow Steps
-    step1Name: 'Find Ideas',
-    step1Desc: 'Discover story ideas from viral trends or generate new ones',
-    step1Tip: 'Optional: Use if you don\'t have a story idea yet',
-    step2Name: 'Story Development',
-    step2Desc: 'Write synopsis, breakdown episodes & scenes - THIS IS THE MOST IMPORTANT!',
-    step2Tip: 'Required: Synopsis will auto-fill all other tools',
-    step3Name: 'Pre-Production',
-    step3Desc: 'Create treatment, storyboard, character & location design',
-    step3Tip: 'Select scene/character for auto-fill',
-    step4Name: 'Image Production',
-    step4Desc: 'Generate images for each scene and character',
-    step4Tip: 'Use Opal to generate with AI',
-    step5Name: 'Video Production',
-    step5Desc: 'Generate videos for each scene with VEO 3',
-    step5Tip: 'Text to Video and Image to Video',
-    step6Name: 'Audio Production',
-    step6Desc: 'Generate dialogue, music, and sound effects',
-    step6Tip: 'Dialogue auto-generated from scene script',
-    step7Name: 'Post-Production',
-    step7Desc: 'Edit, combine scenes, pick viral moments',
-    step7Tip: 'Viral Picker will select the best moments',
-    step8Name: 'Distribution',
-    step8Desc: 'Create thumbnails, posters, trailers for publishing',
-    step8Tip: 'Ready to publish to platforms!'
+    // Insight (not a phase)
+    insightTitle: 'Find Ideas',
+    insightDesc: 'Story inspiration & research (optional)',
+    
+    // Synopsis is CORE
+    synopsisCore: '⭐ CORE: Fill synopsis, EVERYTHING auto-fills!',
+    autoFillEnabled: '🔗 Auto-fill from Synopsis active',
+    autoFillTip: 'Auto-filled from Synopsis',
+    
+    // Phase descriptions
+    phaseProduction: 'Production Phases'
   }
 };
 

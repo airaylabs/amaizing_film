@@ -2,17 +2,99 @@
 // Celtx-Style Production Management with Proper Workflow Logic
 // FIXED: Checklist = User Completion, NOT Opal Upload Status
 
-// ============ WORKFLOW PHASES DEFINITION ============
-// Matches PHASES in data.js for consistency
+// ============ WORKFLOW STRUCTURE ============
+// INSIGHT: Optional tools for finding ideas (not part of production phases)
+const INSIGHT_TOOLS = {
+  id: 'insight',
+  name: { id: 'Cari Ide', en: 'Find Ideas' },
+  icon: '💡',
+  description: { id: 'Inspirasi & riset ide cerita', en: 'Story inspiration & research' },
+  tools: ['idea-01', 'idea-02', 'idea-03'],
+  isInsight: true // Not a production phase
+};
+
+// PRODUCTION PHASES: 7 phases, Synopsis is the CORE that auto-fills everything
 const WORKFLOW_PHASES = [
-  { id: 'ideation', step: 1, icon: '💡', tools: ['idea-01', 'idea-02', 'idea-03'], required: false },
-  { id: 'story-development', step: 2, icon: '📖', tools: ['story-01', 'story-02', 'story-03', 'story-04'], required: true, isCore: true },
-  { id: 'pre-production', step: 3, icon: '📝', tools: ['01', '02', '03', '04'], required: true },
-  { id: 'production-image', step: 4, icon: '🎨', tools: ['05', '06', '07'], required: true },
-  { id: 'production-video', step: 5, icon: '🎬', tools: ['08', '09', '10', '11'], required: true },
-  { id: 'production-audio', step: 6, icon: '🔊', tools: ['audio-01', 'audio-02', 'audio-03', 'audio-04'], required: true },
-  { id: 'post-production', step: 7, icon: '🎞️', tools: ['post-01', 'post-02', 'post-03', 'post-04', 'post-05', 'post-06'], required: true },
-  { id: 'distribution', step: 8, icon: '📢', tools: ['dist-01', 'dist-02', 'dist-03', 'dist-04'], required: false }
+  { 
+    id: 'synopsis', 
+    step: 1, 
+    icon: '📖', 
+    tools: ['story-01'], 
+    required: true, 
+    isCore: true,
+    name: { id: 'Synopsis Writer', en: 'Synopsis Writer' },
+    description: { id: 'Tulis synopsis - SEMUA akan otomatis terisi dari sini!', en: 'Write synopsis - EVERYTHING auto-fills from here!' }
+  },
+  { 
+    id: 'story-breakdown', 
+    step: 2, 
+    icon: '📑', 
+    tools: ['story-02', 'story-03', 'story-04'], 
+    required: true,
+    autoFillFrom: 'synopsis',
+    name: { id: 'Story Breakdown', en: 'Story Breakdown' },
+    description: { id: 'Episode, Scene, Character - otomatis dari Synopsis', en: 'Episode, Scene, Character - auto from Synopsis' }
+  },
+  { 
+    id: 'pre-production', 
+    step: 3, 
+    icon: '📝', 
+    tools: ['01', '02', '03', '04'], 
+    required: true,
+    autoFillFrom: 'synopsis',
+    name: { id: 'Pre-Production', en: 'Pre-Production' },
+    description: { id: 'Treatment, Storyboard, Design - otomatis dari Synopsis', en: 'Treatment, Storyboard, Design - auto from Synopsis' }
+  },
+  { 
+    id: 'production-image', 
+    step: 4, 
+    icon: '🎨', 
+    tools: ['05', '06', '07'], 
+    required: true,
+    autoFillFrom: 'synopsis',
+    name: { id: 'Produksi Gambar', en: 'Image Production' },
+    description: { id: 'Generate gambar - pilih scene/karakter', en: 'Generate images - select scene/character' }
+  },
+  { 
+    id: 'production-video', 
+    step: 5, 
+    icon: '🎬', 
+    tools: ['08', '09', '10', '11'], 
+    required: true,
+    autoFillFrom: 'synopsis',
+    name: { id: 'Produksi Video', en: 'Video Production' },
+    description: { id: 'Generate video dengan VEO 3', en: 'Generate video with VEO 3' }
+  },
+  { 
+    id: 'production-audio', 
+    step: 6, 
+    icon: '🔊', 
+    tools: ['audio-01', 'audio-02', 'audio-03', 'audio-04'], 
+    required: true,
+    autoFillFrom: 'synopsis',
+    name: { id: 'Produksi Audio', en: 'Audio Production' },
+    description: { id: 'Dialog, musik, SFX - otomatis dari scene', en: 'Dialogue, music, SFX - auto from scene' }
+  },
+  { 
+    id: 'post-production', 
+    step: 7, 
+    icon: '🎞️', 
+    tools: ['post-01', 'post-02', 'post-03', 'post-04', 'post-05', 'post-06'], 
+    required: true,
+    autoFillFrom: 'synopsis',
+    name: { id: 'Post-Production', en: 'Post-Production' },
+    description: { id: 'Edit, assembly, viral picker', en: 'Edit, assembly, viral picker' }
+  },
+  { 
+    id: 'distribution', 
+    step: 8, 
+    icon: '📢', 
+    tools: ['dist-01', 'dist-02', 'dist-03', 'dist-04'], 
+    required: false,
+    autoFillFrom: 'synopsis',
+    name: { id: 'Distribution', en: 'Distribution' },
+    description: { id: 'Thumbnail, poster, trailer', en: 'Thumbnail, poster, trailer' }
+  }
 ];
 
 // ============ APP STATE ============
@@ -330,17 +412,31 @@ function findPhase(appId) {
 }
 
 function getWorkflowPhaseName(phaseId) {
-  const names = {
-    'ideation': { id: 'Cari Ide', en: 'Find Ideas' },
-    'story-development': { id: 'Story Development', en: 'Story Development' },
-    'pre-production': { id: 'Pre-Production', en: 'Pre-Production' },
-    'production-image': { id: 'Produksi Gambar', en: 'Image Production' },
-    'production-video': { id: 'Produksi Video', en: 'Video Production' },
-    'production-audio': { id: 'Produksi Audio', en: 'Audio Production' },
-    'post-production': { id: 'Post-Production', en: 'Post-Production' },
-    'distribution': { id: 'Distribution', en: 'Distribution' }
-  };
-  return names[phaseId]?.[getLang()] || phaseId;
+  // Check if it's insight
+  if (phaseId === 'insight') {
+    return INSIGHT_TOOLS.name[getLang()] || INSIGHT_TOOLS.name.en;
+  }
+  
+  // Check workflow phases
+  const phase = WORKFLOW_PHASES.find(p => p.id === phaseId);
+  if (phase && phase.name) {
+    return phase.name[getLang()] || phase.name.en;
+  }
+  
+  return phaseId;
+}
+
+function getPhaseDescription(phaseId) {
+  if (phaseId === 'insight') {
+    return INSIGHT_TOOLS.description[getLang()] || INSIGHT_TOOLS.description.en;
+  }
+  
+  const phase = WORKFLOW_PHASES.find(p => p.id === phaseId);
+  if (phase && phase.description) {
+    return phase.description[getLang()] || phase.description.en;
+  }
+  
+  return '';
 }
 
 
@@ -575,7 +671,7 @@ function renderSidebar() {
   const nav = document.getElementById('sidebar-nav');
   const chars = state.characters.filter(c => !state.currentProject || c.project_id === state.currentProject);
   const locs = state.locations.filter(l => !state.currentProject || l.project_id === state.currentProject);
-  const hasBible = state.productionBible.synopsis && state.productionBible.synopsis.length > 0;
+  const hasSynopsis = state.productionBible.synopsis && state.productionBible.synopsis.length > 0;
   
   let html = `
     <div class="sidebar-item ${state.currentPage === 'dashboard' ? 'active' : ''} rounded-lg p-2 cursor-pointer mb-1 text-sm" onclick="navigateTo('dashboard')">
@@ -583,31 +679,68 @@ function renderSidebar() {
     </div>
   `;
   
-  // Project Status
+  // Project Status with Synopsis indicator
   if (state.currentProject) {
     const project = state.projects.find(p => p.id === state.currentProject);
     const completionPercent = getOverallCompletionPercent();
     html += `
-      <div class="mx-2 my-2 p-2 rounded-lg bg-cyan-500/10 border border-cyan-500/20">
+      <div class="mx-2 my-2 p-2 rounded-lg ${hasSynopsis ? 'bg-green-500/10 border-green-500/20' : 'bg-cyan-500/10 border-cyan-500/20'} border">
         <div class="flex items-center justify-between mb-1">
           <span class="text-xs font-medium truncate">${project?.name || 'Project'}</span>
-          <span class="text-[10px] text-cyan-400">${completionPercent}%</span>
+          <span class="text-[10px] ${hasSynopsis ? 'text-green-400' : 'text-cyan-400'}">${completionPercent}%</span>
         </div>
         <div class="h-1 bg-slate-700 rounded-full overflow-hidden">
-          <div class="h-full bg-cyan-500 transition-all" style="width: ${completionPercent}%"></div>
+          <div class="h-full ${hasSynopsis ? 'bg-green-500' : 'bg-cyan-500'} transition-all" style="width: ${completionPercent}%"></div>
         </div>
+        ${hasSynopsis ? `<p class="text-[9px] text-green-400 mt-1">📖 Synopsis Active - Auto-fill enabled</p>` : ''}
       </div>
     `;
   }
   
-  // Workflow Phases
-  html += `<div class="mt-3 mb-1 px-2 text-[10px] text-slate-500 uppercase tracking-wider">${t('phases')}</div>`;
+  // ============ INSIGHT SECTION (Not a phase, just for ideas) ============
+  html += `<div class="mt-3 mb-1 px-2 text-[10px] text-yellow-500 uppercase tracking-wider">💡 INSIGHT</div>`;
+  
+  const insightExpanded = state.expandedPhases.includes('insight') || INSIGHT_TOOLS.tools.includes(state.currentApp);
+  html += `
+    <div class="mb-0.5">
+      <div class="flex items-center justify-between p-2 rounded-lg cursor-pointer hover:bg-yellow-500/5 text-sm" 
+           onclick="togglePhase('insight')">
+        <span class="flex items-center gap-1.5">
+          <span class="text-sm">${INSIGHT_TOOLS.icon}</span>
+          <span class="text-xs text-yellow-400">${getWorkflowPhaseName('insight')}</span>
+        </span>
+        <span class="text-[10px] text-yellow-500/50">Optional</span>
+      </div>
+      <div id="phase-insight" class="${insightExpanded ? '' : 'hidden'} ml-3 border-l border-yellow-500/15 pl-1.5">
+        ${INSIGHT_TOOLS.tools.map(toolId => {
+          const tool = findApp(toolId);
+          if (!tool) return '';
+          const hasLink = getEffectiveOpalLink(toolId);
+          return `
+            <div class="sidebar-item ${state.currentApp === toolId ? 'active' : ''} rounded p-1.5 cursor-pointer text-xs flex items-center justify-between group" 
+                 onclick="navigateTo('app', '${toolId}')">
+              <span class="flex items-center gap-1.5 truncate">
+                <span>${tool.icon}</span>
+                <span class="truncate">${tool.name}</span>
+              </span>
+              ${hasLink ? `<a href="${hasLink}" target="_blank" onclick="event.stopPropagation()" class="opacity-0 group-hover:opacity-100 text-cyan-400 text-[10px]">↗</a>` : ''}
+            </div>
+          `;
+        }).join('')}
+      </div>
+    </div>
+  `;
+  
+  // ============ PRODUCTION PHASES (7 phases) ============
+  html += `<div class="mt-3 mb-1 px-2 text-[10px] text-cyan-500 uppercase tracking-wider">🎬 FASE PRODUKSI</div>`;
   
   WORKFLOW_PHASES.forEach(phase => {
     const isCompleted = isPhaseCompleted(phase.id);
     const isLocked = isPhaseLocked(phase.id);
     const completionPercent = getPhaseCompletionPercent(phase.id);
     const isExpanded = state.expandedPhases.includes(phase.id) || phase.tools.includes(state.currentApp);
+    const isCore = phase.isCore;
+    const hasAutoFill = phase.autoFillFrom && hasSynopsis;
     
     html += `
       <div class="mb-0.5">
@@ -616,6 +749,8 @@ function renderSidebar() {
           <span class="flex items-center gap-1.5">
             <span class="text-sm">${phase.icon}</span>
             <span class="text-xs">${getWorkflowPhaseName(phase.id)}</span>
+            ${isCore ? '<span class="text-yellow-400 text-[8px]">⭐</span>' : ''}
+            ${hasAutoFill ? '<span class="text-green-400 text-[8px]">🔗</span>' : ''}
             ${isCompleted ? '<span class="text-green-400 text-[10px]">✓</span>' : ''}
             ${isLocked ? '<span class="text-slate-500 text-[10px]">🔒</span>' : ''}
           </span>
@@ -627,12 +762,14 @@ function renderSidebar() {
             if (!tool) return '';
             const isToolDone = isToolCompleted(toolId);
             const hasLink = getEffectiveOpalLink(toolId);
+            const toolHasAutoFill = tool.autoPopulate && hasSynopsis;
             return `
               <div class="sidebar-item ${state.currentApp === toolId ? 'active' : ''} rounded p-1.5 cursor-pointer text-xs flex items-center justify-between group" 
                    onclick="navigateTo('app', '${toolId}')">
                 <span class="flex items-center gap-1.5 truncate">
                   <span>${tool.icon}</span>
                   <span class="truncate">${tool.name}</span>
+                  ${toolHasAutoFill ? '<span class="text-green-400 text-[8px]">🔗</span>' : ''}
                   ${isToolDone ? '<span class="text-green-400 text-[8px]">✓</span>' : ''}
                 </span>
                 ${hasLink ? `<a href="${hasLink}" target="_blank" onclick="event.stopPropagation()" class="opacity-0 group-hover:opacity-100 text-cyan-400 text-[10px]">↗</a>` : ''}
@@ -717,6 +854,7 @@ function renderDashboard() {
   const project = state.projects.find(p => p.id === state.currentProject);
   const currentStep = getCurrentWorkflowStep();
   const completionPercent = getOverallCompletionPercent();
+  const hasSynopsis = state.productionBible.synopsis && state.productionBible.synopsis.length > 0;
   
   return `
     <div class="w-full">
@@ -731,19 +869,64 @@ function renderDashboard() {
       <!-- Project Card -->
       ${project ? renderProjectCard(project) : renderNoProject()}
       
-      <!-- Workflow Progress -->
-      <div class="glass rounded-2xl p-6 mb-6 border-2 border-cyan-500/30">
+      <!-- INSIGHT SECTION (Optional - for finding ideas) -->
+      <div class="glass rounded-xl p-4 mb-4 border border-yellow-500/20 bg-yellow-500/5">
+        <div class="flex items-center justify-between mb-3">
+          <div class="flex items-center gap-2">
+            <span class="text-xl">💡</span>
+            <div>
+              <h3 class="font-semibold text-yellow-400">${getLang() === 'id' ? 'Cari Ide' : 'Find Ideas'}</h3>
+              <p class="text-xs text-slate-500">${getLang() === 'id' ? 'Inspirasi & riset (opsional)' : 'Inspiration & research (optional)'}</p>
+            </div>
+          </div>
+          <span class="text-xs text-yellow-500/50 bg-yellow-500/10 px-2 py-1 rounded">Optional</span>
+        </div>
+        <div class="flex flex-wrap gap-2">
+          ${INSIGHT_TOOLS.tools.map(toolId => {
+            const tool = findApp(toolId);
+            if (!tool) return '';
+            const hasLink = getEffectiveOpalLink(toolId);
+            return `
+              <button onclick="navigateTo('app', '${toolId}')" class="btn-secondary px-3 py-2 rounded-lg text-xs flex items-center gap-2 hover:bg-yellow-500/10">
+                <span>${tool.icon}</span>
+                <span>${tool.name}</span>
+                ${hasLink ? '<span class="text-cyan-400">↗</span>' : ''}
+              </button>
+            `;
+          }).join('')}
+        </div>
+      </div>
+      
+      <!-- PRODUCTION PHASES -->
+      <div class="glass rounded-2xl p-6 mb-6 border-2 ${hasSynopsis ? 'border-green-500/30' : 'border-cyan-500/30'}">
         <div class="flex items-center justify-between mb-4 flex-wrap gap-3">
           <div>
             <h2 class="text-lg font-bold flex items-center gap-2 flex-wrap">
-              ${t('workflowTitle')}
-              <span class="text-xs bg-cyan-500/20 text-cyan-400 px-2 py-1 rounded-full">${t('stepOf').replace('{current}', currentStep).replace('{total}', '8')}</span>
+              🎬 ${getLang() === 'id' ? 'Fase Produksi' : 'Production Phases'}
+              <span class="text-xs bg-cyan-500/20 text-cyan-400 px-2 py-1 rounded-full">Step ${currentStep}/8</span>
               <span class="text-xs bg-green-500/20 text-green-400 px-2 py-1 rounded-full">${completionPercent}%</span>
             </h2>
-            <p class="text-xs text-slate-400 mt-1">${t('workflowSubtitle')}</p>
+            <p class="text-xs text-slate-400 mt-1">${getLang() === 'id' ? 'Mulai dari Synopsis Writer - semua otomatis terisi!' : 'Start from Synopsis Writer - everything auto-fills!'}</p>
           </div>
           <button onclick="showWorkflowHelp()" class="btn-secondary px-3 py-1.5 rounded-lg text-xs">❓ ${t('helpTitle')}</button>
         </div>
+        
+        <!-- Synopsis Status -->
+        ${hasSynopsis ? `
+          <div class="mb-4 p-3 rounded-lg bg-green-500/10 border border-green-500/20">
+            <div class="flex items-center gap-2">
+              <span class="text-green-400">✅</span>
+              <span class="text-sm text-green-400 font-medium">${getLang() === 'id' ? 'Synopsis Active - Auto-fill enabled untuk semua tools!' : 'Synopsis Active - Auto-fill enabled for all tools!'}</span>
+            </div>
+          </div>
+        ` : `
+          <div class="mb-4 p-3 rounded-lg bg-yellow-500/10 border border-yellow-500/20">
+            <div class="flex items-center gap-2">
+              <span class="text-yellow-400">⚠️</span>
+              <span class="text-sm text-yellow-400">${getLang() === 'id' ? 'Mulai dengan Synopsis Writer untuk mengaktifkan auto-fill!' : 'Start with Synopsis Writer to enable auto-fill!'}</span>
+            </div>
+          </div>
+        `}
         
         <!-- Progress Bar -->
         <div class="mb-6">
@@ -810,18 +993,22 @@ function renderWorkflowStep(phase, currentStep) {
   const completionPercent = getPhaseCompletionPercent(phase.id);
   const completedToolCount = phase.tools.filter(t => isToolCompleted(t)).length;
   
-  const stepNames = {
-    'ideation': { name: t('step1Name'), desc: t('step1Desc'), tip: t('step1Tip') },
-    'story-development': { name: t('step2Name'), desc: t('step2Desc'), tip: t('step2Tip') },
-    'pre-production': { name: t('step3Name'), desc: t('step3Desc'), tip: t('step3Tip') },
-    'production-image': { name: t('step4Name'), desc: t('step4Desc'), tip: t('step4Tip') },
-    'production-video': { name: t('step5Name'), desc: t('step5Desc'), tip: t('step5Tip') },
-    'production-audio': { name: t('step6Name'), desc: t('step6Desc'), tip: t('step6Tip') },
-    'post-production': { name: t('step7Name'), desc: t('step7Desc'), tip: t('step7Tip') },
-    'distribution': { name: t('step8Name'), desc: t('step8Desc'), tip: t('step8Tip') }
+  // Get phase info from WORKFLOW_PHASES
+  const phaseInfo = WORKFLOW_PHASES.find(p => p.id === phase.id);
+  const info = {
+    name: phaseInfo?.name?.[getLang()] || phaseInfo?.name?.en || phase.id,
+    desc: phaseInfo?.description?.[getLang()] || phaseInfo?.description?.en || '',
+    tip: phaseInfo?.autoFillFrom ? (getLang() === 'id' ? '🔗 Otomatis terisi dari Synopsis' : '🔗 Auto-filled from Synopsis') : ''
   };
   
-  const info = stepNames[phase.id] || { name: phase.id, desc: '', tip: '' };
+  // Override for synopsis (core)
+  if (phase.id === 'synopsis') {
+    info.tip = getLang() === 'id' ? '⭐ CORE: Isi ini, semua otomatis!' : '⭐ CORE: Fill this, everything auto-fills!';
+  }
+  
+  const stepNames = {}; // Not used anymore, using phaseInfo directly
+  
+
   
   return `
     <div class="workflow-step ${isCurrent ? 'current' : ''} ${isCompleted ? 'completed' : ''} ${isLocked ? 'locked' : ''} 
