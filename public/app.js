@@ -1701,22 +1701,24 @@ async function deleteLocation(locId) {
 
 
 // ============ SCENES PAGE ============
-// ============ STORYBOARD PAGE (Celtx-Style Multi-View) ============
 function renderScenesPage() {
-  const viewMode = state.storyboardView || 'storyboard';
   const scenes = state.scenes.filter(s => !state.currentProject || s.project_id === state.currentProject);
   
   return `
-    <div class="w-full">
-      <!-- Header with View Switcher -->
-      <div class="flex items-center justify-between mb-5 flex-wrap gap-3">
-        <div>
-          <h1 class="text-xl font-bold flex items-center gap-2">🎬 Storyboard</h1>
-          <p class="text-xs text-slate-500">${scenes.length} scenes • ${getLang() === 'id' ? 'Kelola scene seperti Celtx' 
+    <div class="max-w-4xl mx-auto">
+      <div class="flex items-center justify-between mb-5">
+        <h1 class="text-xl font-bold">🎬 Scenes</h1>
+        <button onclick="showNewSceneModal()" class="btn-primary px-4 py-2 rounded-lg text-sm">+ Add Scene</button>
+      </div>
+      
+      ${scenes.length === 0 ? `
+        <div class="glass rounded-xl p-8 text-center">
+          <div class="text-4xl mb-3">🎬</div>
+          <p class="text-slate-400">No scenes yet. Create your first scene!</p>
         </div>
       ` : `
         <div class="space-y-3">
-          ${state.scenes.map((scene, idx) => `
+          ${scenes.map((scene, idx) => `
             <div class="glass rounded-xl p-4 card-hover">
               <div class="flex items-start gap-3">
                 <div class="w-10 h-10 rounded-lg bg-cyan-500/20 flex items-center justify-center text-sm font-bold text-cyan-400">
