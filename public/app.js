@@ -1,97 +1,108 @@
 // raymAIzing film - Main Application
-// Celtx-Style Production Management with Proper Workflow Logic
-// SIMPLIFIED: 2 Main Sections - INSIGHT (optional) + PRODUCTION PHASES (sequential)
+// Celtx-Style Production Management with Storyboard View
+// v3.0: Simplified Navigation + Notion-style Views + Asset Management
 
-// ============ SIMPLIFIED STRUCTURE ============
-// INSIGHT = Optional tools for finding ideas (not part of production flow)
-// PRODUCTION = Sequential phases from Synopsis to Distribution (auto-integrated)
+// ============ SIMPLIFIED NAVIGATION ============
+// 4 Main Sections: STORY, PRODUCTION, STORYBOARD, EXPORT
 
-// ============ INSIGHT TOOLS (Optional - for finding ideas) ============
-// These are standalone tools, not part of production workflow
+// ============ 1. INSIGHT (Optional - Find Ideas) ============
 const INSIGHT_TOOLS = {
   id: 'insight',
   name: { id: 'Cari Ide', en: 'Find Ideas' },
   icon: '💡',
   description: { id: 'Inspirasi & riset (opsional)', en: 'Inspiration & research (optional)' },
-  tools: ['idea-01', 'idea-02', 'idea-03'] // Tool IDs from PHASES in data.js
+  tools: ['idea-01', 'idea-02', 'idea-03']
 };
 
-// ============ PRODUCTION PHASES (Sequential & Auto-integrated) ============
-// Step 1 (Synopsis) is CORE - triggers auto-fill for all other phases
+// ============ 2. STORY (Core - Auto-populates everything) ============
+const STORY_PHASE = {
+  id: 'story',
+  name: { id: 'Cerita', en: 'Story' },
+  icon: '📖',
+  description: { id: 'Tulis cerita, semua otomatis!', en: 'Write story, everything auto!' },
+  tools: ['story-01', 'story-02', 'story-03', 'story-04']
+};
+
+// ============ 3. PRODUCTION (Generate Assets) ============
+const PRODUCTION_TOOLS = {
+  id: 'production',
+  name: { id: 'Produksi', en: 'Production' },
+  icon: '🎨',
+  description: { id: 'Generate gambar, video, audio', en: 'Generate images, video, audio' },
+  categories: [
+    {
+      id: 'character-studio',
+      name: { id: 'Character Studio', en: 'Character Studio' },
+      icon: '👤',
+      tools: ['03', '06'], // Character Designer, Character Transform
+      features: ['T-Pose', 'Multi-Angle', 'Expressions']
+    },
+    {
+      id: 'scene-studio', 
+      name: { id: 'Scene Studio', en: 'Scene Studio' },
+      icon: '🎭',
+      tools: ['04', '05', '07'], // World Builder, Text to Image, Scene Generator
+      features: ['Locations', 'Props', 'Backgrounds']
+    },
+    {
+      id: 'video-studio',
+      name: { id: 'Video Studio', en: 'Video Studio' },
+      icon: '🎬',
+      tools: ['08', '09', '10', '11'], // VEO 3 tools
+      features: ['Text to Video', 'Image to Video', 'Animation']
+    },
+    {
+      id: 'audio-studio',
+      name: { id: 'Audio Studio', en: 'Audio Studio' },
+      icon: '🔊',
+      tools: ['audio-01', 'audio-02', 'audio-03', 'audio-04'],
+      features: ['Dialogue', 'Music', 'SFX']
+    }
+  ]
+};
+
+// ============ 4. POST & EXPORT ============
+const POST_EXPORT = {
+  id: 'export',
+  name: { id: 'Export', en: 'Export' },
+  icon: '📢',
+  tools: ['post-01', 'post-02', 'post-03', 'post-04', 'post-05', 'post-06', 'dist-01', 'dist-02', 'dist-03', 'dist-04']
+};
+
+// ============ LEGACY WORKFLOW PHASES (for compatibility) ============
 const WORKFLOW_PHASES = [
-  { 
-    id: 'synopsis', 
-    step: 1, 
-    icon: '📖', 
-    isCore: true,
-    required: true,
-    name: { id: 'Synopsis Writer', en: 'Synopsis Writer' },
-    description: { id: '⭐ CORE: Tulis synopsis, semua otomatis terisi!', en: '⭐ CORE: Write synopsis, everything auto-fills!' },
-    tools: ['story-01']
-  },
-  { 
-    id: 'breakdown', 
-    step: 2, 
-    icon: '📑', 
-    autoFrom: 'synopsis',
-    name: { id: 'Story Breakdown', en: 'Story Breakdown' },
-    description: { id: 'Episode, Scene, Character Arc', en: 'Episode, Scene, Character Arc' },
-    tools: ['story-02', 'story-03', 'story-04']
-  },
-  { 
-    id: 'preproduction', 
-    step: 3, 
-    icon: '📝', 
-    autoFrom: 'synopsis',
+  { id: 'story', step: 1, icon: '📖', isCore: true, required: true,
+    name: { id: 'Story', en: 'Story' },
+    description: { id: 'Synopsis, Episode, Scene, Character', en: 'Synopsis, Episode, Scene, Character' },
+    tools: ['story-01', 'story-02', 'story-03', 'story-04'] },
+  { id: 'preproduction', step: 2, icon: '📝', autoFrom: 'story',
     name: { id: 'Pre-Production', en: 'Pre-Production' },
-    description: { id: 'Treatment, Storyboard, Design', en: 'Treatment, Storyboard, Design' },
-    tools: ['01', '02', '03', '04']
-  },
-  { 
-    id: 'image', 
-    step: 4, 
-    icon: '🎨', 
-    autoFrom: 'synopsis',
-    name: { id: 'Produksi Gambar', en: 'Image Production' },
-    description: { id: 'Generate gambar scene & karakter', en: 'Generate scene & character images' },
-    tools: ['05', '06', '07']
-  },
-  { 
-    id: 'video', 
-    step: 5, 
-    icon: '🎬', 
-    autoFrom: 'synopsis',
-    name: { id: 'Produksi Video', en: 'Video Production' },
-    description: { id: 'Generate video dengan VEO 3', en: 'Generate video with VEO 3' },
-    tools: ['08', '09', '10', '11']
-  },
-  { 
-    id: 'audio', 
-    step: 6, 
-    icon: '🔊', 
-    autoFrom: 'synopsis',
-    name: { id: 'Produksi Audio', en: 'Audio Production' },
-    description: { id: 'Dialog, musik, SFX', en: 'Dialogue, music, SFX' },
-    tools: ['audio-01', 'audio-02', 'audio-03', 'audio-04']
-  },
-  { 
-    id: 'post', 
-    step: 7, 
-    icon: '🎞️', 
-    autoFrom: 'synopsis',
-    name: { id: 'Post-Production', en: 'Post-Production' },
-    description: { id: 'Edit, assembly, viral picker', en: 'Edit, assembly, viral picker' },
-    tools: ['post-01', 'post-02', 'post-03', 'post-04', 'post-05', 'post-06']
-  },
-  { 
-    id: 'distribution', 
-    step: 8, 
-    icon: '📢', 
-    autoFrom: 'synopsis',
-    name: { id: 'Distribution', en: 'Distribution' },
-    description: { id: 'Thumbnail, poster, trailer', en: 'Thumbnail, poster, trailer' },
-    tools: ['dist-01', 'dist-02', 'dist-03', 'dist-04']
-  }
+    description: { id: 'Treatment & Storyboard', en: 'Treatment & Storyboard' },
+    tools: ['01', '02'] },
+  { id: 'design', step: 3, icon: '🎨', autoFrom: 'story',
+    name: { id: 'Design', en: 'Design' },
+    description: { id: 'Character & World', en: 'Character & World' },
+    tools: ['03', '04'] },
+  { id: 'image', step: 4, icon: '🖼️', autoFrom: 'story',
+    name: { id: 'Image', en: 'Image' },
+    description: { id: 'Generate Images', en: 'Generate Images' },
+    tools: ['05', '06', '07'] },
+  { id: 'video', step: 5, icon: '🎬', autoFrom: 'story',
+    name: { id: 'Video', en: 'Video' },
+    description: { id: 'Generate Videos', en: 'Generate Videos' },
+    tools: ['08', '09', '10', '11'] },
+  { id: 'audio', step: 6, icon: '🔊', autoFrom: 'story',
+    name: { id: 'Audio', en: 'Audio' },
+    description: { id: 'Dialogue, Music, SFX', en: 'Dialogue, Music, SFX' },
+    tools: ['audio-01', 'audio-02', 'audio-03', 'audio-04'] },
+  { id: 'post', step: 7, icon: '🎞️', autoFrom: 'story',
+    name: { id: 'Post', en: 'Post' },
+    description: { id: 'Edit & Assembly', en: 'Edit & Assembly' },
+    tools: ['post-01', 'post-02', 'post-03', 'post-04', 'post-05', 'post-06'] },
+  { id: 'export', step: 8, icon: '📢', autoFrom: 'story',
+    name: { id: 'Export', en: 'Export' },
+    description: { id: 'Thumbnail, Poster, Trailer', en: 'Thumbnail, Poster, Trailer' },
+    tools: ['dist-01', 'dist-02', 'dist-03', 'dist-04'] }
 ];
 
 // Legacy compatibility
@@ -1673,18 +1684,18 @@ async function deleteLocation(locId) {
 
 
 // ============ SCENES PAGE ============
+// ============ STORYBOARD PAGE (Celtx-Style Multi-View) ============
 function renderScenesPage() {
+  const viewMode = state.storyboardView || 'storyboard';
+  const scenes = state.scenes.filter(s => !state.currentProject || s.project_id === state.currentProject);
+  
   return `
-    <div class="max-w-4xl mx-auto">
-      <div class="flex items-center justify-between mb-5">
-        <h1 class="text-xl font-bold">🎬 Scenes</h1>
-        <button onclick="showNewSceneModal()" class="btn-primary px-4 py-2 rounded-lg text-sm">+ ${t('add')}</button>
-      </div>
-      
-      ${state.scenes.length === 0 ? `
-        <div class="glass rounded-xl p-8 text-center">
-          <div class="text-4xl mb-3">🎬</div>
-          <p class="text-slate-400">No scenes yet. Create your first scene!</p>
+    <div class="w-full">
+      <!-- Header with View Switcher -->
+      <div class="flex items-center justify-between mb-5 flex-wrap gap-3">
+        <div>
+          <h1 class="text-xl font-bold flex items-center gap-2">🎬 Storyboard</h1>
+          <p class="text-xs text-slate-500">${scenes.length} scenes • ${getLang() === 'id' ? 'Kelola scene seperti Celtx' 
         </div>
       ` : `
         <div class="space-y-3">
