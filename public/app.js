@@ -2,100 +2,144 @@
 // Celtx-Style Production Management with Proper Workflow Logic
 // FIXED: Checklist = User Completion, NOT Opal Upload Status
 
-// ============ WORKFLOW STRUCTURE ============
-// INSIGHT: Optional tools for finding ideas (not part of production phases)
-const INSIGHT_TOOLS = {
+// ============ APP STRUCTURE ============
+// 3 Main Sections: INSIGHT, PRODUCTION, GENERATOR
+
+// ============ 1. INSIGHT (Optional - Find Ideas) ============
+const INSIGHT_SECTION = {
   id: 'insight',
   name: { id: 'Cari Ide', en: 'Find Ideas' },
   icon: '💡',
-  description: { id: 'Inspirasi & riset ide cerita', en: 'Story inspiration & research' },
-  tools: ['idea-01', 'idea-02', 'idea-03'],
-  isInsight: true // Not a production phase
+  description: { id: 'Inspirasi & riset ide cerita (opsional)', en: 'Story inspiration & research (optional)' },
+  tools: [
+    { id: 'idea-01', name: 'Trend Explorer', icon: '🔥', desc: { id: 'Cari trend viral', en: 'Find viral trends' } },
+    { id: 'idea-02', name: 'Idea Generator', icon: '💡', desc: { id: 'Generate ide cerita', en: 'Generate story ideas' } },
+    { id: 'idea-03', name: 'Genre Mixer', icon: '🎲', desc: { id: 'Mix genre unik', en: 'Mix unique genres' } }
+  ]
 };
 
-// PRODUCTION PHASES: 7 phases, Synopsis is the CORE that auto-fills everything
-const WORKFLOW_PHASES = [
+// ============ 2. PRODUCTION PHASES (Integrated & Auto-fill) ============
+// Synopsis Writer is CORE - triggers everything else automatically
+const PRODUCTION_PHASES = [
   { 
     id: 'synopsis', 
     step: 1, 
     icon: '📖', 
-    tools: ['story-01'], 
-    required: true, 
     isCore: true,
     name: { id: 'Synopsis Writer', en: 'Synopsis Writer' },
-    description: { id: 'Tulis synopsis - SEMUA akan otomatis terisi dari sini!', en: 'Write synopsis - EVERYTHING auto-fills from here!' }
+    description: { id: '⭐ CORE: Tulis synopsis, SEMUA otomatis!', en: '⭐ CORE: Write synopsis, EVERYTHING auto!' },
+    tools: ['story-01'],
+    outputs: ['title', 'logline', 'synopsis', 'genre', 'style', 'mood', 'characters', 'locations', 'episodes', 'scenes']
   },
   { 
-    id: 'story-breakdown', 
+    id: 'breakdown', 
     step: 2, 
     icon: '📑', 
-    tools: ['story-02', 'story-03', 'story-04'], 
-    required: true,
-    autoFillFrom: 'synopsis',
+    autoFrom: 'synopsis',
     name: { id: 'Story Breakdown', en: 'Story Breakdown' },
-    description: { id: 'Episode, Scene, Character - otomatis dari Synopsis', en: 'Episode, Scene, Character - auto from Synopsis' }
+    description: { id: 'Episode, Scene, Character Arc', en: 'Episode, Scene, Character Arc' },
+    tools: ['story-02', 'story-03', 'story-04'],
+    inputs: ['synopsis', 'characters', 'episodes']
   },
   { 
-    id: 'pre-production', 
+    id: 'preproduction', 
     step: 3, 
     icon: '📝', 
-    tools: ['01', '02', '03', '04'], 
-    required: true,
-    autoFillFrom: 'synopsis',
+    autoFrom: 'synopsis',
     name: { id: 'Pre-Production', en: 'Pre-Production' },
-    description: { id: 'Treatment, Storyboard, Design - otomatis dari Synopsis', en: 'Treatment, Storyboard, Design - auto from Synopsis' }
+    description: { id: 'Treatment, Storyboard, Design', en: 'Treatment, Storyboard, Design' },
+    tools: ['01', '02', '03', '04'],
+    inputs: ['synopsis', 'scenes', 'characters', 'locations']
   },
   { 
-    id: 'production-image', 
+    id: 'image', 
     step: 4, 
     icon: '🎨', 
-    tools: ['05', '06', '07'], 
-    required: true,
-    autoFillFrom: 'synopsis',
+    autoFrom: 'synopsis',
     name: { id: 'Produksi Gambar', en: 'Image Production' },
-    description: { id: 'Generate gambar - pilih scene/karakter', en: 'Generate images - select scene/character' }
+    description: { id: 'Generate gambar scene & karakter', en: 'Generate scene & character images' },
+    tools: ['05', '06', '07'],
+    inputs: ['scenes', 'characters', 'locations', 'style']
   },
   { 
-    id: 'production-video', 
+    id: 'video', 
     step: 5, 
     icon: '🎬', 
-    tools: ['08', '09', '10', '11'], 
-    required: true,
-    autoFillFrom: 'synopsis',
+    autoFrom: 'synopsis',
     name: { id: 'Produksi Video', en: 'Video Production' },
-    description: { id: 'Generate video dengan VEO 3', en: 'Generate video with VEO 3' }
+    description: { id: 'Generate video dengan VEO 3', en: 'Generate video with VEO 3' },
+    tools: ['08', '09', '10', '11'],
+    inputs: ['scenes', 'storyboard', 'style', 'mood']
   },
   { 
-    id: 'production-audio', 
+    id: 'audio', 
     step: 6, 
     icon: '🔊', 
-    tools: ['audio-01', 'audio-02', 'audio-03', 'audio-04'], 
-    required: true,
-    autoFillFrom: 'synopsis',
+    autoFrom: 'synopsis',
     name: { id: 'Produksi Audio', en: 'Audio Production' },
-    description: { id: 'Dialog, musik, SFX - otomatis dari scene', en: 'Dialogue, music, SFX - auto from scene' }
+    description: { id: 'Dialog, musik, SFX', en: 'Dialogue, music, SFX' },
+    tools: ['audio-01', 'audio-02', 'audio-03', 'audio-04'],
+    inputs: ['scenes', 'characters', 'dialogue', 'mood']
   },
   { 
-    id: 'post-production', 
+    id: 'post', 
     step: 7, 
     icon: '🎞️', 
-    tools: ['post-01', 'post-02', 'post-03', 'post-04', 'post-05', 'post-06'], 
-    required: true,
-    autoFillFrom: 'synopsis',
+    autoFrom: 'synopsis',
     name: { id: 'Post-Production', en: 'Post-Production' },
-    description: { id: 'Edit, assembly, viral picker', en: 'Edit, assembly, viral picker' }
+    description: { id: 'Edit, assembly, viral picker', en: 'Edit, assembly, viral picker' },
+    tools: ['post-01', 'post-02', 'post-03', 'post-04', 'post-05', 'post-06'],
+    inputs: ['episodes', 'scenes', 'assets']
   },
   { 
     id: 'distribution', 
     step: 8, 
     icon: '📢', 
-    tools: ['dist-01', 'dist-02', 'dist-03', 'dist-04'], 
-    required: false,
-    autoFillFrom: 'synopsis',
+    autoFrom: 'synopsis',
     name: { id: 'Distribution', en: 'Distribution' },
-    description: { id: 'Thumbnail, poster, trailer', en: 'Thumbnail, poster, trailer' }
+    description: { id: 'Thumbnail, poster, trailer', en: 'Thumbnail, poster, trailer' },
+    tools: ['dist-01', 'dist-02', 'dist-03', 'dist-04'],
+    inputs: ['title', 'synopsis', 'assets', 'viralClips']
   }
 ];
+
+// ============ 3. GENERATOR (Modular AI Tools) ============
+const GENERATOR_SECTION = {
+  id: 'generator',
+  name: { id: 'Generator', en: 'Generator' },
+  icon: '🔧',
+  description: { id: 'Tools AI modular - pakai kapan saja', en: 'Modular AI tools - use anytime' },
+  categories: [
+    {
+      id: 'text',
+      name: { id: 'Text Generator', en: 'Text Generator' },
+      icon: '📝',
+      tools: ['gen-text-story', 'gen-text-dialogue', 'gen-text-description']
+    },
+    {
+      id: 'image',
+      name: { id: 'Image Generator', en: 'Image Generator' },
+      icon: '🖼️',
+      tools: ['05', '06', '07'] // Reuse production tools
+    },
+    {
+      id: 'audio',
+      name: { id: 'Audio Generator', en: 'Audio Generator' },
+      icon: '🎵',
+      tools: ['audio-01', 'audio-02', 'audio-03']
+    },
+    {
+      id: 'video',
+      name: { id: 'Video Generator', en: 'Video Generator' },
+      icon: '🎬',
+      tools: ['08', '09', '10', '11']
+    }
+  ]
+};
+
+// Legacy compatibility
+const WORKFLOW_PHASES = PRODUCTION_PHASES;
+const INSIGHT_TOOLS = INSIGHT_SECTION;
 
 // ============ APP STATE ============
 let state = {
@@ -1116,7 +1160,14 @@ function renderAppPage() {
       
       <!-- Tool Form -->
       <div class="glass rounded-xl p-5 mb-5">
-        <h3 class="font-semibold mb-4 flex items-center gap-2">📝 Input Form</h3>
+        <div class="flex items-center justify-between mb-4">
+          <h3 class="font-semibold flex items-center gap-2">📝 Input Form</h3>
+          ${state.currentApp !== 'story-01' && (hasAutoFillData(state.currentApp) || state.productionBible.synopsis) ? `
+            <button onclick="autoFillForm('${app.id}')" class="btn-secondary px-3 py-1.5 rounded-lg text-xs flex items-center gap-1.5 bg-yellow-500/10 border-yellow-500/30 text-yellow-400 hover:bg-yellow-500/20">
+              ✨ Auto-Fill from Synopsis
+            </button>
+          ` : ''}
+        </div>
         <div class="space-y-4" id="tool-form">
           ${renderToolForm(app)}
         </div>
@@ -1341,12 +1392,69 @@ async function saveAndMarkComplete(appId) {
   try {
     await markToolAsCompleted(appId, state.lastFormData, state.lastGeneratedPrompt);
     await saveToHistory(appId);
+    
+    // ============ AUTO-INTEGRATION TRIGGER ============
+    // If this is Synopsis Writer (story-01), trigger auto-integration
+    if (appId === 'story-01' && state.lastFormData) {
+      showToast('🚀 Synopsis completed! Starting auto-integration...', 'info');
+      
+      // Save synopsis to production bible
+      const synopsisData = {
+        title: state.lastFormData.title || '',
+        logline: state.lastFormData.logline || '',
+        synopsis: state.lastFormData.synopsis || '',
+        genre: state.lastFormData.genre || '',
+        style: state.lastFormData.style || '',
+        mood: state.lastFormData.mood || ''
+      };
+      
+      // Save to production bible
+      await DB.saveBible(state.currentProject, state.user.id, synopsisData);
+      state.productionBible = { ...state.productionBible, ...synopsisData };
+      
+      // Trigger auto-integration
+      setTimeout(() => triggerAutoIntegration(synopsisData), 1000);
+    }
   } catch (error) {
     console.error('Error in saveAndMarkComplete:', error);
     // Still show success if at least the prompt was generated
     if (state.lastGeneratedPrompt) {
       showToast(t('savedSuccessfully') + ' (local)', 'success');
     }
+  }
+}
+
+// ============ MARK TOOL AS COMPLETED ============
+async function markToolAsCompleted(appId, formData, generatedPrompt) {
+  if (!state.user || !state.currentProject) return;
+  
+  const phase = findPhase(appId);
+  const phaseId = phase?.id || 'unknown';
+  
+  try {
+    // Save to workflow progress
+    await DB.markToolCompleted(state.currentProject, state.user.id, appId, phaseId);
+    
+    // Update local state
+    const existingProgress = state.workflowProgress.find(p => p.tool_id === appId);
+    if (existingProgress) {
+      existingProgress.is_completed = true;
+      existingProgress.completed_at = new Date().toISOString();
+    } else {
+      state.workflowProgress.push({
+        tool_id: appId,
+        phase_id: phaseId,
+        is_completed: true,
+        completed_at: new Date().toISOString()
+      });
+    }
+    
+    // Update UI
+    renderSidebar();
+    showToast(t('savedSuccessfully'), 'success');
+  } catch (error) {
+    console.error('Error marking tool as completed:', error);
+    throw error;
   }
 }
 
@@ -2197,4 +2305,308 @@ function showEditSceneModal(sceneId) {
       showToast(error.message, 'error');
     }
   });
+}
+
+// ============ AUTO-INTEGRATION SYSTEM ============
+// When Synopsis is completed, auto-trigger all production phases
+// Like Celtx/Final Draft - fill synopsis once, everything flows automatically
+
+async function triggerAutoIntegration(synopsisData) {
+  if (!state.currentProject || !synopsisData) return;
+  
+  showToast('🔄 Auto-integration started...', 'info');
+  
+  try {
+    // 1. Parse synopsis and extract data
+    const extractedData = await extractDataFromSynopsis(synopsisData);
+    
+    // 2. Auto-create characters, locations, episodes, scenes
+    await autoCreateProjectElements(extractedData);
+    
+    // 3. Auto-populate all production tools with extracted data
+    await autoPopulateProductionTools(extractedData);
+    
+    // 4. Update UI
+    await loadProjectData(state.currentProject);
+    renderSidebar();
+    renderPage();
+    
+    showToast('✅ Auto-integration completed! All phases ready.', 'success');
+  } catch (error) {
+    console.error('Auto-integration error:', error);
+    showToast('⚠️ Auto-integration partial. Manual setup may be needed.', 'warning');
+  }
+}
+
+// Extract structured data from synopsis using simple parsing
+async function extractDataFromSynopsis(synopsisData) {
+  const { title, synopsis, genre, style, mood, logline } = synopsisData;
+  
+  return {
+    title: title || 'Untitled',
+    logline: logline || '',
+    synopsis,
+    genre: genre || 'Drama',
+    style: style || 'Cinematic',
+    mood: mood || 'Dramatic',
+    // Extract characters (simple parsing)
+    characters: extractCharacters(synopsis),
+    // Extract locations (simple parsing)
+    locations: extractLocations(synopsis),
+    // Create episodes structure
+    episodes: createEpisodesFromSynopsis(synopsis),
+    // Create scenes structure
+    scenes: createScenesFromSynopsis(synopsis)
+  };
+}
+
+// Simple character extraction from synopsis text
+function extractCharacters(synopsis) {
+  if (!synopsis) return getDefaultCharacters();
+  
+  const characters = [];
+  
+  // Look for character patterns in synopsis
+  const characterPatterns = [
+    /([A-Z][a-z]+)(?:\s+[A-Z][a-z]+)?\s+(?:adalah|is|was|were|who|that)/g,
+    /karakter\s+([A-Z][a-z]+)/gi,
+    /character\s+([A-Z][a-z]+)/gi,
+    /tokoh\s+([A-Z][a-z]+)/gi,
+    /([A-Z][a-z]+)\s+(?:seorang|a|an)\s+/g
+  ];
+  
+  characterPatterns.forEach(pattern => {
+    let match;
+    while ((match = pattern.exec(synopsis)) !== null) {
+      const name = match[1];
+      if (name && name.length > 2 && !characters.find(c => c.name === name)) {
+        // Skip common words
+        const skipWords = ['The', 'This', 'That', 'When', 'Where', 'What', 'How', 'Why', 'But', 'And', 'For'];
+        if (!skipWords.includes(name)) {
+          characters.push({
+            name,
+            role: characters.length === 0 ? 'Protagonist' : 'Supporting',
+            description: `Character from synopsis: ${name}`,
+            visual_description: `${name} character design`
+          });
+        }
+      }
+    }
+  });
+  
+  // Return defaults if none found
+  return characters.length > 0 ? characters.slice(0, 5) : getDefaultCharacters();
+}
+
+function getDefaultCharacters() {
+  return [
+    { name: 'Protagonist', role: 'Protagonist', description: 'Main character', visual_description: 'Main character design' },
+    { name: 'Antagonist', role: 'Antagonist', description: 'Opposing character', visual_description: 'Antagonist character design' }
+  ];
+}
+
+// Simple location extraction from synopsis text
+function extractLocations(synopsis) {
+  if (!synopsis) return getDefaultLocations();
+  
+  const locations = [];
+  
+  // Look for location patterns
+  const locationPatterns = [
+    /(?:di|at|in)\s+([A-Z][a-z]+(?:\s+[A-Z][a-z]+)?)/g,
+    /lokasi\s+([A-Z][a-z]+)/gi,
+    /location\s+([A-Z][a-z]+)/gi,
+    /tempat\s+([A-Z][a-z]+)/gi
+  ];
+  
+  locationPatterns.forEach(pattern => {
+    let match;
+    while ((match = pattern.exec(synopsis)) !== null) {
+      const name = match[1];
+      if (name && name.length > 2 && !locations.find(l => l.name === name)) {
+        locations.push({
+          name,
+          type: 'Interior',
+          description: `Location from synopsis: ${name}`,
+          visual_description: `${name} location design`
+        });
+      }
+    }
+  });
+  
+  // Return defaults if none found
+  return locations.length > 0 ? locations.slice(0, 3) : getDefaultLocations();
+}
+
+function getDefaultLocations() {
+  return [
+    { name: 'Main Location', type: 'Interior', description: 'Primary location', visual_description: 'Main location design' },
+    { name: 'Secondary Location', type: 'Exterior', description: 'Secondary location', visual_description: 'Secondary location design' }
+  ];
+}
+
+// Create episodes structure based on synopsis length
+function createEpisodesFromSynopsis(synopsis) {
+  const episodes = [];
+  const synopsisLength = synopsis?.length || 0;
+  
+  // Determine episode count based on synopsis length
+  let episodeCount = 1;
+  if (synopsisLength > 1000) episodeCount = 3;
+  if (synopsisLength > 2000) episodeCount = 5;
+  
+  for (let i = 1; i <= episodeCount; i++) {
+    episodes.push({
+      episode_number: i,
+      title: `Episode ${i}`,
+      synopsis: `Episode ${i} synopsis based on main story`,
+      duration_minutes: 5
+    });
+  }
+  
+  return episodes;
+}
+
+// Create scenes structure based on synopsis
+function createScenesFromSynopsis(synopsis) {
+  const scenes = [];
+  const synopsisLength = synopsis?.length || 0;
+  
+  // Create basic scene structure
+  const sceneCount = Math.min(Math.max(Math.floor(synopsisLength / 200), 3), 8);
+  
+  for (let i = 1; i <= sceneCount; i++) {
+    scenes.push({
+      scene_number: i,
+      title: `Scene ${i}`,
+      description: `Scene ${i} description from synopsis`,
+      time_of_day: i % 2 === 0 ? 'Day' : 'Night',
+      duration_seconds: 30
+    });
+  }
+  
+  return scenes;
+}
+
+// Auto-create project elements in database
+async function autoCreateProjectElements(extractedData) {
+  if (!state.user || !state.currentProject) return;
+  
+  try {
+    // Create characters (only if none exist)
+    if (state.characters.filter(c => c.project_id === state.currentProject).length === 0) {
+      for (const charData of extractedData.characters) {
+        const newChar = await DB.createCharacter({
+          ...charData,
+          user_id: state.user.id,
+          project_id: state.currentProject
+        });
+        state.characters.push(newChar);
+      }
+    }
+    
+    // Create locations (only if none exist)
+    if (state.locations.filter(l => l.project_id === state.currentProject).length === 0) {
+      for (const locData of extractedData.locations) {
+        const newLoc = await DB.createLocation({
+          ...locData,
+          user_id: state.user.id,
+          project_id: state.currentProject
+        });
+        state.locations.push(newLoc);
+      }
+    }
+    
+    // Create episodes (only if none exist)
+    if (state.episodes.length === 0) {
+      for (const epData of extractedData.episodes) {
+        const newEp = await DB.createEpisode({
+          ...epData,
+          user_id: state.user.id,
+          project_id: state.currentProject
+        });
+        state.episodes.push(newEp);
+      }
+    }
+    
+    // Create scenes (only if none exist)
+    if (state.scenes.length === 0) {
+      for (const sceneData of extractedData.scenes) {
+        const newScene = await DB.createScene({
+          ...sceneData,
+          user_id: state.user.id,
+          project_id: state.currentProject
+        });
+        state.scenes.push(newScene);
+      }
+    }
+  } catch (error) {
+    console.error('Error creating project elements:', error);
+  }
+}
+
+// Auto-populate all production tools with extracted data
+async function autoPopulateProductionTools(extractedData) {
+  if (!state.user || !state.currentProject) return;
+  
+  try {
+    // Mark all production phases as having auto-fill data available
+    for (const phase of PRODUCTION_PHASES) {
+      if (phase.id === 'synopsis') continue; // Skip synopsis itself
+      
+      for (const toolId of phase.tools) {
+        await DB.saveToolProgress(state.currentProject, state.user.id, toolId, phase.id, {
+          is_completed: false,
+          auto_fill_data: JSON.stringify(extractedData),
+          auto_fill_ready: true
+        });
+      }
+    }
+    
+    // Update local state
+    state.workflowProgress = await DB.getWorkflowProgress(state.currentProject);
+  } catch (error) {
+    console.error('Error auto-populating tools:', error);
+  }
+}
+
+// Check if auto-fill data is available for a tool
+function hasAutoFillData(toolId) {
+  const progress = state.workflowProgress.find(p => p.tool_id === toolId);
+  return progress && progress.auto_fill_ready;
+}
+
+// Get auto-fill data for a tool
+function getAutoFillData(toolId) {
+  const progress = state.workflowProgress.find(p => p.tool_id === toolId);
+  if (progress?.auto_fill_data) {
+    try {
+      return JSON.parse(progress.auto_fill_data);
+    } catch (e) {
+      return null;
+    }
+  }
+  return null;
+}
+
+// Auto-fill form with production bible data
+function autoFillForm(appId) {
+  const autoData = getAutoFillData(appId) || state.productionBible;
+  if (!autoData) {
+    showToast('No auto-fill data available. Complete Synopsis Writer first.', 'warning');
+    return;
+  }
+  
+  // Fill form fields with auto data
+  const formDef = typeof APP_FORMS !== 'undefined' ? APP_FORMS[appId] : null;
+  const fields = formDef?.inputs || [];
+  
+  fields.forEach(field => {
+    const el = document.getElementById(`field-${field.id}`);
+    if (el && autoData[field.id]) {
+      el.value = autoData[field.id];
+    }
+  });
+  
+  showToast('✨ Form auto-filled from Synopsis!', 'success');
 }
