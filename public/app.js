@@ -76,17 +76,17 @@ function showAuthTab(tab) {
   const signupForm = document.getElementById('form-signup');
   
   if (tab === 'login') {
-    loginTab.classList.add('bg-purple-500/20', 'text-purple-400');
-    loginTab.classList.remove('text-gray-400');
-    signupTab.classList.remove('bg-purple-500/20', 'text-purple-400');
-    signupTab.classList.add('text-gray-400');
+    loginTab.classList.add('bg-cyan-500/20', 'text-cyan-400');
+    loginTab.classList.remove('text-slate-400');
+    signupTab.classList.remove('bg-cyan-500/20', 'text-cyan-400');
+    signupTab.classList.add('text-slate-400');
     loginForm.classList.remove('hidden');
     signupForm.classList.add('hidden');
   } else {
-    signupTab.classList.add('bg-purple-500/20', 'text-purple-400');
-    signupTab.classList.remove('text-gray-400');
-    loginTab.classList.remove('bg-purple-500/20', 'text-purple-400');
-    loginTab.classList.add('text-gray-400');
+    signupTab.classList.add('bg-cyan-500/20', 'text-cyan-400');
+    signupTab.classList.remove('text-slate-400');
+    loginTab.classList.remove('bg-cyan-500/20', 'text-cyan-400');
+    loginTab.classList.add('text-slate-400');
     signupForm.classList.remove('hidden');
     loginForm.classList.add('hidden');
   }
@@ -270,7 +270,7 @@ function renderSidebar() {
     <div class="sidebar-item ${state.currentPage === 'dashboard' ? 'active' : ''} rounded-lg p-3 cursor-pointer mb-1" onclick="navigateTo('dashboard')">
       <span class="mr-2">🏠</span> Dashboard
     </div>
-    <div class="mt-4 mb-2 px-3 text-xs text-gray-500 uppercase tracking-wider">Production Phases</div>
+    <div class="mt-4 mb-2 px-3 text-xs text-slate-500 uppercase tracking-wider">Production Phases</div>
   `;
   
   PHASES.forEach(phase => {
@@ -279,7 +279,7 @@ function renderSidebar() {
       <div class="mb-1">
         <div class="flex items-center justify-between p-3 rounded-lg cursor-pointer hover:bg-white/5" onclick="togglePhase('${phase.id}')">
           <span><span class="mr-2">${phase.icon}</span>${phase.name}</span>
-          <span class="text-xs text-gray-500">${phase.apps.length}</span>
+          <span class="text-xs text-slate-500">${phase.apps.length}</span>
         </div>
         <div id="phase-${phase.id}" class="${isExpanded ? '' : 'hidden'} ml-4 border-l border-white/10 pl-2">
           ${phase.apps.map(app => `
@@ -293,12 +293,12 @@ function renderSidebar() {
   });
   
   html += `
-    <div class="mt-4 mb-2 px-3 text-xs text-gray-500 uppercase tracking-wider">Management</div>
+    <div class="mt-4 mb-2 px-3 text-xs text-slate-500 uppercase tracking-wider">Management</div>
     <div class="sidebar-item ${state.currentPage === 'characters' ? 'active' : ''} rounded-lg p-3 cursor-pointer mb-1" onclick="navigateTo('characters')">
-      <span class="mr-2">👤</span> Characters <span class="ml-auto text-xs text-gray-500">${chars.length}</span>
+      <span class="mr-2">👤</span> Characters <span class="ml-auto text-xs text-slate-500">${chars.length}</span>
     </div>
     <div class="sidebar-item ${state.currentPage === 'locations' ? 'active' : ''} rounded-lg p-3 cursor-pointer mb-1" onclick="navigateTo('locations')">
-      <span class="mr-2">🎭</span> Locations <span class="ml-auto text-xs text-gray-500">${locs.length}</span>
+      <span class="mr-2">🎭</span> Locations <span class="ml-auto text-xs text-slate-500">${locs.length}</span>
     </div>
     <div class="sidebar-item ${state.currentPage === 'workflow' ? 'active' : ''} rounded-lg p-3 cursor-pointer mb-1" onclick="navigateTo('workflow')">
       <span class="mr-2">📋</span> Workflow
@@ -348,23 +348,23 @@ function showNewProjectModal() {
   showModal('New Project', `
     <div class="space-y-4">
       <div>
-        <label class="block text-sm text-gray-400 mb-1">Project Name</label>
+        <label class="block text-sm text-slate-400 mb-1">Project Name</label>
         <input type="text" id="new-project-name" class="w-full rounded-lg px-3 py-2" placeholder="My Film Project">
       </div>
       <div>
-        <label class="block text-sm text-gray-400 mb-1">Type</label>
+        <label class="block text-sm text-slate-400 mb-1">Type</label>
         <select id="new-project-type" class="w-full rounded-lg px-3 py-2">
           ${OPTIONS.projectType.map(t => `<option>${t}</option>`).join('')}
         </select>
       </div>
       <div>
-        <label class="block text-sm text-gray-400 mb-1">Genre</label>
+        <label class="block text-sm text-slate-400 mb-1">Genre</label>
         <select id="new-project-genre" class="w-full rounded-lg px-3 py-2">
           ${OPTIONS.genre.map(g => `<option>${g}</option>`).join('')}
         </select>
       </div>
       <div>
-        <label class="block text-sm text-gray-400 mb-1">Description</label>
+        <label class="block text-sm text-slate-400 mb-1">Description</label>
         <textarea id="new-project-desc" class="w-full rounded-lg px-3 py-2 h-20" placeholder="Brief description..."></textarea>
       </div>
     </div>
@@ -415,10 +415,10 @@ function renderDashboard() {
   return `
     <div class="max-w-6xl mx-auto">
       <div class="mb-8">
-        <h1 class="text-3xl font-bold mb-2 bg-gradient-to-r from-purple-400 via-pink-400 to-blue-400 bg-clip-text text-transparent">
-          AI Filmmaking Studio
+        <h1 class="text-3xl font-bold mb-2" style="font-family: 'Space Grotesk', sans-serif;">
+          <span class="text-white">raym</span><span class="bg-gradient-to-r from-cyan-400 to-blue-400 bg-clip-text text-transparent">AI</span><span class="text-slate-400">zing film</span>
         </h1>
-        <p class="text-gray-400">Complete production platform • Unlimited VEO 3 + Gemini via Google Opal</p>
+        <p class="text-slate-400">Complete production platform • Unlimited VEO 3 + Gemini via Google Opal</p>
       </div>
       
       ${project ? `
@@ -430,11 +430,11 @@ function renderDashboard() {
                 <span class="tag">${project.genre}</span>
               </div>
               <h2 class="text-2xl font-bold">${project.name}</h2>
-              <p class="text-gray-400 text-sm mt-2">${project.description || 'No description'}</p>
+              <p class="text-slate-400 text-sm mt-2">${project.description || 'No description'}</p>
               <div class="flex gap-4 mt-4 text-sm">
-                <span class="text-gray-500">👤 ${chars.length} Characters</span>
-                <span class="text-gray-500">🎭 ${locs.length} Locations</span>
-                <span class="text-gray-500">📜 ${state.history.filter(h => h.project_id === project.id).length} Generations</span>
+                <span class="text-slate-500">👤 ${chars.length} Characters</span>
+                <span class="text-slate-500">🎭 ${locs.length} Locations</span>
+                <span class="text-slate-500">📜 ${state.history.filter(h => h.project_id === project.id).length} Generations</span>
               </div>
             </div>
             <button onclick="deleteProject('${project.id}')" class="btn-secondary px-4 py-2 rounded-lg text-sm">Delete</button>
@@ -444,7 +444,7 @@ function renderDashboard() {
         <div class="glass rounded-2xl p-8 mb-8 text-center gradient-card">
           <div class="text-5xl mb-4">🎬</div>
           <h3 class="text-xl font-semibold mb-2">Start Your Film Project</h3>
-          <p class="text-gray-400 mb-6">Create a project to organize characters, locations, and track your production.</p>
+          <p class="text-slate-400 mb-6">Create a project to organize characters, locations, and track your production.</p>
           <button onclick="showNewProjectModal()" class="btn-primary px-8 py-3 rounded-xl font-semibold">+ Create New Project</button>
         </div>
       `}
@@ -452,13 +452,13 @@ function renderDashboard() {
       <div class="glass rounded-2xl p-6 mb-8">
         <h3 class="font-semibold mb-4">🚀 Quick Start Workflow</h3>
         <div class="flex flex-wrap items-center gap-3 text-sm">
-          <div class="bg-purple-500/10 px-4 py-2 rounded-full border border-purple-500/20">1️⃣ Create Characters</div>
-          <span class="text-purple-500">→</span>
-          <div class="bg-blue-500/10 px-4 py-2 rounded-full border border-blue-500/20">2️⃣ Design Locations</div>
+          <div class="bg-cyan-500/10 px-4 py-2 rounded-full border border-cyan-500/20 text-cyan-300">1️⃣ Create Characters</div>
+          <span class="text-cyan-500">→</span>
+          <div class="bg-sky-500/10 px-4 py-2 rounded-full border border-sky-500/20 text-sky-300">2️⃣ Design Locations</div>
+          <span class="text-sky-500">→</span>
+          <div class="bg-blue-500/10 px-4 py-2 rounded-full border border-blue-500/20 text-blue-300">3️⃣ Generate Prompts</div>
           <span class="text-blue-500">→</span>
-          <div class="bg-pink-500/10 px-4 py-2 rounded-full border border-pink-500/20">3️⃣ Generate Prompts</div>
-          <span class="text-pink-500">→</span>
-          <div class="bg-green-500/10 px-4 py-2 rounded-full border border-green-500/20">4️⃣ Copy to Opal</div>
+          <div class="bg-indigo-500/10 px-4 py-2 rounded-full border border-indigo-500/20 text-indigo-300">4️⃣ Copy to Opal</div>
         </div>
       </div>
       
@@ -467,7 +467,7 @@ function renderDashboard() {
         <div class="glass rounded-2xl p-6 mb-8 gradient-card">
           <h3 class="font-semibold mb-4 flex items-center gap-2">
             <span>🔗</span> Quick Access Opal Tools
-            <span class="text-xs text-gray-500">(Click to open)</span>
+            <span class="text-xs text-slate-500">(Click to open)</span>
           </h3>
           <div class="grid grid-cols-3 md:grid-cols-4 lg:grid-cols-6 gap-3">
             ${PHASES.flatMap(phase => phase.apps.filter(app => getEffectiveOpalLink(app.id)).slice(0, 2).map(app => `
@@ -490,9 +490,9 @@ function renderDashboard() {
         ${PHASES.map((phase, idx) => `
           <div class="glass glass-hover rounded-2xl p-5 cursor-pointer" onclick="togglePhase('${phase.id}')">
             <div class="flex items-center gap-3 mb-3">
-              <div class="w-10 h-10 rounded-xl bg-purple-500/20 flex items-center justify-center text-xl">${phase.icon}</div>
+              <div class="w-10 h-10 rounded-xl bg-cyan-500/15 flex items-center justify-center text-xl">${phase.icon}</div>
               <div>
-                <div class="text-xs text-gray-500">Phase ${idx + 1}</div>
+                <div class="text-xs text-slate-500">Phase ${idx + 1}</div>
                 <h4 class="font-semibold">${phase.name}</h4>
               </div>
             </div>
@@ -511,7 +511,7 @@ function renderDashboard() {
         <div class="glass rounded-2xl p-5 cursor-pointer glass-hover" onclick="navigateTo('characters')">
           <div class="flex items-center justify-between mb-3">
             <span class="text-2xl">👤</span>
-            <span class="text-2xl font-bold text-purple-400">${chars.length}</span>
+            <span class="text-2xl font-bold text-cyan-400">${chars.length}</span>
           </div>
           <h4 class="font-semibold">Characters</h4>
         </div>
@@ -568,14 +568,14 @@ function renderAppPage() {
   return `
     <div class="max-w-6xl mx-auto">
       <div class="flex items-center gap-4 mb-6">
-        <div class="w-16 h-16 rounded-2xl bg-purple-500/20 flex items-center justify-center text-3xl">${app.icon}</div>
+        <div class="w-16 h-16 rounded-2xl bg-cyan-500/20 flex items-center justify-center text-3xl">${app.icon}</div>
         <div class="flex-1">
           <div class="flex items-center gap-2 mb-1">
             <span class="tag">${phase.name}</span>
             ${isGlobalLink ? '<span class="tag bg-green-500/20 border-green-500/30 text-green-400">✓ Ready</span>' : ''}
           </div>
           <h2 class="text-2xl font-bold">${app.name}</h2>
-          <p class="text-gray-400 text-sm">${app.desc}</p>
+          <p class="text-slate-400 text-sm">${app.desc}</p>
         </div>
         ${effectiveLink ? `
           <a href="${effectiveLink}" target="_blank" class="btn-primary px-5 py-2.5 rounded-xl text-sm font-medium flex items-center gap-2">
@@ -591,7 +591,7 @@ function renderAppPage() {
       <div class="glass rounded-xl p-4 mb-6">
         <div class="flex items-center justify-between">
           <div class="flex items-center gap-3">
-            <span class="text-sm text-gray-400">Output Count:</span>
+            <span class="text-sm text-slate-400">Output Count:</span>
             <div class="flex gap-2">
               ${[1, 2, 3, 4].map(n => `
                 <button onclick="setOutputCount(${n})" class="w-10 h-10 rounded-lg ${state.outputCount === n ? 'btn-primary' : 'btn-secondary'} text-sm font-bold">
@@ -599,10 +599,10 @@ function renderAppPage() {
                 </button>
               `).join('')}
             </div>
-            <span class="text-xs text-gray-500 ml-2">Generate ${state.outputCount} variation${state.outputCount > 1 ? 's' : ''}</span>
+            <span class="text-xs text-slate-500 ml-2">Generate ${state.outputCount} variation${state.outputCount > 1 ? 's' : ''}</span>
           </div>
           <div class="flex items-center gap-2">
-            <span class="text-xs text-gray-500">Character Mode:</span>
+            <span class="text-xs text-slate-500">Character Mode:</span>
             <select id="character-mode" class="rounded-lg px-3 py-1.5 text-sm" onchange="updateCharacterMode(this.value)">
               <option value="single">Single Character</option>
               <option value="multi-2">2 Characters</option>
@@ -616,9 +616,9 @@ function renderAppPage() {
       ${(chars.length > 0 || locs.length > 0) ? `
         <div class="glass rounded-xl p-4 mb-6">
           <div class="flex items-center gap-4 flex-wrap">
-            <span class="text-sm text-gray-400">Quick Insert:</span>
+            <span class="text-sm text-slate-400">Quick Insert:</span>
             ${chars.slice(0, 3).map(c => `
-              <button onclick="quickInsertCharacter('${c.id}')" class="text-xs bg-purple-500/10 border border-purple-500/20 px-3 py-1.5 rounded-lg">👤 ${c.name}</button>
+              <button onclick="quickInsertCharacter('${c.id}')" class="text-xs bg-cyan-500/10 border border-cyan-500/20 px-3 py-1.5 rounded-lg">👤 ${c.name}</button>
             `).join('')}
             ${locs.slice(0, 3).map(l => `
               <button onclick="quickInsertLocation('${l.id}')" class="text-xs bg-blue-500/10 border border-blue-500/20 px-3 py-1.5 rounded-lg">🎭 ${l.name}</button>
@@ -644,7 +644,7 @@ function renderAppPage() {
               <button onclick="copyPrompt()" id="copy-btn" class="btn-primary px-4 py-1.5 rounded-lg text-xs">📋 Copy</button>
             </div>
             <div id="prompt-output" class="prompt-output rounded-xl p-4 min-h-[180px] max-h-[300px] overflow-y-auto font-mono text-xs whitespace-pre-wrap">
-              <span class="text-gray-500 italic">Fill in the options above...</span>
+              <span class="text-slate-500 italic">Fill in the options above...</span>
             </div>
           </div>
           
@@ -664,17 +664,17 @@ function renderAppPage() {
 function renderAppForm(config) {
   return config.inputs.map(input => {
     if (input.type === 'textarea') {
-      return `<div><label class="block text-sm text-gray-400 mb-1">${input.label}</label>
+      return `<div><label class="block text-sm text-slate-400 mb-1">${input.label}</label>
         <textarea id="input-${input.id}" class="w-full rounded-lg px-3 py-2" rows="${input.rows || 3}" placeholder="${input.placeholder || ''}"></textarea></div>`;
     } else if (input.type === 'select') {
       const options = OPTIONS[input.options] || [];
-      return `<div><label class="block text-sm text-gray-400 mb-1">${input.label}</label>
+      return `<div><label class="block text-sm text-slate-400 mb-1">${input.label}</label>
         <select id="input-${input.id}" class="w-full rounded-lg px-3 py-2">
           <option value="">Select...</option>
           ${options.map(opt => `<option value="${opt}">${opt}</option>`).join('')}
         </select></div>`;
     } else {
-      return `<div><label class="block text-sm text-gray-400 mb-1">${input.label}</label>
+      return `<div><label class="block text-sm text-slate-400 mb-1">${input.label}</label>
         <input type="text" id="input-${input.id}" class="w-full rounded-lg px-3 py-2" placeholder="${input.placeholder || ''}"></div>`;
     }
   }).join('');
@@ -717,7 +717,7 @@ function clearForm() {
     const el = document.getElementById('input-' + input.id);
     if (el) el.value = '';
   });
-  document.getElementById('prompt-output').innerHTML = '<span class="text-gray-500 italic">Fill in the options above...</span>';
+  document.getElementById('prompt-output').innerHTML = '<span class="text-slate-500 italic">Fill in the options above...</span>';
 }
 
 function copyPrompt() {
@@ -790,14 +790,14 @@ function renderCharactersPage() {
       <div class="flex items-center justify-between mb-6">
         <div>
           <h2 class="text-2xl font-bold">👤 Characters</h2>
-          <p class="text-gray-400 text-sm">Manage your film characters</p>
+          <p class="text-slate-400 text-sm">Manage your film characters</p>
         </div>
         <button onclick="showCharacterModal()" class="btn-primary px-4 py-2 rounded-xl">+ New Character</button>
       </div>
       
       ${chars.length === 0 ? `
         <div class="glass rounded-2xl p-8 text-center">
-          <p class="text-gray-400 mb-4">No characters yet.</p>
+          <p class="text-slate-400 mb-4">No characters yet.</p>
           <button onclick="showCharacterModal()" class="btn-primary px-6 py-2 rounded-xl">+ Create Character</button>
         </div>
       ` : `
@@ -810,11 +810,11 @@ function renderCharactersPage() {
                     <span class="text-2xl">👤</span>
                     <div>
                       <h3 class="font-semibold text-lg">${char.name}</h3>
-                      <p class="text-sm text-gray-400">${char.age || ''} • ${char.gender || ''} • ${char.role || ''}</p>
+                      <p class="text-sm text-slate-400">${char.age || ''} • ${char.gender || ''} • ${char.role || ''}</p>
                     </div>
                   </div>
-                  <p class="text-sm text-gray-300 mb-2">${char.physical || ''}</p>
-                  <p class="text-sm text-gray-500">Costume: ${char.costume || 'N/A'}</p>
+                  <p class="text-sm text-slate-300 mb-2">${char.physical || ''}</p>
+                  <p class="text-sm text-slate-500">Costume: ${char.costume || 'N/A'}</p>
                 </div>
                 <div class="flex gap-2">
                   <button onclick="copyCharacterPrompt('${char.id}')" class="bg-blue-500/20 px-3 py-1.5 rounded-lg text-sm">Copy Prompt</button>
@@ -832,23 +832,23 @@ function renderCharactersPage() {
 function showCharacterModal() {
   showModal('New Character', `
     <div class="space-y-4">
-      <div><label class="block text-sm text-gray-400 mb-1">Name</label>
+      <div><label class="block text-sm text-slate-400 mb-1">Name</label>
         <input type="text" id="char-name" class="w-full rounded-lg px-3 py-2" placeholder="Character name"></div>
       <div class="grid grid-cols-3 gap-3">
-        <div><label class="block text-sm text-gray-400 mb-1">Age</label>
+        <div><label class="block text-sm text-slate-400 mb-1">Age</label>
           <input type="text" id="char-age" class="w-full rounded-lg px-3 py-2" placeholder="25"></div>
-        <div><label class="block text-sm text-gray-400 mb-1">Gender</label>
+        <div><label class="block text-sm text-slate-400 mb-1">Gender</label>
           <select id="char-gender" class="w-full rounded-lg px-3 py-2">
             <option>Male</option><option>Female</option><option>Non-binary</option>
           </select></div>
-        <div><label class="block text-sm text-gray-400 mb-1">Role</label>
+        <div><label class="block text-sm text-slate-400 mb-1">Role</label>
           <select id="char-role" class="w-full rounded-lg px-3 py-2">
             ${OPTIONS.characterRole.map(r => `<option>${r}</option>`).join('')}
           </select></div>
       </div>
-      <div><label class="block text-sm text-gray-400 mb-1">Physical Description</label>
+      <div><label class="block text-sm text-slate-400 mb-1">Physical Description</label>
         <textarea id="char-physical" class="w-full rounded-lg px-3 py-2 h-20" placeholder="Height, build, hair, eyes..."></textarea></div>
-      <div><label class="block text-sm text-gray-400 mb-1">Costume</label>
+      <div><label class="block text-sm text-slate-400 mb-1">Costume</label>
         <input type="text" id="char-costume" class="w-full rounded-lg px-3 py-2" placeholder="What they wear"></div>
     </div>
   `, async () => {
@@ -898,14 +898,14 @@ function renderLocationsPage() {
       <div class="flex items-center justify-between mb-6">
         <div>
           <h2 class="text-2xl font-bold">🎭 Locations</h2>
-          <p class="text-gray-400 text-sm">Manage your film locations</p>
+          <p class="text-slate-400 text-sm">Manage your film locations</p>
         </div>
         <button onclick="showLocationModal()" class="btn-primary px-4 py-2 rounded-xl">+ New Location</button>
       </div>
       
       ${locs.length === 0 ? `
         <div class="glass rounded-2xl p-8 text-center">
-          <p class="text-gray-400 mb-4">No locations yet.</p>
+          <p class="text-slate-400 mb-4">No locations yet.</p>
           <button onclick="showLocationModal()" class="btn-primary px-6 py-2 rounded-xl">+ Create Location</button>
         </div>
       ` : `
@@ -918,10 +918,10 @@ function renderLocationsPage() {
                     <span class="text-2xl">🎭</span>
                     <div>
                       <h3 class="font-semibold text-lg">${loc.name}</h3>
-                      <p class="text-sm text-gray-400">${loc.type || ''} • ${loc.mood || ''} • ${loc.time_of_day || ''}</p>
+                      <p class="text-sm text-slate-400">${loc.type || ''} • ${loc.mood || ''} • ${loc.time_of_day || ''}</p>
                     </div>
                   </div>
-                  <p class="text-sm text-gray-300">${loc.description || ''}</p>
+                  <p class="text-sm text-slate-300">${loc.description || ''}</p>
                 </div>
                 <div class="flex gap-2">
                   <button onclick="copyLocationPrompt('${loc.id}')" class="bg-blue-500/20 px-3 py-1.5 rounded-lg text-sm">Copy Prompt</button>
@@ -939,23 +939,23 @@ function renderLocationsPage() {
 function showLocationModal() {
   showModal('New Location', `
     <div class="space-y-4">
-      <div><label class="block text-sm text-gray-400 mb-1">Name</label>
+      <div><label class="block text-sm text-slate-400 mb-1">Name</label>
         <input type="text" id="loc-name" class="w-full rounded-lg px-3 py-2" placeholder="Location name"></div>
       <div class="grid grid-cols-3 gap-3">
-        <div><label class="block text-sm text-gray-400 mb-1">Type</label>
+        <div><label class="block text-sm text-slate-400 mb-1">Type</label>
           <select id="loc-type" class="w-full rounded-lg px-3 py-2">
             ${OPTIONS.locationType.map(t => `<option>${t}</option>`).join('')}
           </select></div>
-        <div><label class="block text-sm text-gray-400 mb-1">Mood</label>
+        <div><label class="block text-sm text-slate-400 mb-1">Mood</label>
           <select id="loc-mood" class="w-full rounded-lg px-3 py-2">
             ${OPTIONS.mood.map(m => `<option>${m}</option>`).join('')}
           </select></div>
-        <div><label class="block text-sm text-gray-400 mb-1">Time of Day</label>
+        <div><label class="block text-sm text-slate-400 mb-1">Time of Day</label>
           <select id="loc-time" class="w-full rounded-lg px-3 py-2">
             ${OPTIONS.timeOfDay.map(t => `<option>${t}</option>`).join('')}
           </select></div>
       </div>
-      <div><label class="block text-sm text-gray-400 mb-1">Description</label>
+      <div><label class="block text-sm text-slate-400 mb-1">Description</label>
         <textarea id="loc-desc" class="w-full rounded-lg px-3 py-2 h-20" placeholder="Describe the location..."></textarea></div>
     </div>
   `, async () => {
@@ -1003,7 +1003,7 @@ function renderWorkflowPage() {
     <div class="max-w-4xl mx-auto">
       <div class="mb-6">
         <h2 class="text-2xl font-bold">📋 Production Workflow</h2>
-        <p class="text-gray-400 text-sm">Track your progress through all production phases</p>
+        <p class="text-slate-400 text-sm">Track your progress through all production phases</p>
       </div>
       
       <div class="space-y-6">
@@ -1013,7 +1013,7 @@ function renderWorkflowPage() {
               <span class="text-2xl">${phase.icon}</span>
               <div>
                 <h3 class="font-semibold">Phase ${idx + 1}: ${phase.name}</h3>
-                <p class="text-xs text-gray-500">${phase.apps.length} tools available</p>
+                <p class="text-xs text-slate-500">${phase.apps.length} tools available</p>
               </div>
             </div>
             <div class="grid grid-cols-1 md:grid-cols-2 gap-3">
@@ -1022,7 +1022,7 @@ function renderWorkflowPage() {
                   <span>${app.icon}</span>
                   <div class="flex-1">
                     <p class="text-sm font-medium">${app.name}</p>
-                    <p class="text-xs text-gray-500">${app.desc}</p>
+                    <p class="text-xs text-slate-500">${app.desc}</p>
                   </div>
                 </div>
               `).join('')}
@@ -1043,7 +1043,7 @@ function renderOpalLinksPage() {
     <div class="max-w-4xl mx-auto">
       <div class="mb-6">
         <h2 class="text-2xl font-bold">🔗 Opal Links</h2>
-        <p class="text-gray-400 text-sm">Quick access to Google Opal tools</p>
+        <p class="text-slate-400 text-sm">Quick access to Google Opal tools</p>
       </div>
       
       <!-- Status Cards -->
@@ -1053,22 +1053,22 @@ function renderOpalLinksPage() {
             <span class="text-2xl">🌐</span>
             <div>
               <h4 class="font-semibold">Global Links</h4>
-              <p class="text-xs text-gray-500">Pre-configured by admin</p>
+              <p class="text-xs text-slate-500">Pre-configured by admin</p>
             </div>
           </div>
           <p class="text-3xl font-bold text-green-400">${globalLinksCount}</p>
-          <p class="text-xs text-gray-500 mt-1">Ready to use</p>
+          <p class="text-xs text-slate-500 mt-1">Ready to use</p>
         </div>
         <div class="glass rounded-2xl p-5">
           <div class="flex items-center gap-3 mb-2">
             <span class="text-2xl">👤</span>
             <div>
               <h4 class="font-semibold">Personal Links</h4>
-              <p class="text-xs text-gray-500">Your custom overrides</p>
+              <p class="text-xs text-slate-500">Your custom overrides</p>
             </div>
           </div>
-          <p class="text-3xl font-bold text-purple-400">${personalLinksCount}</p>
-          <p class="text-xs text-gray-500 mt-1">Custom links</p>
+          <p class="text-3xl font-bold text-cyan-400">${personalLinksCount}</p>
+          <p class="text-xs text-slate-500 mt-1">Custom links</p>
         </div>
       </div>
       
@@ -1094,9 +1094,9 @@ function renderOpalLinksPage() {
       <!-- Personal Links Override Section -->
       <div class="glass rounded-2xl p-6 mb-6">
         <h3 class="font-semibold mb-4">📝 Personal Link Overrides (Optional)</h3>
-        <p class="text-sm text-gray-400 mb-4">Add your own links to override global settings, or leave empty to use global links.</p>
-        <ol class="text-sm text-gray-500 space-y-1 mb-4">
-          <li>1. Go to <a href="https://opal.google" target="_blank" class="text-purple-400 hover:underline">opal.google</a></li>
+        <p class="text-sm text-slate-400 mb-4">Add your own links to override global settings, or leave empty to use global links.</p>
+        <ol class="text-sm text-slate-500 space-y-1 mb-4">
+          <li>1. Go to <a href="https://opal.google" target="_blank" class="text-cyan-400 hover:underline">opal.google</a></li>
           <li>2. Open the specific tool you want</li>
           <li>3. Copy the URL and paste below</li>
         </ol>
@@ -1152,7 +1152,7 @@ function renderHistoryList() {
   const filtered = state.history.filter(h => !state.currentProject || h.project_id === state.currentProject);
   
   if (filtered.length === 0) {
-    list.innerHTML = '<p class="text-gray-500 text-center p-4">No history yet</p>';
+    list.innerHTML = '<p class="text-slate-500 text-center p-4">No history yet</p>';
     return;
   }
   
@@ -1161,12 +1161,12 @@ function renderHistoryList() {
     return `
       <div class="glass rounded-xl p-4 mb-3">
         <div class="flex items-center justify-between mb-2">
-          <span class="text-xs text-purple-400">${app ? app.name : h.app_id}</span>
-          <span class="text-xs text-gray-500">${new Date(h.created_at).toLocaleString()}</span>
+          <span class="text-xs text-cyan-400">${app ? app.name : h.app_id}</span>
+          <span class="text-xs text-slate-500">${new Date(h.created_at).toLocaleString()}</span>
         </div>
-        <p class="text-xs text-gray-300 line-clamp-3 mb-2">${h.prompt.substring(0, 150)}...</p>
+        <p class="text-xs text-slate-300 line-clamp-3 mb-2">${h.prompt.substring(0, 150)}...</p>
         <div class="flex gap-2">
-          <button onclick="copyHistoryPrompt('${h.id}')" class="text-xs text-gray-400 hover:text-white">📋 Copy</button>
+          <button onclick="copyHistoryPrompt('${h.id}')" class="text-xs text-slate-400 hover:text-white">📋 Copy</button>
           <button onclick="deleteHistoryItem('${h.id}')" class="text-xs text-red-400 hover:text-red-300">🗑️ Delete</button>
         </div>
       </div>
@@ -1205,7 +1205,7 @@ function showModal(title, content, onSave) {
       <div class="glass rounded-2xl p-6 w-full max-w-lg fade-in" onclick="event.stopPropagation()">
         <div class="flex items-center justify-between mb-4">
           <h3 class="text-lg font-semibold">${title}</h3>
-          <button onclick="hideModal()" class="text-gray-400 hover:text-white text-xl">&times;</button>
+          <button onclick="hideModal()" class="text-slate-400 hover:text-white text-xl">&times;</button>
         </div>
         <div class="mb-6">${content}</div>
         <div class="flex gap-3 justify-end">
@@ -1226,8 +1226,8 @@ function hideModal() {
 function showSettingsModal() {
   showModal('Settings', `
     <div class="space-y-4">
-      <p class="text-gray-400">Logged in as: <span class="text-white">${state.user?.email}</span></p>
-      <p class="text-gray-400">Role: <span class="text-white ${isAdmin() ? 'text-yellow-400' : ''}">${isAdmin() ? '👑 Admin' : '👤 User'}</span></p>
+      <p class="text-slate-400">Logged in as: <span class="text-white">${state.user?.email}</span></p>
+      <p class="text-slate-400">Role: <span class="text-white ${isAdmin() ? 'text-yellow-400' : ''}">${isAdmin() ? '👑 Admin' : '👤 User'}</span></p>
       <button onclick="handleLogout()" class="btn-secondary w-full py-2 rounded-lg text-red-400">Logout</button>
     </div>
   `, hideModal);
@@ -1247,7 +1247,7 @@ function renderAdminOpalLinksPage() {
           <span class="text-3xl">👑</span>
           <div>
             <h2 class="text-2xl font-bold">Manage Global Opal Links</h2>
-            <p class="text-gray-400 text-sm">Configure links that ALL users can access</p>
+            <p class="text-slate-400 text-sm">Configure links that ALL users can access</p>
           </div>
         </div>
       </div>
@@ -1256,12 +1256,12 @@ function renderAdminOpalLinksPage() {
       <div class="glass rounded-2xl p-5 mb-6 gradient-card">
         <div class="flex items-center justify-between">
           <div>
-            <p class="text-sm text-gray-400">Global Links Configured</p>
+            <p class="text-sm text-slate-400">Global Links Configured</p>
             <p class="text-3xl font-bold text-green-400">${configuredCount} / ${totalApps}</p>
           </div>
           <div class="text-right">
-            <p class="text-sm text-gray-400">Coverage</p>
-            <p class="text-3xl font-bold text-purple-400">${Math.round(configuredCount/totalApps*100)}%</p>
+            <p class="text-sm text-slate-400">Coverage</p>
+            <p class="text-3xl font-bold text-cyan-400">${Math.round(configuredCount/totalApps*100)}%</p>
           </div>
         </div>
         <div class="mt-4 bg-dark-800 rounded-full h-2 overflow-hidden">
@@ -1272,8 +1272,8 @@ function renderAdminOpalLinksPage() {
       <!-- Instructions -->
       <div class="glass rounded-2xl p-6 mb-6">
         <h3 class="font-semibold mb-3 text-yellow-400">⚠️ Admin Instructions</h3>
-        <ol class="text-sm text-gray-400 space-y-2">
-          <li>1. Go to <a href="https://opal.google" target="_blank" class="text-purple-400 hover:underline">opal.google</a> and open each tool</li>
+        <ol class="text-sm text-slate-400 space-y-2">
+          <li>1. Go to <a href="https://opal.google" target="_blank" class="text-cyan-400 hover:underline">opal.google</a> and open each tool</li>
           <li>2. Copy the URL with the flow parameter (e.g., <code class="text-xs bg-dark-800 px-2 py-1 rounded">https://opal.google/?flow=drive:/...</code>)</li>
           <li>3. Paste below and click Save - this link will be available to ALL users</li>
           <li>4. Users can still override with their own personal links if needed</li>
@@ -1286,7 +1286,7 @@ function renderAdminOpalLinksPage() {
           <div class="glass rounded-2xl p-5">
             <h3 class="font-semibold mb-4 flex items-center gap-2">
               ${phase.icon} ${phase.name}
-              <span class="text-xs text-gray-500">(${phase.apps.filter(a => state.globalOpalLinks[a.id]).length}/${phase.apps.length} configured)</span>
+              <span class="text-xs text-slate-500">(${phase.apps.filter(a => state.globalOpalLinks[a.id]).length}/${phase.apps.length} configured)</span>
             </h3>
             <div class="space-y-3">
               ${phase.apps.map(app => {
@@ -1295,7 +1295,7 @@ function renderAdminOpalLinksPage() {
                 <div class="flex items-center gap-3 ${hasLink ? 'bg-green-500/5 -mx-2 px-2 py-1 rounded-lg' : ''}">
                   <span class="w-8">${app.icon}</span>
                   <span class="w-40 text-sm font-medium">${app.name}</span>
-                  ${hasLink ? '<span class="text-xs text-green-400 w-12">✓ Live</span>' : '<span class="text-xs text-gray-500 w-12">Empty</span>'}
+                  ${hasLink ? '<span class="text-xs text-green-400 w-12">✓ Live</span>' : '<span class="text-xs text-slate-500 w-12">Empty</span>'}
                   <input type="text" id="global-opal-${app.id}" value="${state.globalOpalLinks[app.id] || ''}" 
                     class="flex-1 rounded-lg px-3 py-2 text-sm" placeholder="https://opal.google/?flow=drive:/...">
                   <button onclick="saveGlobalOpalLink('${app.id}')" class="btn-primary px-3 py-2 rounded-lg text-sm">Save</button>
@@ -1343,14 +1343,14 @@ function renderAdminUsersPage() {
           <span class="text-3xl">👥</span>
           <div>
             <h2 class="text-2xl font-bold">User Management</h2>
-            <p class="text-gray-400 text-sm">Manage user roles and permissions</p>
+            <p class="text-slate-400 text-sm">Manage user roles and permissions</p>
           </div>
         </div>
       </div>
       
       <div class="glass rounded-2xl p-6 mb-6">
         <h3 class="font-semibold mb-4">Make User Admin</h3>
-        <p class="text-sm text-gray-400 mb-4">Enter the user's email to grant admin access. They must have already signed up.</p>
+        <p class="text-sm text-slate-400 mb-4">Enter the user's email to grant admin access. They must have already signed up.</p>
         <div class="flex gap-3">
           <input type="email" id="admin-email-input" class="flex-1 rounded-lg px-4 py-2" placeholder="user@email.com">
           <button onclick="makeUserAdmin()" class="btn-primary px-6 py-2 rounded-lg">Grant Admin</button>
@@ -1366,7 +1366,7 @@ function renderAdminUsersPage() {
             <p class="text-xs text-yellow-400">You (Admin)</p>
           </div>
         </div>
-        <p class="text-xs text-gray-500 mt-4">Note: To manage other admins, use Supabase dashboard directly.</p>
+        <p class="text-xs text-slate-500 mt-4">Note: To manage other admins, use Supabase dashboard directly.</p>
       </div>
     </div>
   `;

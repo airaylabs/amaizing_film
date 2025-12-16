@@ -3,17 +3,27 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>AI Filmmaking Studio - Complete Production Platform</title>
+  <title>raymAIzing film - AI Filmmaking Studio</title>
   <script src="https://cdn.tailwindcss.com"></script>
   <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
-  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+  <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@300;400;500;600;700;800&family=Space+Grotesk:wght@400;500;600;700&display=swap" rel="stylesheet">
   <script>
     tailwind.config = {
       theme: {
         extend: {
           colors: {
-            dark: { 950: '#050508', 900: '#0a0a0f', 800: '#12121a', 700: '#1a1a25', 600: '#252535' },
-            accent: { purple: '#8B5CF6', blue: '#3B82F6', pink: '#EC4899', cyan: '#06B6D4' }
+            dark: { 950: '#030712', 900: '#0a1628', 800: '#0f1d32', 700: '#162544', 600: '#1e3a5f' },
+            accent: { 
+              cyan: '#22d3ee', 
+              blue: '#38bdf8', 
+              sky: '#7dd3fc',
+              teal: '#2dd4bf',
+              indigo: '#818cf8'
+            }
+          },
+          fontFamily: {
+            sans: ['Plus Jakarta Sans', 'sans-serif'],
+            display: ['Space Grotesk', 'sans-serif']
           }
         }
       }
@@ -21,72 +31,178 @@
   </script>
   <style>
     * { box-sizing: border-box; }
-    body { font-family: 'Inter', sans-serif; background: #050508; }
-    .gradient-bg { background: linear-gradient(180deg, #0a0a12 0%, #0d0d18 50%, #08080f 100%); }
-    .gradient-card { background: linear-gradient(145deg, rgba(139,92,246,0.08) 0%, rgba(59,130,246,0.05) 100%); }
-    .glass { background: rgba(20, 20, 30, 0.8); backdrop-filter: blur(20px); border: 1px solid rgba(255,255,255,0.06); }
-    .glass-hover:hover { background: rgba(30, 30, 45, 0.9); border-color: rgba(139,92,246,0.3); transform: translateY(-2px); box-shadow: 0 8px 30px rgba(139,92,246,0.15); }
-    .btn-primary { background: linear-gradient(135deg, #8B5CF6 0%, #6366F1 50%, #3B82F6 100%); box-shadow: 0 4px 15px rgba(139,92,246,0.3); }
-    .btn-primary:hover { background: linear-gradient(135deg, #7C3AED 0%, #4F46E5 50%, #2563EB 100%); transform: translateY(-1px); box-shadow: 0 6px 20px rgba(139,92,246,0.4); }
-    .btn-secondary { background: rgba(255,255,255,0.05); border: 1px solid rgba(255,255,255,0.1); }
-    .btn-secondary:hover { background: rgba(255,255,255,0.1); border-color: rgba(139,92,246,0.3); }
+    body { font-family: 'Plus Jakarta Sans', sans-serif; background: #030712; }
+    
+    /* Modern gradient backgrounds */
+    .gradient-bg { 
+      background: linear-gradient(135deg, #030712 0%, #0a1628 50%, #0f172a 100%);
+    }
+    .gradient-card { 
+      background: linear-gradient(145deg, rgba(34,211,238,0.06) 0%, rgba(56,189,248,0.03) 100%); 
+    }
+    .gradient-hero {
+      background: linear-gradient(135deg, rgba(34,211,238,0.1) 0%, rgba(56,189,248,0.05) 50%, rgba(129,140,248,0.05) 100%);
+    }
+    
+    /* Glass morphism */
+    .glass { 
+      background: rgba(15, 23, 42, 0.8); 
+      backdrop-filter: blur(20px); 
+      border: 1px solid rgba(34,211,238,0.1); 
+    }
+    .glass-hover:hover { 
+      background: rgba(15, 29, 50, 0.9); 
+      border-color: rgba(34,211,238,0.3); 
+      transform: translateY(-2px); 
+      box-shadow: 0 8px 30px rgba(34,211,238,0.1); 
+    }
+    
+    /* Buttons */
+    .btn-primary { 
+      background: linear-gradient(135deg, #22d3ee 0%, #38bdf8 50%, #818cf8 100%); 
+      box-shadow: 0 4px 15px rgba(34,211,238,0.3); 
+      color: #030712;
+      font-weight: 600;
+    }
+    .btn-primary:hover { 
+      background: linear-gradient(135deg, #06b6d4 0%, #0ea5e9 50%, #6366f1 100%); 
+      transform: translateY(-1px); 
+      box-shadow: 0 6px 20px rgba(34,211,238,0.4); 
+    }
+    .btn-secondary { 
+      background: rgba(34,211,238,0.08); 
+      border: 1px solid rgba(34,211,238,0.2); 
+    }
+    .btn-secondary:hover { 
+      background: rgba(34,211,238,0.15); 
+      border-color: rgba(34,211,238,0.4); 
+    }
     .btn-google { background: #fff; color: #333; }
     .btn-google:hover { background: #f1f1f1; }
+    
+    /* Sidebar */
     .sidebar-item { transition: all 0.2s ease; }
-    .sidebar-item:hover { background: rgba(139,92,246,0.1); }
-    .sidebar-item.active { background: linear-gradient(90deg, rgba(139,92,246,0.2) 0%, transparent 100%); border-left: 3px solid #8B5CF6; }
-    input, textarea, select { background: #0f0f19 !important; border: 1px solid rgba(255,255,255,0.15) !important; color: #fff !important; transition: all 0.2s ease; }
-    input:focus, textarea:focus, select:focus { border-color: rgba(139,92,246,0.5) !important; outline: none !important; box-shadow: 0 0 0 3px rgba(139,92,246,0.15) !important; }
-    input::placeholder, textarea::placeholder { color: rgba(255,255,255,0.35) !important; }
-    select { background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' fill='none' viewBox='0 0 24 24' stroke='%238B5CF6'%3E%3Cpath stroke-linecap='round' stroke-linejoin='round' stroke-width='2' d='M19 9l-7 7-7-7'%3E%3C/path%3E%3C/svg%3E") !important; background-repeat: no-repeat !important; background-position: right 0.75rem center !important; background-size: 1.2rem !important; padding-right: 2.5rem !important; appearance: none !important; }
-    select option { background-color: #1a1a2e !important; color: #ffffff !important; }
+    .sidebar-item:hover { background: rgba(34,211,238,0.08); }
+    .sidebar-item.active { 
+      background: linear-gradient(90deg, rgba(34,211,238,0.15) 0%, transparent 100%); 
+      border-left: 3px solid #22d3ee; 
+    }
+    
+    /* Form elements */
+    input, textarea, select { 
+      background: rgba(15, 23, 42, 0.9) !important; 
+      border: 1px solid rgba(34,211,238,0.15) !important; 
+      color: #fff !important; 
+      transition: all 0.2s ease; 
+    }
+    input:focus, textarea:focus, select:focus { 
+      border-color: rgba(34,211,238,0.5) !important; 
+      outline: none !important; 
+      box-shadow: 0 0 0 3px rgba(34,211,238,0.1) !important; 
+    }
+    input::placeholder, textarea::placeholder { color: rgba(148,163,184,0.6) !important; }
+    select { 
+      background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' fill='none' viewBox='0 0 24 24' stroke='%2322d3ee'%3E%3Cpath stroke-linecap='round' stroke-linejoin='round' stroke-width='2' d='M19 9l-7 7-7-7'%3E%3C/path%3E%3C/svg%3E") !important; 
+      background-repeat: no-repeat !important; 
+      background-position: right 0.75rem center !important; 
+      background-size: 1.2rem !important; 
+      padding-right: 2.5rem !important; 
+      appearance: none !important; 
+    }
+    select option { background-color: #0f1d32 !important; color: #ffffff !important; }
+    
+    /* Scrollbar */
     ::-webkit-scrollbar { width: 6px; height: 6px; }
     ::-webkit-scrollbar-track { background: rgba(0,0,0,0.2); }
-    ::-webkit-scrollbar-thumb { background: rgba(139,92,246,0.3); border-radius: 3px; }
+    ::-webkit-scrollbar-thumb { background: rgba(34,211,238,0.3); border-radius: 3px; }
+    
+    /* Animations */
     .fade-in { animation: fadeIn 0.3s ease-out; }
     @keyframes fadeIn { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: translateY(0); } }
-    .pulse-glow { animation: pulseGlow 2s ease-in-out infinite; }
-    @keyframes pulseGlow { 0%, 100% { box-shadow: 0 0 20px rgba(139,92,246,0.2); } 50% { box-shadow: 0 0 30px rgba(139,92,246,0.4); } }
-    .prompt-output { background: linear-gradient(145deg, rgba(139,92,246,0.08) 0%, rgba(59,130,246,0.05) 100%); border: 1px solid rgba(139,92,246,0.2); }
-    .phase-purple { border-left: 3px solid #8B5CF6; }
-    .phase-blue { border-left: 3px solid #3B82F6; }
-    .phase-pink { border-left: 3px solid #EC4899; }
-    .phase-green { border-left: 3px solid #10B981; }
-    .phase-orange { border-left: 3px solid #F59E0B; }
-    .tag { background: rgba(139,92,246,0.15); border: 1px solid rgba(139,92,246,0.3); font-size: 11px; padding: 2px 8px; border-radius: 20px; }
+    .pulse-glow { animation: pulseGlow 3s ease-in-out infinite; }
+    @keyframes pulseGlow { 0%, 100% { box-shadow: 0 0 20px rgba(34,211,238,0.15); } 50% { box-shadow: 0 0 40px rgba(34,211,238,0.25); } }
+    
+    /* Prompt output */
+    .prompt-output { 
+      background: linear-gradient(145deg, rgba(34,211,238,0.06) 0%, rgba(56,189,248,0.03) 100%); 
+      border: 1px solid rgba(34,211,238,0.15); 
+    }
+    
+    /* Tags */
+    .tag { 
+      background: rgba(34,211,238,0.1); 
+      border: 1px solid rgba(34,211,238,0.25); 
+      font-size: 11px; 
+      padding: 2px 10px; 
+      border-radius: 20px; 
+      color: #7dd3fc;
+    }
+    
+    /* Text utilities */
     .line-clamp-2 { display: -webkit-box; -webkit-line-clamp: 2; -webkit-box-orient: vertical; overflow: hidden; }
     .line-clamp-3 { display: -webkit-box; -webkit-line-clamp: 3; -webkit-box-orient: vertical; overflow: hidden; }
-    .loading-spinner { border: 3px solid rgba(139,92,246,0.2); border-top-color: #8B5CF6; border-radius: 50%; width: 40px; height: 40px; animation: spin 1s linear infinite; }
+    
+    /* Loading */
+    .loading-spinner { 
+      border: 3px solid rgba(34,211,238,0.2); 
+      border-top-color: #22d3ee; 
+      border-radius: 50%; 
+      width: 40px; 
+      height: 40px; 
+      animation: spin 1s linear infinite; 
+    }
     @keyframes spin { to { transform: rotate(360deg); } }
+    
+    /* Brand logo */
+    .brand-text {
+      font-family: 'Space Grotesk', sans-serif;
+      font-weight: 700;
+      letter-spacing: -0.02em;
+    }
+    .brand-ai {
+      background: linear-gradient(135deg, #22d3ee 0%, #38bdf8 100%);
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+      background-clip: text;
+    }
+    .brand-film {
+      color: #94a3b8;
+      font-weight: 500;
+    }
+    
+    /* Glow effects */
+    .glow-cyan { text-shadow: 0 0 20px rgba(34,211,238,0.5); }
+    .border-glow { box-shadow: 0 0 15px rgba(34,211,238,0.1), inset 0 0 15px rgba(34,211,238,0.05); }
   </style>
 </head>
 <body class="gradient-bg min-h-screen text-white">
   
   <!-- Auth Screen -->
   <div id="auth-screen" class="min-h-screen flex items-center justify-center p-4">
-    <div class="glass rounded-3xl p-8 w-full max-w-md fade-in">
+    <div class="glass rounded-3xl p-8 w-full max-w-md fade-in border-glow">
       <div class="text-center mb-8">
         <div class="text-5xl mb-4">🎬</div>
-        <h1 class="text-2xl font-bold bg-gradient-to-r from-purple-400 via-pink-400 to-blue-400 bg-clip-text text-transparent">
-          AI Filmmaking Studio
+        <h1 class="text-2xl brand-text mb-1">
+          <span class="text-white">raym</span><span class="brand-ai">AI</span><span class="brand-film">zing film</span>
         </h1>
-        <p class="text-gray-400 text-sm mt-2">Complete production platform with VEO 3 + Gemini</p>
+        <p class="text-slate-400 text-sm mt-3">AI Filmmaking Studio</p>
+        <p class="text-slate-500 text-xs mt-1">Unlimited VEO 3 + Gemini via Google Opal</p>
       </div>
       
       <!-- Auth Tabs -->
       <div class="flex mb-6 bg-dark-800 rounded-xl p-1">
-        <button onclick="showAuthTab('login')" id="tab-login" class="flex-1 py-2 rounded-lg text-sm font-medium transition-all bg-purple-500/20 text-purple-400">Login</button>
-        <button onclick="showAuthTab('signup')" id="tab-signup" class="flex-1 py-2 rounded-lg text-sm font-medium transition-all text-gray-400">Sign Up</button>
+        <button onclick="showAuthTab('login')" id="tab-login" class="flex-1 py-2 rounded-lg text-sm font-medium transition-all bg-cyan-500/20 text-cyan-400">Login</button>
+        <button onclick="showAuthTab('signup')" id="tab-signup" class="flex-1 py-2 rounded-lg text-sm font-medium transition-all text-slate-400">Sign Up</button>
       </div>
       
       <!-- Login Form -->
       <div id="form-login" class="space-y-4">
         <div>
-          <label class="block text-sm text-gray-400 mb-1">Email</label>
+          <label class="block text-sm text-slate-400 mb-1">Email</label>
           <input type="email" id="login-email" class="w-full rounded-xl px-4 py-3" placeholder="your@email.com">
         </div>
         <div>
-          <label class="block text-sm text-gray-400 mb-1">Password</label>
+          <label class="block text-sm text-slate-400 mb-1">Password</label>
           <input type="password" id="login-password" class="w-full rounded-xl px-4 py-3" placeholder="••••••••">
         </div>
         <button onclick="handleLogin()" class="w-full btn-primary py-3 rounded-xl font-semibold">Login</button>
@@ -95,15 +211,15 @@
       <!-- Signup Form -->
       <div id="form-signup" class="space-y-4 hidden">
         <div>
-          <label class="block text-sm text-gray-400 mb-1">Full Name</label>
+          <label class="block text-sm text-slate-400 mb-1">Full Name</label>
           <input type="text" id="signup-name" class="w-full rounded-xl px-4 py-3" placeholder="John Doe">
         </div>
         <div>
-          <label class="block text-sm text-gray-400 mb-1">Email</label>
+          <label class="block text-sm text-slate-400 mb-1">Email</label>
           <input type="email" id="signup-email" class="w-full rounded-xl px-4 py-3" placeholder="your@email.com">
         </div>
         <div>
-          <label class="block text-sm text-gray-400 mb-1">Password</label>
+          <label class="block text-sm text-slate-400 mb-1">Password</label>
           <input type="password" id="signup-password" class="w-full rounded-xl px-4 py-3" placeholder="Min 6 characters">
         </div>
         <button onclick="handleSignup()" class="w-full btn-primary py-3 rounded-xl font-semibold">Create Account</button>
@@ -112,7 +228,7 @@
       <!-- Divider -->
       <div class="flex items-center my-6">
         <div class="flex-1 border-t border-white/10"></div>
-        <span class="px-4 text-sm text-gray-500">or continue with</span>
+        <span class="px-4 text-sm text-slate-500">or continue with</span>
         <div class="flex-1 border-t border-white/10"></div>
       </div>
       
@@ -126,7 +242,7 @@
       <div id="auth-error" class="hidden mt-4 p-3 bg-red-500/20 border border-red-500/30 rounded-xl text-red-400 text-sm text-center"></div>
       
       <!-- Success Message -->
-      <div id="auth-success" class="hidden mt-4 p-3 bg-green-500/20 border border-green-500/30 rounded-xl text-green-400 text-sm text-center"></div>
+      <div id="auth-success" class="hidden mt-4 p-3 bg-emerald-500/20 border border-emerald-500/30 rounded-xl text-emerald-400 text-sm text-center"></div>
     </div>
   </div>
 
@@ -134,44 +250,48 @@
   <div id="loading-screen" class="hidden min-h-screen flex items-center justify-center">
     <div class="text-center">
       <div class="loading-spinner mx-auto mb-4"></div>
-      <p class="text-gray-400">Loading your studio...</p>
+      <p class="text-slate-400">Loading your studio...</p>
     </div>
   </div>
+</body>
+</html>
 
   <!-- Main App (hidden until logged in) -->
   <div id="app" class="hidden flex h-screen overflow-hidden">
     <!-- Sidebar -->
-    <aside id="sidebar" class="w-72 bg-dark-900/90 border-r border-white/5 flex flex-col">
+    <aside id="sidebar" class="w-72 bg-dark-900/95 border-r border-cyan-500/10 flex flex-col">
       <!-- Logo -->
-      <div class="p-5 border-b border-white/5">
-        <h1 class="text-xl font-bold flex items-center gap-3">
-          <span class="text-3xl">🎬</span> 
+      <div class="p-5 border-b border-cyan-500/10">
+        <h1 class="flex items-center gap-3">
+          <span class="text-2xl">🎬</span> 
           <div>
-            <span class="bg-gradient-to-r from-purple-400 via-pink-400 to-blue-400 bg-clip-text text-transparent">AI Filmmaking</span>
-            <p class="text-[10px] text-gray-500 font-normal mt-0.5">Unlimited VEO 3 + Gemini</p>
+            <span class="brand-text text-lg">
+              <span class="text-white">raym</span><span class="brand-ai">AI</span><span class="brand-film">zing</span>
+            </span>
+            <p class="text-[10px] text-slate-500 font-normal mt-0.5">Unlimited VEO 3 + Gemini</p>
           </div>
         </h1>
       </div>
       
       <!-- User Info -->
-      <div id="user-info" class="p-4 border-b border-white/5 flex items-center gap-3">
-        <div class="w-10 h-10 rounded-full bg-gradient-to-br from-purple-500 to-blue-500 flex items-center justify-center text-lg font-bold" id="user-avatar">?</div>
+      <div id="user-info" class="p-4 border-b border-cyan-500/10 flex items-center gap-3">
+        <div class="w-10 h-10 rounded-full bg-gradient-to-br from-cyan-500 to-blue-500 flex items-center justify-center text-lg font-bold text-dark-950" id="user-avatar">?</div>
         <div class="flex-1 min-w-0">
           <p class="text-sm font-medium truncate" id="user-name">Loading...</p>
-          <p class="text-xs text-gray-500 truncate" id="user-email">...</p>
+          <p class="text-xs text-slate-500 truncate" id="user-email">...</p>
         </div>
-        <button onclick="handleLogout()" class="text-gray-400 hover:text-white p-2" title="Logout">
+        <button onclick="handleLogout()" class="text-slate-400 hover:text-white p-2" title="Logout">
           <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 16l4-4m0 0l-4-4m4 4H7m6 4v1a3 3 0 01-3 3H6a3 3 0 01-3-3V7a3 3 0 013-3h4a3 3 0 013 3v1"/></svg>
         </button>
       </div>
       
       <!-- Project Selector -->
-      <div class="p-4 border-b border-white/5">
-        <label class="text-xs text-gray-500 mb-1 block">Current Project</label>
+      <div class="p-4 border-b border-cyan-500/10">
+        <label class="text-xs text-slate-500 mb-1 block">Current Project</label>
         <select id="project-selector" onchange="switchProject(this.value)" class="w-full rounded-lg px-3 py-2.5 text-sm font-medium">
           <option value="">📁 All Projects</option>
         </select>
-        <button onclick="showNewProjectModal()" class="w-full mt-2 text-sm text-purple-400 hover:text-purple-300 py-2 rounded-lg btn-secondary transition-all">
+        <button onclick="showNewProjectModal()" class="w-full mt-2 text-sm text-cyan-400 hover:text-cyan-300 py-2 rounded-lg btn-secondary transition-all">
           + New Project
         </button>
       </div>
@@ -180,23 +300,23 @@
       <nav class="flex-1 overflow-y-auto p-3" id="sidebar-nav"></nav>
       
       <!-- Opal Link -->
-      <div class="p-4 border-t border-white/5 space-y-2">
+      <div class="p-4 border-t border-cyan-500/10 space-y-2">
         <a href="https://opal.google" target="_blank" class="btn-primary flex items-center justify-center gap-2 py-3 px-4 rounded-xl text-sm font-semibold transition-all w-full">
           🚀 Open Google Opal
         </a>
-        <p class="text-[10px] text-gray-500 text-center">Generate unlimited with VEO 3</p>
+        <p class="text-[10px] text-slate-500 text-center">Generate unlimited with VEO 3</p>
       </div>
     </aside>
 
     <!-- Main Content -->
     <main class="flex-1 flex flex-col overflow-hidden bg-dark-950/50">
       <!-- Top Bar -->
-      <header class="h-14 border-b border-white/5 flex items-center justify-between px-6 bg-dark-900/50">
-        <div id="breadcrumb" class="text-sm text-gray-400 flex items-center gap-2"></div>
+      <header class="h-14 border-b border-cyan-500/10 flex items-center justify-between px-6 bg-dark-900/50">
+        <div id="breadcrumb" class="text-sm text-slate-400 flex items-center gap-2"></div>
         <div class="flex items-center gap-3">
           <button onclick="showHistoryPanel()" class="btn-secondary px-3 py-1.5 rounded-lg text-sm flex items-center gap-2 transition-all">
             <span>📜</span> History
-            <span class="bg-purple-500/20 text-purple-400 text-xs px-1.5 rounded" id="history-count">0</span>
+            <span class="bg-cyan-500/20 text-cyan-400 text-xs px-1.5 rounded" id="history-count">0</span>
           </button>
           <button onclick="showSettingsModal()" class="btn-secondary p-2 rounded-lg transition-all">⚙️</button>
         </div>
@@ -207,10 +327,10 @@
     </main>
     
     <!-- History Panel -->
-    <aside id="history-panel" class="hidden w-96 bg-dark-900/95 border-l border-white/5 flex flex-col">
-      <div class="p-4 border-b border-white/5 flex items-center justify-between">
+    <aside id="history-panel" class="hidden w-96 bg-dark-900/95 border-l border-cyan-500/10 flex flex-col">
+      <div class="p-4 border-b border-cyan-500/10 flex items-center justify-between">
         <h3 class="font-semibold flex items-center gap-2">📜 Generation History</h3>
-        <button onclick="hideHistoryPanel()" class="text-gray-400 hover:text-white text-xl">&times;</button>
+        <button onclick="hideHistoryPanel()" class="text-slate-400 hover:text-white text-xl">&times;</button>
       </div>
       <div id="history-list" class="flex-1 overflow-y-auto p-3"></div>
     </aside>
