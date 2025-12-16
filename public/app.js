@@ -872,7 +872,6 @@ function togglePhaseExpand(idx) {
     navigateTo('app', phase.apps[0].id);
   }
 }
-}
 
 async function deleteProject(id) {
   if (!confirm('Delete this project and all its data?')) return;
