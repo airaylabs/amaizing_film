@@ -154,6 +154,18 @@ document.addEventListener('DOMContentLoaded', () => {
 
 async function initAuth() {
   showLoading(true);
+  
+  // DEV MODE: Skip auth for localhost testing
+  const isLocalDev = window.location.hostname === 'localhost' || window.location.hostname === '127.0.0.1';
+  const devModeEnabled = localStorage.getItem('devMode') === 'true';
+  
+  if (isLocalDev && devModeEnabled) {
+    console.log('🔧 DEV MODE: Skipping auth');
+    state.user = { id: 'dev-user', email: 'dev@localhost', user_metadata: { full_name: 'Dev User' } };
+    showApp();
+    return;
+  }
+  
   const session = await Auth.getSession();
   
   if (session) {
@@ -162,6 +174,11 @@ async function initAuth() {
     showApp();
   } else {
     showAuthScreen();
+    
+    // Show dev mode hint on localhost
+    if (isLocalDev) {
+      console.log('💡 TIP: Enable dev mode with: localStorage.setItem("devMode", "true"); then refresh');
+    }
   }
   
   Auth.onAuthStateChange(async (event, session) => {
