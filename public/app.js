@@ -1,35 +1,33 @@
 // raymAIzing film - Main Application
 // Celtx-Style Production Management with Proper Workflow Logic
-// FIXED: Checklist = User Completion, NOT Opal Upload Status
+// SIMPLIFIED: 2 Main Sections - INSIGHT (optional) + PRODUCTION PHASES (sequential)
 
-// ============ APP STRUCTURE ============
-// 3 Main Sections: INSIGHT, PRODUCTION, GENERATOR
+// ============ SIMPLIFIED STRUCTURE ============
+// INSIGHT = Optional tools for finding ideas (not part of production flow)
+// PRODUCTION = Sequential phases from Synopsis to Distribution (auto-integrated)
 
-// ============ 1. INSIGHT (Optional - Find Ideas) ============
-const INSIGHT_SECTION = {
+// ============ INSIGHT TOOLS (Optional - for finding ideas) ============
+// These are standalone tools, not part of production workflow
+const INSIGHT_TOOLS = {
   id: 'insight',
   name: { id: 'Cari Ide', en: 'Find Ideas' },
   icon: '💡',
-  description: { id: 'Inspirasi & riset ide cerita (opsional)', en: 'Story inspiration & research (optional)' },
-  tools: [
-    { id: 'idea-01', name: 'Trend Explorer', icon: '🔥', desc: { id: 'Cari trend viral', en: 'Find viral trends' } },
-    { id: 'idea-02', name: 'Idea Generator', icon: '💡', desc: { id: 'Generate ide cerita', en: 'Generate story ideas' } },
-    { id: 'idea-03', name: 'Genre Mixer', icon: '🎲', desc: { id: 'Mix genre unik', en: 'Mix unique genres' } }
-  ]
+  description: { id: 'Inspirasi & riset (opsional)', en: 'Inspiration & research (optional)' },
+  tools: ['idea-01', 'idea-02', 'idea-03'] // Tool IDs from PHASES in data.js
 };
 
-// ============ 2. PRODUCTION PHASES (Integrated & Auto-fill) ============
-// Synopsis Writer is CORE - triggers everything else automatically
-const PRODUCTION_PHASES = [
+// ============ PRODUCTION PHASES (Sequential & Auto-integrated) ============
+// Step 1 (Synopsis) is CORE - triggers auto-fill for all other phases
+const WORKFLOW_PHASES = [
   { 
     id: 'synopsis', 
     step: 1, 
     icon: '📖', 
     isCore: true,
+    required: true,
     name: { id: 'Synopsis Writer', en: 'Synopsis Writer' },
-    description: { id: '⭐ CORE: Tulis synopsis, SEMUA otomatis!', en: '⭐ CORE: Write synopsis, EVERYTHING auto!' },
-    tools: ['story-01'],
-    outputs: ['title', 'logline', 'synopsis', 'genre', 'style', 'mood', 'characters', 'locations', 'episodes', 'scenes']
+    description: { id: '⭐ CORE: Tulis synopsis, semua otomatis terisi!', en: '⭐ CORE: Write synopsis, everything auto-fills!' },
+    tools: ['story-01']
   },
   { 
     id: 'breakdown', 
@@ -38,8 +36,7 @@ const PRODUCTION_PHASES = [
     autoFrom: 'synopsis',
     name: { id: 'Story Breakdown', en: 'Story Breakdown' },
     description: { id: 'Episode, Scene, Character Arc', en: 'Episode, Scene, Character Arc' },
-    tools: ['story-02', 'story-03', 'story-04'],
-    inputs: ['synopsis', 'characters', 'episodes']
+    tools: ['story-02', 'story-03', 'story-04']
   },
   { 
     id: 'preproduction', 
@@ -48,8 +45,7 @@ const PRODUCTION_PHASES = [
     autoFrom: 'synopsis',
     name: { id: 'Pre-Production', en: 'Pre-Production' },
     description: { id: 'Treatment, Storyboard, Design', en: 'Treatment, Storyboard, Design' },
-    tools: ['01', '02', '03', '04'],
-    inputs: ['synopsis', 'scenes', 'characters', 'locations']
+    tools: ['01', '02', '03', '04']
   },
   { 
     id: 'image', 
@@ -58,8 +54,7 @@ const PRODUCTION_PHASES = [
     autoFrom: 'synopsis',
     name: { id: 'Produksi Gambar', en: 'Image Production' },
     description: { id: 'Generate gambar scene & karakter', en: 'Generate scene & character images' },
-    tools: ['05', '06', '07'],
-    inputs: ['scenes', 'characters', 'locations', 'style']
+    tools: ['05', '06', '07']
   },
   { 
     id: 'video', 
@@ -68,8 +63,7 @@ const PRODUCTION_PHASES = [
     autoFrom: 'synopsis',
     name: { id: 'Produksi Video', en: 'Video Production' },
     description: { id: 'Generate video dengan VEO 3', en: 'Generate video with VEO 3' },
-    tools: ['08', '09', '10', '11'],
-    inputs: ['scenes', 'storyboard', 'style', 'mood']
+    tools: ['08', '09', '10', '11']
   },
   { 
     id: 'audio', 
@@ -78,8 +72,7 @@ const PRODUCTION_PHASES = [
     autoFrom: 'synopsis',
     name: { id: 'Produksi Audio', en: 'Audio Production' },
     description: { id: 'Dialog, musik, SFX', en: 'Dialogue, music, SFX' },
-    tools: ['audio-01', 'audio-02', 'audio-03', 'audio-04'],
-    inputs: ['scenes', 'characters', 'dialogue', 'mood']
+    tools: ['audio-01', 'audio-02', 'audio-03', 'audio-04']
   },
   { 
     id: 'post', 
@@ -88,8 +81,7 @@ const PRODUCTION_PHASES = [
     autoFrom: 'synopsis',
     name: { id: 'Post-Production', en: 'Post-Production' },
     description: { id: 'Edit, assembly, viral picker', en: 'Edit, assembly, viral picker' },
-    tools: ['post-01', 'post-02', 'post-03', 'post-04', 'post-05', 'post-06'],
-    inputs: ['episodes', 'scenes', 'assets']
+    tools: ['post-01', 'post-02', 'post-03', 'post-04', 'post-05', 'post-06']
   },
   { 
     id: 'distribution', 
@@ -98,26 +90,13 @@ const PRODUCTION_PHASES = [
     autoFrom: 'synopsis',
     name: { id: 'Distribution', en: 'Distribution' },
     description: { id: 'Thumbnail, poster, trailer', en: 'Thumbnail, poster, trailer' },
-    tools: ['dist-01', 'dist-02', 'dist-03', 'dist-04'],
-    inputs: ['title', 'synopsis', 'assets', 'viralClips']
+    tools: ['dist-01', 'dist-02', 'dist-03', 'dist-04']
   }
 ];
 
-// ============ 3. GENERATOR (Modular AI Tools) ============
-const GENERATOR_SECTION = {
-  id: 'generator',
-  name: { id: 'Generator', en: 'Generator' },
-  icon: '🔧',
-  description: { id: 'Tools AI modular - pakai kapan saja', en: 'Modular AI tools - use anytime' },
-  categories: [
-    {
-      id: 'text',
-      name: { id: 'Text Generator', en: 'Text Generator' },
-      icon: '📝',
-      tools: ['gen-text-story', 'gen-text-dialogue', 'gen-text-description']
-    },
-    {
-      id: 'image',
+// Legacy compatibility
+const PRODUCTION_PHASES = WORKFLOW_PHASES;
+const INSIGHT_SECTION = INSIGHT_TOOLS;
       name: { id: 'Image Generator', en: 'Image Generator' },
       icon: '🖼️',
       tools: ['05', '06', '07'] // Reuse production tools
