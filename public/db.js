@@ -1,14 +1,38 @@
 // raymAIzing film - Database Operations
 // Celtx-Style Project Management with Content Storage
 
-// Get supabase client from global
-const supabase = window.supabaseClient;
+// Get supabase client from global (lazy initialization)
+function getSupabase() {
+  if (!window.supabaseClient) {
+    console.warn('Supabase client not initialized yet');
+    return null;
+  }
+  return window.supabaseClient;
+}
+
+// Shorthand for getting supabase
+const supabase = {
+  from: (table) => {
+    const client = getSupabase();
+    if (!client) {
+      // Return mock that throws on actual operations
+      return {
+        select: () => ({ eq: () => ({ order: () => ({ single: () => Promise.resolve({ data: null, error: { message: 'DB not ready' } }) }) }) }),
+        insert: () => ({ select: () => ({ single: () => Promise.resolve({ data: null, error: { message: 'DB not ready' } }) }) }),
+        update: () => ({ eq: () => ({ select: () => ({ single: () => Promise.resolve({ data: null, error: { message: 'DB not ready' } }) }) }) }),
+        delete: () => ({ eq: () => Promise.resolve({ error: { message: 'DB not ready' } }) }),
+        upsert: () => ({ select: () => ({ single: () => Promise.resolve({ data: null, error: { message: 'DB not ready' } }) }) })
+      };
+    }
+    return client.from(table);
+  }
+};
 
 // ============ DATABASE OPERATIONS ============
 const DB = {
   // ============ PROJECTS ============
   async getProjects(userId) {
-    const { data, error } = await supabase
+    const { data, error } = await supabase.from('projects')
       .from('projects')
       .select('*')
       .eq('user_id', userId)
