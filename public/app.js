@@ -170,7 +170,13 @@ document.addEventListener('DOMContentLoaded', () => {
 async function initAuth() {
   showLoading(true);
 
-  // DEV MODE: Skip auth for localhost testing
+  // SKIP AUTH - Langsung masuk tanpa login
+  console.log('🎬 raymAIzing film - Langsung masuk tanpa login');
+  state.user = { id: 'guest-user', email: 'guest@raymAIzing.film', user_metadata: { full_name: 'Guest User' } };
+  showApp();
+  return;
+
+  /* AUTH DISABLED - Uncomment untuk enable login nanti
   const isLocalDev = window.location.hostname === 'localhost' || window.location.hostname === '127.0.0.1';
   const devModeEnabled = localStorage.getItem('devMode') === 'true';
 
@@ -191,7 +197,6 @@ async function initAuth() {
     } else {
       showAuthScreen();
 
-      // Show dev mode hint on localhost
       if (isLocalDev) {
         console.log('💡 TIP: Enable dev mode with: localStorage.setItem("devMode", "true"); then refresh');
       }
@@ -211,6 +216,7 @@ async function initAuth() {
       showAuthScreen();
     }
   });
+  */
 
   // Listen for tab visibility changes to restore state
   document.addEventListener('visibilitychange', () => {
