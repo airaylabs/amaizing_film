@@ -847,9 +847,7 @@ const DB = {
         totalSteps: 32
       }
     };
-  }
-};
-
+  },
 
   // ============ HISTORY ============
   async getHistory(userId, projectId = null) {
@@ -918,6 +916,37 @@ const DB = {
       return data;
     } catch (error) {
       console.warn('Could not mark tool completed:', error);
+      throw error;
+    }
+  },
+
+  // ============ GLOBAL OPAL LINKS ============
+  async getGlobalOpalLinks() {
+    try {
+      const { data, error } = await supabase.from('global_opal_links')
+        .select('*');
+      if (error) throw error;
+      return data || [];
+    } catch (error) {
+      console.warn('Could not get global opal links:', error);
+      return [];
+    }
+  },
+
+  async setGlobalOpalLink(appId, url) {
+    try {
+      const { data, error } = await supabase.from('global_opal_links')
+        .upsert({
+          app_id: appId,
+          url: url,
+          updated_at: new Date().toISOString()
+        }, { onConflict: 'app_id' })
+        .select()
+        .single();
+      if (error) throw error;
+      return data;
+    } catch (error) {
+      console.warn('Could not set global opal link:', error);
       throw error;
     }
   }
