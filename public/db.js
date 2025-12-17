@@ -849,3 +849,76 @@ const DB = {
     };
   }
 };
+
+
+  // ============ HISTORY ============
+  async getHistory(userId, projectId = null) {
+    try {
+      let query = supabase.from('prompt_history')
+        .select('*')
+        .eq('user_id', userId)
+        .order('created_at', { ascending: false })
+        .limit(100);
+      
+      if (projectId) {
+        query = query.eq('project_id', projectId);
+      }
+      
+      const { data, error } = await query;
+      if (error) throw error;
+      return data || [];
+    } catch (error) {
+      console.warn('History table may not exist:', error);
+      return [];
+    }
+  },
+
+  async saveToHistory(entry) {
+    try {
+      const { data, error } = await supabase.from('prompt_history')
+        .insert(entry)
+        .select()
+        .single();
+      if (error) throw error;
+      return data;
+    } catch (error) {
+      console.warn('Could not save to history:', error);
+      throw error;
+    }
+  },
+
+  async deleteHistory(historyId) {
+    try {
+      const { error } = await supabase.from('prompt_history')
+        .delete()
+        .eq('id', historyId);
+      if (error) throw error;
+      return true;
+    } catch (error) {
+      console.warn('Could not delete history:', error);
+      throw error;
+    }
+  },
+
+  // ============ TOOL PROGRESS ============
+  async markToolCompleted(projectId, userId, toolId, phaseId) {
+    try {
+      const { data, error } = await supabase.from('workflow_progress')
+        .upsert({
+          project_id: projectId,
+          user_id: userId,
+          tool_id: toolId,
+          phase_id: phaseId,
+          is_completed: true,
+          completed_at: new Date().toISOString()
+        }, { onConflict: 'project_id,tool_id' })
+        .select()
+        .single();
+      if (error) throw error;
+      return data;
+    } catch (error) {
+      console.warn('Could not mark tool completed:', error);
+      throw error;
+    }
+  }
+};
