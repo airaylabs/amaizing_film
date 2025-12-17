@@ -1,28 +1,31 @@
 // raymAIzing film - Database Operations
 // Celtx-Style Project Management with Content Storage
 
-// Get supabase client from global (lazy initialization)
-function getSupabase() {
-  if (!window.supabaseClient) {
-    console.warn('Supabase client not initialized yet');
-    return null;
-  }
-  return window.supabaseClient;
+// Get supabase client - returns client or null
+function getSupabaseClient() {
+  return window.supabaseClient || null;
 }
 
-// Shorthand for getting supabase
+// Create supabase proxy that handles missing client gracefully
 const supabase = {
-  from: (table) => {
-    const client = getSupabase();
+  from: function(table) {
+    const client = getSupabaseClient();
     if (!client) {
-      // Return mock that throws on actual operations
-      return {
-        select: () => ({ eq: () => ({ order: () => ({ single: () => Promise.resolve({ data: null, error: { message: 'DB not ready' } }) }) }) }),
-        insert: () => ({ select: () => ({ single: () => Promise.resolve({ data: null, error: { message: 'DB not ready' } }) }) }),
-        update: () => ({ eq: () => ({ select: () => ({ single: () => Promise.resolve({ data: null, error: { message: 'DB not ready' } }) }) }) }),
-        delete: () => ({ eq: () => Promise.resolve({ error: { message: 'DB not ready' } }) }),
-        upsert: () => ({ select: () => ({ single: () => Promise.resolve({ data: null, error: { message: 'DB not ready' } }) }) })
+      console.warn('Supabase not ready, operation will use localStorage fallback');
+      // Return a mock that resolves with empty data
+      const mockChain = {
+        select: () => mockChain,
+        insert: () => mockChain,
+        update: () => mockChain,
+        delete: () => mockChain,
+        upsert: () => mockChain,
+        eq: () => mockChain,
+        order: () => mockChain,
+        limit: () => mockChain,
+        single: () => Promise.resolve({ data: null, error: { message: 'DB not connected', code: 'NO_CLIENT' } }),
+        then: (resolve) => resolve({ data: null, error: { message: 'DB not connected', code: 'NO_CLIENT' } })
       };
+      return mockChain;
     }
     return client.from(table);
   }
@@ -30,28 +33,57 @@ const supabase = {
 
 // ============ DATABASE OPERATIONS ============
 const DB = {
+  // Helper to check if DB is ready
+  isReady() {
+    return !!getSupabaseClient();
+  },
+
   // ============ PROJECTS ============
   async getProjects(userId) {
-    const { data, error } = await supabase.from('projects')
+    if (!this.isReady()) {
+      const projects = JSON.parse(localStorage.getItem('projects') || '[]');
+      return projects.filter(p => p.user_id === userId);
+    }
+    
+    const { data, error } = await supabase
       .from('projects')
       .select('*')
       .eq('user_id', userId)
       .order('updated_at', { ascending: false });
-    if (error) throw error;
+    if (error && error.code !== 'NO_CLIENT') throw error;
     return data || [];
   },
 
   async getProject(projectId) {
+    if (!this.isReady()) {
+      const projects = JSON.parse(localStorage.getItem('projects') || '[]');
+      return projects.find(p => p.id === projectId);
+    }
+    
     const { data, error } = await supabase
       .from('projects')
       .select('*')
       .eq('id', projectId)
       .single();
-    if (error) throw error;
+    if (error && error.code !== 'NO_CLIENT') throw error;
     return data;
   },
 
   async createProject(project) {
+    if (!this.isReady()) {
+      // Fallback to localStorage
+      const projects = JSON.parse(localStorage.getItem('projects') || '[]');
+      const newProject = {
+        ...project,
+        id: 'local-' + Date.now(),
+        created_at: new Date().toISOString(),
+        updated_at: new Date().toISOString()
+      };
+      projects.unshift(newProject);
+      localStorage.setItem('projects', JSON.stringify(projects));
+      return newProject;
+    }
+    
     const { data, error } = await supabase
       .from('projects')
       .insert(project)
@@ -62,6 +94,17 @@ const DB = {
   },
 
   async updateProject(projectId, updates) {
+    if (!this.isReady()) {
+      const projects = JSON.parse(localStorage.getItem('projects') || '[]');
+      const idx = projects.findIndex(p => p.id === projectId);
+      if (idx >= 0) {
+        projects[idx] = { ...projects[idx], ...updates, updated_at: new Date().toISOString() };
+        localStorage.setItem('projects', JSON.stringify(projects));
+        return projects[idx];
+      }
+      return null;
+    }
+    
     const { data, error } = await supabase
       .from('projects')
       .update({ ...updates, updated_at: new Date().toISOString() })
@@ -73,6 +116,13 @@ const DB = {
   },
 
   async deleteProject(projectId) {
+    if (!this.isReady()) {
+      const projects = JSON.parse(localStorage.getItem('projects') || '[]');
+      const filtered = projects.filter(p => p.id !== projectId);
+      localStorage.setItem('projects', JSON.stringify(filtered));
+      return true;
+    }
+    
     const { error } = await supabase
       .from('projects')
       .delete()
