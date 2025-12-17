@@ -1,100 +1,72 @@
-// raymAIzing film - Main Application
-// Celtx-Style Production Management
-// v4.0: Clear Navigation Structure
+// raymAIzing film - Platform Produksi Film AI
+// v5.0: Navigasi Minimalis + Bahasa Indonesia
 
-// ============ NAVIGATION STRUCTURE ============
-// 💡 CARI IDE - Optional, untuk inspirasi
-// 🎬 FASE PRODUKSI - Sequential Celtx-style workflow (semua bisa generate di Opal)
-// 🔧 GENERATOR - Modular standalone tools
-// 📢 MARKETING - Distribution & promotional content
+// ============ STRUKTUR NAVIGASI ============
+// 💡 CARI IDE - Opsional, untuk inspirasi
+// 🎬 PRODUKSI - Workflow sequential dari Story sampai Audio
+// 📢 MARKETING - Thumbnail, poster, trailer
 
-// ============ 1. CARI IDE (Optional) ============
+// ============ CARI IDE (Opsional) ============
 const INSIGHT_TOOLS = {
   id: 'insight',
-  name: { id: 'Cari Ide', en: 'Find Ideas' },
+  name: 'Cari Ide',
   icon: '💡',
-  description: { id: 'Inspirasi & riset (opsional)', en: 'Inspiration & research (optional)' },
+  description: 'Inspirasi & riset (opsional)',
   tools: ['idea-01', 'idea-02', 'idea-03']
 };
 
-// ============ 2. FASE PRODUKSI (Celtx-style Sequential) ============
-// Semua tools ini BISA generate di Opal (text/image/video/audio)
+// ============ FASE PRODUKSI ============
 const WORKFLOW_PHASES = [
   {
     id: 'story',
     step: 1,
     icon: '📖',
     isCore: true,
-    required: true,
-    name: { id: 'Story', en: 'Story' },
-    description: { id: 'Synopsis → Episode → Scene → Character Arc', en: 'Synopsis → Episode → Scene → Character Arc' },
+    name: 'Story',
+    description: 'Synopsis, Episode, Scene, Character Arc',
     tools: ['story-01', 'story-02', 'story-03', 'story-04']
   },
   {
     id: 'preproduction',
     step: 2,
     icon: '📝',
-    autoFrom: 'story',
-    name: { id: 'Pre-Production', en: 'Pre-Production' },
-    description: { id: 'Treatment, Storyboard, Character Design, World Building', en: 'Treatment, Storyboard, Character Design, World Building' },
-    tools: ['01', '02', '03', '04'] // Script to Treatment, Storyboard, Character Designer, World Builder
+    name: 'Pre-Production',
+    description: 'Treatment, Storyboard, Desain Karakter, World Building',
+    tools: ['01', '02', '03', '04']
   },
   {
     id: 'image',
     step: 3,
     icon: '🖼️',
-    autoFrom: 'story',
-    name: { id: 'Image Production', en: 'Image Production' },
-    description: { id: 'Generate gambar scene, karakter, background', en: 'Generate scene images, characters, backgrounds' },
-    tools: ['05', '06', '07'] // Text to Image, Character Transform, Scene Generator
+    name: 'Produksi Gambar',
+    description: 'Generate gambar scene & karakter',
+    tools: ['05', '06', '07']
   },
   {
     id: 'video',
     step: 4,
     icon: '🎬',
-    autoFrom: 'story',
-    name: { id: 'Video Production', en: 'Video Production' },
-    description: { id: 'Generate video dengan VEO 3', en: 'Generate videos with VEO 3' },
-    tools: ['08', '09', '10', '11'] // Text to Video, Image to Video, Dialogue Animator, Action Sequence
+    name: 'Produksi Video',
+    description: 'Generate video dengan VEO 3',
+    tools: ['08', '09', '10', '11']
   },
   {
     id: 'audio',
     step: 5,
     icon: '🔊',
-    autoFrom: 'story',
-    name: { id: 'Audio Production', en: 'Audio Production' },
-    description: { id: 'Dialog, musik, sound effects', en: 'Dialogue, music, sound effects' },
-    tools: ['audio-01', 'audio-02', 'audio-03', 'audio-04'] // Dialogue, Music, SFX, Mixer
+    name: 'Produksi Audio',
+    description: 'Dialog, musik, sound effects',
+    tools: ['audio-01', 'audio-02', 'audio-03', 'audio-04']
   }
 ];
 
-// ============ 3. MARKETING (Distribution) ============
-// Tools untuk promotional content - semua bisa di Opal
+// ============ MARKETING ============
 const MARKETING_TOOLS = {
   id: 'marketing',
-  name: { id: 'Marketing', en: 'Marketing' },
+  name: 'Marketing',
   icon: '📢',
-  description: { id: 'Thumbnail, poster, trailer untuk promosi', en: 'Thumbnails, posters, trailers for promotion' },
-  tools: ['dist-01', 'dist-02', 'dist-03', 'dist-04'] // Thumbnail, Poster & Promo, Social Clips, Trailer Maker
-};
-
-// ============ 4. POST-PRODUCTION (Guide/Checklist - NOT generators) ============
-// Ini BUKAN generator, tapi panduan untuk editing di CapCut
-// Tools post-01 sampai post-06 sebaiknya jadi checklist/guide, bukan Opal flow
-const POST_PRODUCTION_GUIDE = {
-  id: 'post',
-  name: { id: 'Post-Production Guide', en: 'Post-Production Guide' },
-  icon: '🎞️',
-  description: { id: 'Panduan editing di CapCut', en: 'Editing guide for CapCut' },
-  isGuide: true, // Flag bahwa ini bukan generator
-  steps: [
-    { id: 'import', name: 'Import Assets', desc: 'Import semua hasil generate ke CapCut' },
-    { id: 'arrange', name: 'Arrange Scenes', desc: 'Susun scene sesuai storyboard' },
-    { id: 'transitions', name: 'Add Transitions', desc: 'Tambahkan transisi antar scene' },
-    { id: 'color', name: 'Color Grading', desc: 'Sesuaikan warna & mood' },
-    { id: 'audio-sync', name: 'Sync Audio', desc: 'Sinkronkan dialog, musik, SFX' },
-    { id: 'export', name: 'Export Final', desc: 'Export video final' }
-  ]
+  description: 'Thumbnail, poster, trailer',
+  tools: ['dist-01', 'dist-02', 'dist-03', 'dist-04']
 };
 
 // Legacy compatibility
@@ -438,31 +410,17 @@ function findPhase(appId) {
 }
 
 function getWorkflowPhaseName(phaseId) {
-  // Check if it's insight
-  if (phaseId === 'insight') {
-    return INSIGHT_TOOLS.name[getLang()] || INSIGHT_TOOLS.name.en;
-  }
-
-  // Check workflow phases
+  if (phaseId === 'insight') return INSIGHT_TOOLS.name;
+  if (phaseId === 'marketing') return MARKETING_TOOLS.name;
   const phase = WORKFLOW_PHASES.find(p => p.id === phaseId);
-  if (phase && phase.name) {
-    return phase.name[getLang()] || phase.name.en;
-  }
-
-  return phaseId;
+  return phase?.name || phaseId;
 }
 
 function getPhaseDescription(phaseId) {
-  if (phaseId === 'insight') {
-    return INSIGHT_TOOLS.description[getLang()] || INSIGHT_TOOLS.description.en;
-  }
-
+  if (phaseId === 'insight') return INSIGHT_TOOLS.description;
+  if (phaseId === 'marketing') return MARKETING_TOOLS.description;
   const phase = WORKFLOW_PHASES.find(p => p.id === phaseId);
-  if (phase && phase.description) {
-    return phase.description[getLang()] || phase.description.en;
-  }
-
-  return '';
+  return phase?.description || '';
 }
 
 
@@ -817,7 +775,7 @@ function renderSidebar() {
            onclick="togglePhase('marketing')">
         <span class="flex items-center gap-1.5">
           <span class="text-sm">${MARKETING_TOOLS.icon}</span>
-          <span class="text-xs text-purple-400">${MARKETING_TOOLS.name[getLang()]}</span>
+          <span class="text-xs text-purple-400">${MARKETING_TOOLS.name}</span>
         </span>
       </div>
       <div id="phase-marketing" class="${marketingExpanded ? '' : 'hidden'} ml-3 border-l border-purple-500/15 pl-1.5">
@@ -918,97 +876,125 @@ function renderDashboard() {
   const hasSynopsis = state.productionBible.synopsis && state.productionBible.synopsis.length > 0;
 
   return `
-    <div class="w-full">
-      <!-- Header -->
-      <div class="mb-6">
-        <h1 class="text-2xl font-bold mb-1" style="font-family: 'Space Grotesk', sans-serif;">
+    <div class="max-w-4xl mx-auto">
+      <!-- Header Minimalis -->
+      <div class="mb-8">
+        <h1 class="text-3xl font-bold mb-2" style="font-family: 'Space Grotesk', sans-serif;">
           <span class="text-white">raym</span><span class="brand-ai">AI</span><span class="brand-film">zing film</span>
         </h1>
-        <p class="text-slate-500 text-sm">${t('tagline')}</p>
+        <p class="text-slate-400">Platform Produksi Film AI Terintegrasi</p>
       </div>
       
-      <!-- Project Card -->
+      <!-- Project Card atau Mulai Baru -->
       ${project ? renderProjectCard(project) : renderNoProject()}
       
-      <!-- INSIGHT SECTION (Optional - for finding ideas) -->
-      <div class="glass rounded-xl p-4 mb-4 border border-yellow-500/20 bg-yellow-500/5">
+      ${project ? `
+      <!-- Cari Ide (Opsional) -->
+      <div class="glass rounded-xl p-4 mb-4 border border-yellow-500/20">
         <div class="flex items-center justify-between mb-3">
           <div class="flex items-center gap-2">
-            <span class="text-xl">💡</span>
-            <div>
-              <h3 class="font-semibold text-yellow-400">${getLang() === 'id' ? 'Cari Ide' : 'Find Ideas'}</h3>
-              <p class="text-xs text-slate-500">${getLang() === 'id' ? 'Inspirasi & riset (opsional)' : 'Inspiration & research (optional)'}</p>
-            </div>
+            <span class="text-lg">💡</span>
+            <span class="font-medium text-yellow-400">Cari Ide</span>
+            <span class="text-[10px] text-slate-500">(opsional)</span>
           </div>
-          <span class="text-xs text-yellow-500/50 bg-yellow-500/10 px-2 py-1 rounded">Optional</span>
         </div>
         <div class="flex flex-wrap gap-2">
           ${INSIGHT_TOOLS.tools.map(toolId => {
-    const tool = findApp(toolId);
-    if (!tool) return '';
-    const hasLink = getEffectiveOpalLink(toolId);
-    return `
-              <button onclick="navigateTo('app', '${toolId}')" class="btn-secondary px-3 py-2 rounded-lg text-xs flex items-center gap-2 hover:bg-yellow-500/10">
-                <span>${tool.icon}</span>
-                <span>${tool.name}</span>
-                ${hasLink ? '<span class="text-cyan-400">↗</span>' : ''}
-              </button>
-            `;
-  }).join('')}
+            const tool = findApp(toolId);
+            if (!tool) return '';
+            return `<button onclick="navigateTo('app', '${toolId}')" class="px-3 py-1.5 rounded-lg text-xs bg-yellow-500/10 text-yellow-400 hover:bg-yellow-500/20">${tool.icon} ${tool.name}</button>`;
+          }).join('')}
         </div>
       </div>
       
-      <!-- PRODUCTION PHASES -->
-      <div class="glass rounded-2xl p-6 mb-6 border-2 ${hasSynopsis ? 'border-green-500/30' : 'border-cyan-500/30'}">
-        <div class="flex items-center justify-between mb-4 flex-wrap gap-3">
-          <div>
-            <h2 class="text-lg font-bold flex items-center gap-2 flex-wrap">
-              🎬 ${getLang() === 'id' ? 'Fase Produksi' : 'Production Phases'}
-              <span class="text-xs bg-cyan-500/20 text-cyan-400 px-2 py-1 rounded-full">Step ${currentStep}/8</span>
-              <span class="text-xs bg-green-500/20 text-green-400 px-2 py-1 rounded-full">${completionPercent}%</span>
-            </h2>
-            <p class="text-xs text-slate-400 mt-1">${getLang() === 'id' ? 'Mulai dari Synopsis Writer - semua otomatis terisi!' : 'Start from Synopsis Writer - everything auto-fills!'}</p>
+      <!-- Fase Produksi -->
+      <div class="glass rounded-xl p-5 mb-4">
+        <div class="flex items-center justify-between mb-4">
+          <div class="flex items-center gap-3">
+            <span class="text-lg">🎬</span>
+            <div>
+              <h2 class="font-bold">Fase Produksi</h2>
+              <p class="text-xs text-slate-500">Step ${currentStep}/5 • ${completionPercent}% selesai</p>
+            </div>
           </div>
-          <button onclick="showWorkflowHelp()" class="btn-secondary px-3 py-1.5 rounded-lg text-xs">❓ ${t('helpTitle')}</button>
+          <div class="w-24 h-2 bg-slate-700 rounded-full overflow-hidden">
+            <div class="h-full bg-cyan-500" style="width: ${completionPercent}%"></div>
+          </div>
         </div>
         
-        <!-- Synopsis Status -->
         ${hasSynopsis ? `
-          <div class="mb-4 p-3 rounded-lg bg-green-500/10 border border-green-500/20">
-            <div class="flex items-center gap-2">
-              <span class="text-green-400">✅</span>
-              <span class="text-sm text-green-400 font-medium">${getLang() === 'id' ? 'Synopsis Active - Auto-fill enabled untuk semua tools!' : 'Synopsis Active - Auto-fill enabled for all tools!'}</span>
-            </div>
+          <div class="mb-4 p-2 rounded-lg bg-green-500/10 text-green-400 text-xs flex items-center gap-2">
+            ✅ Synopsis aktif - Auto-fill tersedia
           </div>
         ` : `
-          <div class="mb-4 p-3 rounded-lg bg-yellow-500/10 border border-yellow-500/20">
-            <div class="flex items-center gap-2">
-              <span class="text-yellow-400">⚠️</span>
-              <span class="text-sm text-yellow-400">${getLang() === 'id' ? 'Mulai dengan Synopsis Writer untuk mengaktifkan auto-fill!' : 'Start with Synopsis Writer to enable auto-fill!'}</span>
-            </div>
+          <div class="mb-4 p-2 rounded-lg bg-yellow-500/10 text-yellow-400 text-xs flex items-center gap-2">
+            ⚠️ Mulai dengan Synopsis Writer
           </div>
         `}
         
-        <!-- Progress Bar -->
-        <div class="mb-6">
-          <div class="h-2 bg-slate-700 rounded-full overflow-hidden">
-            <div class="h-full bg-gradient-to-r from-cyan-500 to-green-500 transition-all duration-500" style="width: ${completionPercent}%"></div>
-          </div>
+        <div class="space-y-2">
+          ${WORKFLOW_PHASES.map((phase, idx) => {
+            const isCompleted = isPhaseCompleted(phase.id);
+            const isCurrent = phase.step === currentStep;
+            return `
+              <div class="flex items-center gap-3 p-3 rounded-lg ${isCurrent ? 'bg-cyan-500/10 border border-cyan-500/30' : 'hover:bg-white/5'} cursor-pointer" onclick="navigateTo('app', '${phase.tools[0]}')">
+                <div class="w-8 h-8 rounded-full flex items-center justify-center text-sm ${isCompleted ? 'bg-green-500 text-white' : isCurrent ? 'bg-cyan-500 text-white' : 'bg-slate-700 text-slate-400'}">
+                  ${isCompleted ? '✓' : idx + 1}
+                </div>
+                <div class="flex-1">
+                  <div class="flex items-center gap-2">
+                    <span>${phase.icon}</span>
+                    <span class="font-medium text-sm">${phase.name}</span>
+                    ${phase.isCore ? '<span class="text-[10px] text-yellow-400">⭐ Core</span>' : ''}
+                  </div>
+                  <p class="text-[11px] text-slate-500">${phase.description}</p>
+                </div>
+                <span class="text-cyan-400 text-sm">→</span>
+              </div>
+            `;
+          }).join('')}
         </div>
-        
-        <!-- Workflow Steps -->
-        <div class="space-y-3">
-          ${WORKFLOW_PHASES.map(phase => renderWorkflowStep(phase, currentStep)).join('')}
+      </div>
+      
+      <!-- Marketing -->
+      <div class="glass rounded-xl p-4 mb-4 border border-purple-500/20">
+        <div class="flex items-center gap-2 mb-3">
+          <span class="text-lg">📢</span>
+          <span class="font-medium text-purple-400">Marketing</span>
+        </div>
+        <div class="flex flex-wrap gap-2">
+          ${MARKETING_TOOLS.tools.map(toolId => {
+            const tool = findApp(toolId);
+            if (!tool) return '';
+            return `<button onclick="navigateTo('app', '${toolId}')" class="px-3 py-1.5 rounded-lg text-xs bg-purple-500/10 text-purple-400 hover:bg-purple-500/20">${tool.icon} ${tool.name}</button>`;
+          }).join('')}
         </div>
       </div>
       
       <!-- Quick Stats -->
-      <div class="grid grid-cols-2 sm:grid-cols-4 gap-3 mb-6">
-        ${renderQuickStat('👤', state.characters.length, t('characters'), 'characters')}
-        ${renderQuickStat('🎭', state.locations.length, t('locations'), 'locations')}
-        ${renderQuickStat('🎬', state.scenes.length, 'Scenes', 'scenes')}
-        ${renderQuickStat('🖼️', state.generatedAssets.length, t('generatedAssets'), 'assets')}
+      <div class="grid grid-cols-4 gap-3">
+        <div class="glass rounded-lg p-3 text-center cursor-pointer hover:bg-white/5" onclick="navigateTo('characters')">
+          <div class="text-xl mb-1">👤</div>
+          <div class="text-lg font-bold">${state.characters.length}</div>
+          <div class="text-[10px] text-slate-500">Karakter</div>
+        </div>
+        <div class="glass rounded-lg p-3 text-center cursor-pointer hover:bg-white/5" onclick="navigateTo('locations')">
+          <div class="text-xl mb-1">🎭</div>
+          <div class="text-lg font-bold">${state.locations.length}</div>
+          <div class="text-[10px] text-slate-500">Lokasi</div>
+        </div>
+        <div class="glass rounded-lg p-3 text-center cursor-pointer hover:bg-white/5" onclick="navigateTo('scenes')">
+          <div class="text-xl mb-1">🎬</div>
+          <div class="text-lg font-bold">${state.scenes.length}</div>
+          <div class="text-[10px] text-slate-500">Scene</div>
+        </div>
+        <div class="glass rounded-lg p-3 text-center cursor-pointer hover:bg-white/5" onclick="navigateTo('assets')">
+          <div class="text-xl mb-1">🖼️</div>
+          <div class="text-lg font-bold">${state.generatedAssets.length}</div>
+          <div class="text-[10px] text-slate-500">Assets</div>
+        </div>
       </div>
+      ` : ''}
     </div>
   `;
 }
@@ -1038,7 +1024,18 @@ function renderProjectCard(project) {
 
 function renderNoProject() {
   return `
-    <div class="glass rounded-xl p-6 mb-6 text-center gradient-card">
+    <div class="glass rounded-xl p-8 mb-6 text-center">
+      <div class="text-4xl mb-3">🎬</div>
+      <h3 class="text-lg font-bold mb-2">Mulai Proyek Baru</h3>
+      <p class="text-slate-400 text-sm mb-4">Buat proyek untuk mulai produksi film dengan AI</p>
+      <button onclick="showNewProjectModal()" class="btn-primary px-6 py-2 rounded-lg">+ Proyek Baru</button>
+    </div>
+  `;
+}
+
+function renderProjectCardOld(project) {
+  return `
+    <div class="glass rounded-xl p-4 mb-6">
       <div class="text-3xl mb-2">🎬</div>
       <h3 class="text-base font-semibold mb-1">${t('bibleStart')}</h3>
       <p class="text-slate-500 text-xs mb-4">${t('bibleStartDesc')}</p>
