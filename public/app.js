@@ -1,77 +1,128 @@
 // raymAIzing film - Platform Produksi Film AI
-// v5.0: Navigasi Minimalis + Bahasa Indonesia
+// v6.0: Struktur sesuai User Flow
 
-// ============ STRUKTUR NAVIGASI ============
-// 💡 CARI IDE - Opsional, untuk inspirasi
-// 🎬 PRODUKSI - Workflow sequential dari Story sampai Audio
-// 📢 MARKETING - Thumbnail, poster, trailer
+// ============ STRUKTUR NAVIGASI (sesuai user flow) ============
+// � DASH BOARD - Database Celtx, status progress
+// 💡 INSIGHT - Ide + Marketing
+// 🎬 FASE PRODUKSI - Synopsis → Pra Produksi → Script → Storyboard → Character → World
+// 🔧 GENERATE - Produksi Gambar, Video, Audio
+// 📦 ASET - Karakter, Lokasi, Scene, Aset Tergenerate
 
-// ============ CARI IDE (Opsional) ============
-const INSIGHT_TOOLS = {
+// ============ INSIGHT ============
+const INSIGHT_SECTION = {
   id: 'insight',
-  name: 'Cari Ide',
+  name: 'Insight',
   icon: '💡',
-  description: 'Inspirasi & riset (opsional)',
-  tools: ['idea-01', 'idea-02', 'idea-03']
+  subsections: [
+    {
+      id: 'ide',
+      name: 'Ide',
+      icon: '💡',
+      tools: ['idea-01', 'idea-02'] // Trend/Viral, Idea Generator
+    },
+    {
+      id: 'marketing',
+      name: 'Marketing',
+      icon: '📢',
+      tools: ['dist-01', 'dist-02', 'dist-03', 'dist-04'] // Thumbnail, Poster, Social Clips, Trailer
+    }
+  ]
 };
 
 // ============ FASE PRODUKSI ============
-const WORKFLOW_PHASES = [
+const FASE_PRODUKSI = [
   {
-    id: 'story',
+    id: 'synopsis',
     step: 1,
     icon: '📖',
-    isCore: true,
-    name: 'Story',
-    description: 'Synopsis, Episode, Scene, Character Arc',
-    tools: ['story-01', 'story-02', 'story-03', 'story-04']
+    name: 'Synopsis',
+    description: 'Tulis sinopsis cerita',
+    tools: ['story-01'],
+    isCore: true
   },
   {
-    id: 'preproduction',
+    id: 'pra-produksi',
     step: 2,
-    icon: '📝',
-    name: 'Pre-Production',
-    description: 'Treatment, Storyboard, Desain Karakter, World Building',
-    tools: ['01', '02', '03', '04']
+    icon: '📋',
+    name: 'Pra Produksi',
+    description: 'Episode, Scene, Angle, Karakter',
+    tools: ['story-02', 'story-03', 'story-04'], // Episode Breakdown, Scene Planner, Character Arc
+    hasSubItems: true
   },
   {
-    id: 'image',
+    id: 'script-treatment',
     step: 3,
-    icon: '🖼️',
-    name: 'Produksi Gambar',
-    description: 'Generate gambar scene & karakter',
-    tools: ['05', '06', '07']
+    icon: '📝',
+    name: 'Script to Treatment',
+    description: 'Konversi script ke treatment visual',
+    tools: ['01']
   },
   {
-    id: 'video',
+    id: 'storyboard',
     step: 4,
     icon: '🎬',
-    name: 'Produksi Video',
-    description: 'Generate video dengan VEO 3',
-    tools: ['08', '09', '10', '11']
+    name: 'Storyboard Creator',
+    description: 'Buat storyboard per scene',
+    tools: ['02']
   },
   {
-    id: 'audio',
+    id: 'character-designer',
     step: 5,
-    icon: '🔊',
-    name: 'Produksi Audio',
-    description: 'Dialog, musik, sound effects',
-    tools: ['audio-01', 'audio-02', 'audio-03', 'audio-04']
+    icon: '👤',
+    name: 'Character Designer',
+    description: 'Desain karakter (T-Pose, Face Angle, Expression)',
+    tools: ['03']
+  },
+  {
+    id: 'world-builder',
+    step: 6,
+    icon: '🌍',
+    name: 'World Builder',
+    description: 'Desain lokasi dan environment',
+    tools: ['04']
   }
 ];
 
-// ============ MARKETING ============
-const MARKETING_TOOLS = {
-  id: 'marketing',
-  name: 'Marketing',
-  icon: '📢',
-  description: 'Thumbnail, poster, trailer',
-  tools: ['dist-01', 'dist-02', 'dist-03', 'dist-04']
+// ============ GENERATE ============
+const GENERATE_SECTION = {
+  id: 'generate',
+  name: 'Generate',
+  icon: '🔧',
+  subsections: [
+    {
+      id: 'produksi-gambar',
+      name: 'Produksi Gambar',
+      icon: '🖼️',
+      tools: ['05', '06', '07'] // Text to Image, Character Transform, Scene Generator
+    },
+    {
+      id: 'produksi-video',
+      name: 'Produksi Video',
+      icon: '🎬',
+      tools: ['08', '09', '10', '11'] // Text to Video, Image to Video, Dialog Animator, Action Sequence
+    },
+    {
+      id: 'produksi-audio',
+      name: 'Produksi Audio',
+      icon: '🔊',
+      tools: ['audio-01', 'audio-02', 'audio-03', 'audio-04'] // Dialog, Music, SFX, Mixer
+    }
+  ]
 };
 
 // Legacy compatibility
-const PRODUCTION_PHASES = WORKFLOW_PHASES;
-const INSIGHT_SECTION = INSIGHT_TOOLS;
+const WORKFLOW_PHASES = FASE_PRODUKSI;
+const PRODUCTION_PHASES = FASE_PRODUKSI;
+const INSIGHT_TOOLS = { 
+  tools: INSIGHT_SECTION.subsections.flatMap(s => s.tools),
+  icon: '💡',
+  name: 'Insight'
+};
+const MARKETING_TOOLS = { 
+  tools: ['dist-01', 'dist-02', 'dist-03', 'dist-04'], 
+  name: 'Marketing', 
+  icon: '📢' 
+};
 
 // ============ APP STATE ============
 let state = {
@@ -800,23 +851,60 @@ function renderSidebar() {
     </div>
   `;
 
+  // ============ GENERATE SECTION ============
+  html += `<div class="mt-3 mb-1 px-2 text-[10px] text-green-500 uppercase tracking-wider">🔧 GENERATE</div>`;
+  
+  GENERATE_SECTION.subsections.forEach(sub => {
+    const subExpanded = state.expandedPhases.includes(sub.id) || sub.tools.includes(state.currentApp);
+    html += `
+      <div class="mb-0.5">
+        <div class="flex items-center justify-between p-2 rounded-lg cursor-pointer hover:bg-green-500/5 text-sm" 
+             onclick="togglePhase('${sub.id}')">
+          <span class="flex items-center gap-1.5">
+            <span class="text-sm">${sub.icon}</span>
+            <span class="text-xs text-green-400">${sub.name}</span>
+          </span>
+        </div>
+        <div id="phase-${sub.id}" class="${subExpanded ? '' : 'hidden'} ml-3 border-l border-green-500/15 pl-1.5">
+          ${sub.tools.map(toolId => {
+            const tool = findApp(toolId);
+            if (!tool) return '';
+            const hasLink = getEffectiveOpalLink(toolId);
+            const isToolDone = isToolCompleted(toolId);
+            return `
+              <div class="sidebar-item ${state.currentApp === toolId ? 'active' : ''} rounded p-1.5 cursor-pointer text-xs flex items-center justify-between group" 
+                   onclick="navigateTo('app', '${toolId}')">
+                <span class="flex items-center gap-1.5 truncate">
+                  <span>${tool.icon}</span>
+                  <span class="truncate">${tool.name}</span>
+                  ${isToolDone ? '<span class="text-green-400 text-[8px]">✓</span>' : ''}
+                </span>
+                ${hasLink ? `<a href="${hasLink}" target="_blank" onclick="event.stopPropagation()" class="opacity-0 group-hover:opacity-100 text-cyan-400 text-[10px]">↗</a>` : ''}
+              </div>
+            `;
+          }).join('')}
+        </div>
+      </div>
+    `;
+  });
+
   // Assets Section
   html += `
-    <div class="mt-3 mb-1 px-2 text-[10px] text-slate-500 uppercase tracking-wider">${t('assets')}</div>
+    <div class="mt-3 mb-1 px-2 text-[10px] text-slate-500 uppercase tracking-wider">📦 ASET</div>
     <div class="sidebar-item ${state.currentPage === 'characters' ? 'active' : ''} rounded-lg p-2 cursor-pointer mb-0.5 text-sm flex items-center justify-between" onclick="navigateTo('characters')">
-      <span class="flex items-center gap-1.5"><span>👤</span><span class="text-xs">${t('characters')}</span></span>
+      <span class="flex items-center gap-1.5"><span>👤</span><span class="text-xs">Karakter</span></span>
       <span class="text-[10px] text-slate-500">${chars.length}</span>
     </div>
     <div class="sidebar-item ${state.currentPage === 'locations' ? 'active' : ''} rounded-lg p-2 cursor-pointer mb-0.5 text-sm flex items-center justify-between" onclick="navigateTo('locations')">
-      <span class="flex items-center gap-1.5"><span>🎭</span><span class="text-xs">${t('locations')}</span></span>
+      <span class="flex items-center gap-1.5"><span>🎭</span><span class="text-xs">Lokasi</span></span>
       <span class="text-[10px] text-slate-500">${locs.length}</span>
     </div>
     <div class="sidebar-item ${state.currentPage === 'scenes' ? 'active' : ''} rounded-lg p-2 cursor-pointer mb-0.5 text-sm flex items-center justify-between" onclick="navigateTo('scenes')">
-      <span class="flex items-center gap-1.5"><span>🎬</span><span class="text-xs">Scenes</span></span>
+      <span class="flex items-center gap-1.5"><span>🎬</span><span class="text-xs">Scene</span></span>
       <span class="text-[10px] text-slate-500">${state.scenes.length}</span>
     </div>
     <div class="sidebar-item ${state.currentPage === 'assets' ? 'active' : ''} rounded-lg p-2 cursor-pointer mb-0.5 text-sm flex items-center justify-between" onclick="navigateTo('assets')">
-      <span class="flex items-center gap-1.5"><span>🖼️</span><span class="text-xs">${t('generatedAssets')}</span></span>
+      <span class="flex items-center gap-1.5"><span>🖼️</span><span class="text-xs">Aset Tergenerate</span></span>
       <span class="text-[10px] text-slate-500">${state.generatedAssets.length}</span>
     </div>
   `;
@@ -900,10 +988,10 @@ function renderDashboard() {
         </div>
         <div class="flex flex-wrap gap-2">
           ${INSIGHT_TOOLS.tools.map(toolId => {
-            const tool = findApp(toolId);
-            if (!tool) return '';
-            return `<button onclick="navigateTo('app', '${toolId}')" class="px-3 py-1.5 rounded-lg text-xs bg-yellow-500/10 text-yellow-400 hover:bg-yellow-500/20">${tool.icon} ${tool.name}</button>`;
-          }).join('')}
+    const tool = findApp(toolId);
+    if (!tool) return '';
+    return `<button onclick="navigateTo('app', '${toolId}')" class="px-3 py-1.5 rounded-lg text-xs bg-yellow-500/10 text-yellow-400 hover:bg-yellow-500/20">${tool.icon} ${tool.name}</button>`;
+  }).join('')}
         </div>
       </div>
       
@@ -934,9 +1022,9 @@ function renderDashboard() {
         
         <div class="space-y-2">
           ${WORKFLOW_PHASES.map((phase, idx) => {
-            const isCompleted = isPhaseCompleted(phase.id);
-            const isCurrent = phase.step === currentStep;
-            return `
+    const isCompleted = isPhaseCompleted(phase.id);
+    const isCurrent = phase.step === currentStep;
+    return `
               <div class="flex items-center gap-3 p-3 rounded-lg ${isCurrent ? 'bg-cyan-500/10 border border-cyan-500/30' : 'hover:bg-white/5'} cursor-pointer" onclick="navigateTo('app', '${phase.tools[0]}')">
                 <div class="w-8 h-8 rounded-full flex items-center justify-center text-sm ${isCompleted ? 'bg-green-500 text-white' : isCurrent ? 'bg-cyan-500 text-white' : 'bg-slate-700 text-slate-400'}">
                   ${isCompleted ? '✓' : idx + 1}
@@ -952,7 +1040,7 @@ function renderDashboard() {
                 <span class="text-cyan-400 text-sm">→</span>
               </div>
             `;
-          }).join('')}
+  }).join('')}
         </div>
       </div>
       
@@ -964,10 +1052,10 @@ function renderDashboard() {
         </div>
         <div class="flex flex-wrap gap-2">
           ${MARKETING_TOOLS.tools.map(toolId => {
-            const tool = findApp(toolId);
-            if (!tool) return '';
-            return `<button onclick="navigateTo('app', '${toolId}')" class="px-3 py-1.5 rounded-lg text-xs bg-purple-500/10 text-purple-400 hover:bg-purple-500/20">${tool.icon} ${tool.name}</button>`;
-          }).join('')}
+    const tool = findApp(toolId);
+    if (!tool) return '';
+    return `<button onclick="navigateTo('app', '${toolId}')" class="px-3 py-1.5 rounded-lg text-xs bg-purple-500/10 text-purple-400 hover:bg-purple-500/20">${tool.icon} ${tool.name}</button>`;
+  }).join('')}
         </div>
       </div>
       
