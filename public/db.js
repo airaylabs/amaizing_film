@@ -1023,3 +1023,7 @@ const DB = {
     }
   }
 };
+
+
+// Expose DB to global scope
+window.DB = DB;
