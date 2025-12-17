@@ -480,6 +480,110 @@ function getPhaseDescription(phaseId) {
   return phase?.description || '';
 }
 
+// ============ TOOL GUIDE SYSTEM ============
+function getToolGuide(toolId) {
+  const app = findApp(toolId);
+  const formDef = typeof APP_FORMS !== 'undefined' ? APP_FORMS[toolId] : null;
+  
+  return {
+    shortDesc: formDef?.description || app?.desc || 'Tool untuk produksi film AI',
+    fullDesc: formDef?.description || app?.desc || '',
+    howTo: getToolHowTo(toolId),
+    tips: getToolTips(toolId)
+  };
+}
+
+function getToolHowTo(toolId) {
+  const howToGuides = {
+    'story-01': '1. Isi judul dan logline\n2. Pilih genre dan format\n3. Tulis synopsis lengkap\n4. Klik Generate Prompt\n5. Copy ke Opal untuk generate',
+    'story-02': '1. Synopsis akan auto-fill dari Synopsis Writer\n2. Isi nomor dan judul episode\n3. Tentukan fokus karakter\n4. Generate breakdown episode',
+    'story-03': '1. Context episode auto-fill\n2. Isi detail scene\n3. Pilih tone dan durasi\n4. Generate scene plan',
+    'story-04': '1. Pilih karakter dari list\n2. Tentukan arc development\n3. Generate character journey',
+    '01': '1. Script auto-fill dari synopsis\n2. Pilih scene untuk treatment\n3. Generate visual breakdown',
+    '02': '1. Scene data auto-fill\n2. Pilih shot type dan angle\n3. Generate storyboard prompts',
+    '03': '1. Character data auto-fill\n2. Pilih pose dan expression\n3. Generate character design prompts',
+    '04': '1. Location data auto-fill\n2. Pilih time dan weather\n3. Generate world/location prompts'
+  };
+  return howToGuides[toolId] || '1. Isi form input\n2. Klik Generate Prompt\n3. Copy dan paste ke Opal';
+}
+
+function getToolTips(toolId) {
+  const tips = {
+    'story-01': ['Synopsis adalah CORE - semua tool lain akan auto-fill dari sini', 'Tulis synopsis selengkap mungkin untuk hasil terbaik'],
+    'story-02': ['Episode breakdown membantu struktur cerita', 'Fokus pada satu karakter per episode untuk drama yang kuat'],
+    'story-03': ['Scene yang detail menghasilkan visual yang lebih baik', 'Tentukan durasi untuk pacing yang tepat'],
+    '03': ['Gunakan T-Pose untuk konsistensi karakter', 'Buat multiple expression untuk variasi']
+  };
+  return tips[toolId] || ['Isi semua field untuk hasil optimal', 'Gunakan Auto-Fill jika tersedia'];
+}
+
+function showToolGuide(toolId) {
+  const guide = getToolGuide(toolId);
+  const app = findApp(toolId);
+  
+  showModal(`❓ ${app?.name || 'Tool Guide'}`, `
+    <div class="space-y-4">
+      <div class="flex items-center gap-3 mb-4">
+        <div class="w-12 h-12 rounded-xl bg-cyan-500/20 flex items-center justify-center text-2xl">${app?.icon || '📝'}</div>
+        <div>
+          <p class="text-sm text-slate-400">${guide.shortDesc}</p>
+        </div>
+      </div>
+      
+      <div>
+        <h3 class="font-semibold text-cyan-400 mb-2">📋 Cara Kerja</h3>
+        <pre class="text-sm text-slate-300 whitespace-pre-wrap bg-slate-800/50 rounded-lg p-3">${guide.howTo}</pre>
+      </div>
+      
+      <div>
+        <h3 class="font-semibold text-yellow-400 mb-2">💡 Tips</h3>
+        <ul class="text-sm text-slate-300 space-y-1">
+          ${guide.tips.map(tip => `<li>• ${tip}</li>`).join('')}
+        </ul>
+      </div>
+    </div>
+  `, () => hideModal());
+}
+
+// Check if auto-fill data is available for a tool
+function hasAutoFillData(toolId) {
+  // Tools that can auto-fill from synopsis
+  const autoFillTools = ['story-02', 'story-03', 'story-04', '01', '02', '03', '04', '05', '06', '07', '08', '09', '10', '11'];
+  if (!autoFillTools.includes(toolId)) return false;
+  
+  // Check if synopsis data exists
+  return state.productionBible.synopsis && state.productionBible.synopsis.length > 0;
+}
+
+// Auto-fill form from synopsis data
+function autoFillForm(toolId) {
+  const bible = state.productionBible;
+  if (!bible.synopsis) {
+    showToast('Synopsis belum diisi. Isi Synopsis Writer dulu.', 'warning');
+    return;
+  }
+  
+  // Fill common fields
+  const synopsisField = document.getElementById('field-synopsis');
+  if (synopsisField) synopsisField.value = bible.synopsis;
+  
+  const titleField = document.getElementById('field-title');
+  if (titleField) titleField.value = bible.title || '';
+  
+  const genreField = document.getElementById('field-genre');
+  if (genreField) genreField.value = bible.genre || '';
+  
+  const styleField = document.getElementById('field-style');
+  if (styleField) styleField.value = bible.style || '';
+  
+  const moodField = document.getElementById('field-mood');
+  if (moodField) moodField.value = bible.mood || '';
+  
+  const settingField = document.getElementById('field-setting');
+  if (settingField) settingField.value = bible.setting || '';
+  
+  showToast('✨ Form auto-filled dari Synopsis!', 'success');
+}
 
 // ============ WORKFLOW LOGIC (FIXED!) ============
 // Checklist = User has COMPLETED the step, NOT just uploaded Opal link
