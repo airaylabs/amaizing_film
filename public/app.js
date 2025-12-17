@@ -1,11 +1,14 @@
 // raymAIzing film - Main Application
-// Celtx-Style Production Management with Storyboard View
-// v3.0: Simplified Navigation + Notion-style Views + Asset Management
+// Celtx-Style Production Management
+// v4.0: Clear Navigation Structure
 
-// ============ SIMPLIFIED NAVIGATION ============
-// 4 Main Sections: STORY, PRODUCTION, STORYBOARD, EXPORT
+// ============ NAVIGATION STRUCTURE ============
+// 💡 CARI IDE - Optional, untuk inspirasi
+// 🎬 FASE PRODUKSI - Sequential Celtx-style workflow (semua bisa generate di Opal)
+// 🔧 GENERATOR - Modular standalone tools
+// 📢 MARKETING - Distribution & promotional content
 
-// ============ 1. INSIGHT (Optional - Find Ideas) ============
+// ============ 1. CARI IDE (Optional) ============
 const INSIGHT_TOOLS = {
   id: 'insight',
   name: { id: 'Cari Ide', en: 'Find Ideas' },
@@ -14,96 +17,89 @@ const INSIGHT_TOOLS = {
   tools: ['idea-01', 'idea-02', 'idea-03']
 };
 
-// ============ 2. STORY (Core - Auto-populates everything) ============
-const STORY_PHASE = {
-  id: 'story',
-  name: { id: 'Cerita', en: 'Story' },
-  icon: '📖',
-  description: { id: 'Tulis cerita, semua otomatis!', en: 'Write story, everything auto!' },
-  tools: ['story-01', 'story-02', 'story-03', 'story-04']
+// ============ 2. FASE PRODUKSI (Celtx-style Sequential) ============
+// Semua tools ini BISA generate di Opal (text/image/video/audio)
+const WORKFLOW_PHASES = [
+  { 
+    id: 'story', 
+    step: 1, 
+    icon: '📖', 
+    isCore: true, 
+    required: true,
+    name: { id: 'Story', en: 'Story' },
+    description: { id: 'Synopsis → Episode → Scene → Character Arc', en: 'Synopsis → Episode → Scene → Character Arc' },
+    tools: ['story-01', 'story-02', 'story-03', 'story-04']
+  },
+  { 
+    id: 'preproduction', 
+    step: 2, 
+    icon: '📝', 
+    autoFrom: 'story',
+    name: { id: 'Pre-Production', en: 'Pre-Production' },
+    description: { id: 'Treatment, Storyboard, Character Design, World Building', en: 'Treatment, Storyboard, Character Design, World Building' },
+    tools: ['01', '02', '03', '04'] // Script to Treatment, Storyboard, Character Designer, World Builder
+  },
+  { 
+    id: 'image', 
+    step: 3, 
+    icon: '🖼️', 
+    autoFrom: 'story',
+    name: { id: 'Image Production', en: 'Image Production' },
+    description: { id: 'Generate gambar scene, karakter, background', en: 'Generate scene images, characters, backgrounds' },
+    tools: ['05', '06', '07'] // Text to Image, Character Transform, Scene Generator
+  },
+  { 
+    id: 'video', 
+    step: 4, 
+    icon: '🎬', 
+    autoFrom: 'story',
+    name: { id: 'Video Production', en: 'Video Production' },
+    description: { id: 'Generate video dengan VEO 3', en: 'Generate videos with VEO 3' },
+    tools: ['08', '09', '10', '11'] // Text to Video, Image to Video, Dialogue Animator, Action Sequence
+  },
+  { 
+    id: 'audio', 
+    step: 5, 
+    icon: '🔊', 
+    autoFrom: 'story',
+    name: { id: 'Audio Production', en: 'Audio Production' },
+    description: { id: 'Dialog, musik, sound effects', en: 'Dialogue, music, sound effects' },
+    tools: ['audio-01', 'audio-02', 'audio-03', 'audio-04'] // Dialogue, Music, SFX, Mixer
+  }
+];
+
+// ============ 3. MARKETING (Distribution) ============
+// Tools untuk promotional content - semua bisa di Opal
+const MARKETING_TOOLS = {
+  id: 'marketing',
+  name: { id: 'Marketing', en: 'Marketing' },
+  icon: '📢',
+  description: { id: 'Thumbnail, poster, trailer untuk promosi', en: 'Thumbnails, posters, trailers for promotion' },
+  tools: ['dist-01', 'dist-02', 'dist-03', 'dist-04'] // Thumbnail, Poster & Promo, Social Clips, Trailer Maker
 };
 
-// ============ 3. PRODUCTION (Generate Assets) ============
-const PRODUCTION_TOOLS = {
-  id: 'production',
-  name: { id: 'Produksi', en: 'Production' },
-  icon: '🎨',
-  description: { id: 'Generate gambar, video, audio', en: 'Generate images, video, audio' },
-  categories: [
-    {
-      id: 'character-studio',
-      name: { id: 'Character Studio', en: 'Character Studio' },
-      icon: '👤',
-      tools: ['03', '06'], // Character Designer, Character Transform
-      features: ['T-Pose', 'Multi-Angle', 'Expressions']
-    },
-    {
-      id: 'scene-studio', 
-      name: { id: 'Scene Studio', en: 'Scene Studio' },
-      icon: '🎭',
-      tools: ['04', '05', '07'], // World Builder, Text to Image, Scene Generator
-      features: ['Locations', 'Props', 'Backgrounds']
-    },
-    {
-      id: 'video-studio',
-      name: { id: 'Video Studio', en: 'Video Studio' },
-      icon: '🎬',
-      tools: ['08', '09', '10', '11'], // VEO 3 tools
-      features: ['Text to Video', 'Image to Video', 'Animation']
-    },
-    {
-      id: 'audio-studio',
-      name: { id: 'Audio Studio', en: 'Audio Studio' },
-      icon: '🔊',
-      tools: ['audio-01', 'audio-02', 'audio-03', 'audio-04'],
-      features: ['Dialogue', 'Music', 'SFX']
-    }
+// ============ 4. POST-PRODUCTION (Guide/Checklist - NOT generators) ============
+// Ini BUKAN generator, tapi panduan untuk editing di CapCut
+// Tools post-01 sampai post-06 sebaiknya jadi checklist/guide, bukan Opal flow
+const POST_PRODUCTION_GUIDE = {
+  id: 'post',
+  name: { id: 'Post-Production Guide', en: 'Post-Production Guide' },
+  icon: '🎞️',
+  description: { id: 'Panduan editing di CapCut', en: 'Editing guide for CapCut' },
+  isGuide: true, // Flag bahwa ini bukan generator
+  steps: [
+    { id: 'import', name: 'Import Assets', desc: 'Import semua hasil generate ke CapCut' },
+    { id: 'arrange', name: 'Arrange Scenes', desc: 'Susun scene sesuai storyboard' },
+    { id: 'transitions', name: 'Add Transitions', desc: 'Tambahkan transisi antar scene' },
+    { id: 'color', name: 'Color Grading', desc: 'Sesuaikan warna & mood' },
+    { id: 'audio-sync', name: 'Sync Audio', desc: 'Sinkronkan dialog, musik, SFX' },
+    { id: 'export', name: 'Export Final', desc: 'Export video final' }
   ]
 };
 
-// ============ 4. POST & EXPORT ============
-const POST_EXPORT = {
-  id: 'export',
-  name: { id: 'Export', en: 'Export' },
-  icon: '📢',
-  tools: ['post-01', 'post-02', 'post-03', 'post-04', 'post-05', 'post-06', 'dist-01', 'dist-02', 'dist-03', 'dist-04']
-};
-
-// ============ LEGACY WORKFLOW PHASES (for compatibility) ============
-const WORKFLOW_PHASES = [
-  { id: 'story', step: 1, icon: '📖', isCore: true, required: true,
-    name: { id: 'Story', en: 'Story' },
-    description: { id: 'Synopsis, Episode, Scene, Character', en: 'Synopsis, Episode, Scene, Character' },
-    tools: ['story-01', 'story-02', 'story-03', 'story-04'] },
-  { id: 'preproduction', step: 2, icon: '📝', autoFrom: 'story',
-    name: { id: 'Pre-Production', en: 'Pre-Production' },
-    description: { id: 'Treatment & Storyboard', en: 'Treatment & Storyboard' },
-    tools: ['01', '02'] },
-  { id: 'design', step: 3, icon: '🎨', autoFrom: 'story',
-    name: { id: 'Design', en: 'Design' },
-    description: { id: 'Character & World', en: 'Character & World' },
-    tools: ['03', '04'] },
-  { id: 'image', step: 4, icon: '🖼️', autoFrom: 'story',
-    name: { id: 'Image', en: 'Image' },
-    description: { id: 'Generate Images', en: 'Generate Images' },
-    tools: ['05', '06', '07'] },
-  { id: 'video', step: 5, icon: '🎬', autoFrom: 'story',
-    name: { id: 'Video', en: 'Video' },
-    description: { id: 'Generate Videos', en: 'Generate Videos' },
-    tools: ['08', '09', '10', '11'] },
-  { id: 'audio', step: 6, icon: '🔊', autoFrom: 'story',
-    name: { id: 'Audio', en: 'Audio' },
-    description: { id: 'Dialogue, Music, SFX', en: 'Dialogue, Music, SFX' },
-    tools: ['audio-01', 'audio-02', 'audio-03', 'audio-04'] },
-  { id: 'post', step: 7, icon: '🎞️', autoFrom: 'story',
-    name: { id: 'Post', en: 'Post' },
-    description: { id: 'Edit & Assembly', en: 'Edit & Assembly' },
-    tools: ['post-01', 'post-02', 'post-03', 'post-04', 'post-05', 'post-06'] },
-  { id: 'export', step: 8, icon: '📢', autoFrom: 'story',
-    name: { id: 'Export', en: 'Export' },
-    description: { id: 'Thumbnail, Poster, Trailer', en: 'Thumbnail, Poster, Trailer' },
-    tools: ['dist-01', 'dist-02', 'dist-03', 'dist-04'] }
-];
+// Legacy compatibility
+const PRODUCTION_PHASES = WORKFLOW_PHASES;
+const INSIGHT_SECTION = INSIGHT_TOOLS;
 
 // Legacy compatibility
 const PRODUCTION_PHASES = WORKFLOW_PHASES;
@@ -810,6 +806,41 @@ function renderSidebar() {
     `;
   });
   
+  // ============ MARKETING SECTION ============
+  html += `<div class="mt-3 mb-1 px-2 text-[10px] text-purple-500 uppercase tracking-wider">📢 MARKETING</div>`;
+  
+  const marketingExpanded = state.expandedPhases.includes('marketing') || MARKETING_TOOLS.tools.includes(state.currentApp);
+  html += `
+    <div class="mb-0.5">
+      <div class="flex items-center justify-between p-2 rounded-lg cursor-pointer hover:bg-purple-500/5 text-sm" 
+           onclick="togglePhase('marketing')">
+        <span class="flex items-center gap-1.5">
+          <span class="text-sm">${MARKETING_TOOLS.icon}</span>
+          <span class="text-xs text-purple-400">${MARKETING_TOOLS.name[getLang()]}</span>
+        </span>
+      </div>
+      <div id="phase-marketing" class="${marketingExpanded ? '' : 'hidden'} ml-3 border-l border-purple-500/15 pl-1.5">
+        ${MARKETING_TOOLS.tools.map(toolId => {
+          const tool = findApp(toolId);
+          if (!tool) return '';
+          const hasLink = getEffectiveOpalLink(toolId);
+          const isToolDone = isToolCompleted(toolId);
+          return `
+            <div class="sidebar-item ${state.currentApp === toolId ? 'active' : ''} rounded p-1.5 cursor-pointer text-xs flex items-center justify-between group" 
+                 onclick="navigateTo('app', '${toolId}')">
+              <span class="flex items-center gap-1.5 truncate">
+                <span>${tool.icon}</span>
+                <span class="truncate">${tool.name}</span>
+                ${isToolDone ? '<span class="text-green-400 text-[8px]">✓</span>' : ''}
+              </span>
+              ${hasLink ? `<a href="${hasLink}" target="_blank" onclick="event.stopPropagation()" class="opacity-0 group-hover:opacity-100 text-cyan-400 text-[10px]">↗</a>` : ''}
+            </div>
+          `;
+        }).join('')}
+      </div>
+    </div>
+  `;
+
   // Assets Section
   html += `
     <div class="mt-3 mb-1 px-2 text-[10px] text-slate-500 uppercase tracking-wider">${t('assets')}</div>
