@@ -256,6 +256,21 @@ function showApp() {
   updateHistoryCount();
 }
 
+// Update user info in header
+function updateUserInfo() {
+  const userNameEl = document.getElementById('user-name');
+  const userAvatarEl = document.getElementById('user-avatar');
+  
+  if (state.user) {
+    const name = state.user.user_metadata?.full_name || state.user.email?.split('@')[0] || 'User';
+    if (userNameEl) userNameEl.textContent = name;
+    if (userAvatarEl) {
+      const initial = name.charAt(0).toUpperCase();
+      userAvatarEl.textContent = initial;
+    }
+  }
+}
+
 // Load local history from localStorage
 function loadLocalHistory() {
   const localHistory = JSON.parse(localStorage.getItem('localHistory') || '[]');
