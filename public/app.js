@@ -158,19 +158,24 @@ async function initAuth() {
     return;
   }
   
-  const session = await Auth.getSession();
-  
-  if (session) {
-    state.user = session.user;
-    await loadUserData();
-    showApp();
-  } else {
-    showAuthScreen();
+  try {
+    const session = await Auth.getSession();
     
-    // Show dev mode hint on localhost
-    if (isLocalDev) {
-      console.log('💡 TIP: Enable dev mode with: localStorage.setItem("devMode", "true"); then refresh');
+    if (session) {
+      state.user = session.user;
+      await loadUserData();
+      showApp();
+    } else {
+      showAuthScreen();
+      
+      // Show dev mode hint on localhost
+      if (isLocalDev) {
+        console.log('💡 TIP: Enable dev mode with: localStorage.setItem("devMode", "true"); then refresh');
+      }
     }
+  } catch (error) {
+    console.error('Auth error:', error);
+    showAuthScreen();
   }
   
   Auth.onAuthStateChange(async (event, session) => {
