@@ -718,12 +718,12 @@ function renderSidebar() {
 
   // ============ 💡 INSIGHT ============
   html += `<div class="mt-4 mb-1 px-2 text-[10px] text-yellow-500 uppercase tracking-wider font-medium">💡 INSIGHT</div>`;
-  
+
   // Ide
   const ideTools = ['idea-01', 'idea-02'];
   const ideExpanded = state.expandedPhases.includes('ide') || ideTools.includes(state.currentApp);
   html += renderSidebarSection('ide', '💡', 'Ide', ideTools, ideExpanded, 'yellow');
-  
+
   // Marketing  
   const marketingTools = ['dist-01', 'dist-02', 'dist-03', 'dist-04'];
   const marketingExpanded = state.expandedPhases.includes('marketing') || marketingTools.includes(state.currentApp);
@@ -731,44 +731,42 @@ function renderSidebar() {
 
   // ============ 🎬 FASE PRODUKSI ============
   html += `<div class="mt-4 mb-1 px-2 text-[10px] text-cyan-500 uppercase tracking-wider font-medium">🎬 FASE PRODUKSI</div>`;
-  
+
   // Synopsis Writer (Core)
   html += renderSidebarItem('story-01', '📖', 'Synopsis Writer', true);
-  
+
   // Pra Produksi (Episode, Scene, Character Arc)
   const praProduksiTools = ['story-02', 'story-03', 'story-04'];
   const praProduksiExpanded = state.expandedPhases.includes('pra-produksi') || praProduksiTools.includes(state.currentApp);
   html += renderSidebarSection('pra-produksi', '📋', 'Pra Produksi', praProduksiTools, praProduksiExpanded, 'cyan');
-  
+
   // Script to Treatment
   html += renderSidebarItem('01', '📝', 'Script to Treatment');
-  
+
   // Storyboard Creator
   html += renderSidebarItem('02', '🎬', 'Storyboard Creator');
-  
+
   // Character Designer
   html += renderSidebarItem('03', '👤', 'Character Designer');
-  
+
   // World Builder
   html += renderSidebarItem('04', '🌍', 'World Builder');
 
   // ============ 🔧 GENERATE ============
   html += `<div class="mt-4 mb-1 px-2 text-[10px] text-green-500 uppercase tracking-wider font-medium">🔧 GENERATE</div>`;
-  
-  // Produksi Gambar
+
+  // Gambar (3 tools)
   const gambarTools = ['05', '06', '07'];
   const gambarExpanded = state.expandedPhases.includes('produksi-gambar') || gambarTools.includes(state.currentApp);
-  html += renderSidebarSection('produksi-gambar', '🖼️', 'Produksi Gambar', gambarTools, gambarExpanded, 'green');
-  
-  // Produksi Video
-  const videoTools = ['08', '09', '10', '11'];
+  html += renderSidebarSection('produksi-gambar', '🖼️', 'Gambar', gambarTools, gambarExpanded, 'green');
+
+  // Video (simplified - 2 main tools, dialog & action as options in form)
+  const videoTools = ['08', '09']; // Text to Video, Image to Video (dialog & action built-in)
   const videoExpanded = state.expandedPhases.includes('produksi-video') || videoTools.includes(state.currentApp);
-  html += renderSidebarSection('produksi-video', '🎬', 'Produksi Video', videoTools, videoExpanded, 'green');
-  
-  // Produksi Audio
-  const audioTools = ['audio-01', 'audio-02', 'audio-03', 'audio-04'];
-  const audioExpanded = state.expandedPhases.includes('produksi-audio') || audioTools.includes(state.currentApp);
-  html += renderSidebarSection('produksi-audio', '🔊', 'Produksi Audio', audioTools, audioExpanded, 'green');
+  html += renderSidebarSection('produksi-video', '🎬', 'Video', videoTools, videoExpanded, 'green');
+
+  // Audio (simplified - 1 main tool with all options)
+  html += renderSidebarItem('audio-01', '🔊', 'Audio Generator'); // Dialog, Music, SFX all in one
 
   // ============ 📦 ASET ============
   html += `<div class="mt-4 mb-1 px-2 text-[10px] text-slate-400 uppercase tracking-wider font-medium">📦 ASET</div>`;
@@ -817,7 +815,7 @@ function renderSidebarSection(id, icon, name, tools, expanded, color) {
       </div>
       <div class="${expanded ? '' : 'hidden'} ml-4 border-l border-${color}-500/20 pl-2">
   `;
-  
+
   tools.forEach(toolId => {
     const tool = findApp(toolId);
     if (!tool) return;
@@ -833,7 +831,7 @@ function renderSidebarSection(id, icon, name, tools, expanded, color) {
       </div>
     `;
   });
-  
+
   html += `</div></div>`;
   return html;
 }
@@ -843,7 +841,7 @@ function renderSidebarItem(toolId, icon, name, isCore = false) {
   const tool = findApp(toolId);
   const hasLink = getEffectiveOpalLink(toolId);
   const isActive = state.currentApp === toolId;
-  
+
   return `
     <div class="sidebar-item ${isActive ? 'active' : ''} rounded-lg p-2 cursor-pointer mb-0.5 text-sm flex items-center justify-between group" onclick="navigateTo('app', '${toolId}')">
       <span class="flex items-center gap-2">
@@ -936,7 +934,7 @@ function renderDashboard() {
             <span class="text-lg">🎬</span>
             <div>
               <h2 class="font-bold">Fase Produksi</h2>
-              <p class="text-xs text-slate-500">Step ${currentStep}/5 • ${completionPercent}% selesai</p>
+              <p class="text-xs text-slate-500">Step ${currentStep}/8 • ${completionPercent}% selesai</p>
             </div>
           </div>
           <div class="w-24 h-2 bg-slate-700 rounded-full overflow-hidden">
@@ -955,26 +953,32 @@ function renderDashboard() {
         `}
         
         <div class="space-y-2">
-          ${WORKFLOW_PHASES.map((phase, idx) => {
-    const isCompleted = isPhaseCompleted(phase.id);
-    const isCurrent = phase.step === currentStep;
-    return `
-              <div class="flex items-center gap-3 p-3 rounded-lg ${isCurrent ? 'bg-cyan-500/10 border border-cyan-500/30' : 'hover:bg-white/5'} cursor-pointer" onclick="navigateTo('app', '${phase.tools[0]}')">
-                <div class="w-8 h-8 rounded-full flex items-center justify-center text-sm ${isCompleted ? 'bg-green-500 text-white' : isCurrent ? 'bg-cyan-500 text-white' : 'bg-slate-700 text-slate-400'}">
-                  ${isCompleted ? '✓' : idx + 1}
-                </div>
-                <div class="flex-1">
-                  <div class="flex items-center gap-2">
-                    <span>${phase.icon}</span>
-                    <span class="font-medium text-sm">${phase.name}</span>
-                    ${phase.isCore ? '<span class="text-[10px] text-yellow-400">⭐ Core</span>' : ''}
-                  </div>
-                  <p class="text-[11px] text-slate-500">${phase.description}</p>
-                </div>
-                <span class="text-cyan-400 text-sm">→</span>
-              </div>
-            `;
-  }).join('')}
+          ${renderDashboardFases(currentStep)}
+        </div>
+      </div>
+      
+      <!-- Generate Tools -->
+      <div class="glass rounded-xl p-4 mb-4 border border-green-500/20">
+        <div class="flex items-center gap-2 mb-3">
+          <span class="text-lg">✨</span>
+          <div>
+            <span class="font-medium text-green-400">Generate</span>
+            <span class="text-[10px] text-slate-500 ml-2">Tools modular untuk generate assets</span>
+          </div>
+        </div>
+        <div class="grid grid-cols-3 gap-2">
+          <button onclick="navigateTo('app', 'gen-image')" class="p-3 rounded-lg text-xs bg-green-500/10 text-green-400 hover:bg-green-500/20 text-center">
+            <div class="text-lg mb-1">🖼️</div>
+            <div>Gambar</div>
+          </button>
+          <button onclick="navigateTo('app', 'gen-video')" class="p-3 rounded-lg text-xs bg-green-500/10 text-green-400 hover:bg-green-500/20 text-center">
+            <div class="text-lg mb-1">🎬</div>
+            <div>Video</div>
+          </button>
+          <button onclick="navigateTo('app', 'gen-audio')" class="p-3 rounded-lg text-xs bg-green-500/10 text-green-400 hover:bg-green-500/20 text-center">
+            <div class="text-lg mb-1">🎵</div>
+            <div>Audio</div>
+          </button>
         </div>
       </div>
       
@@ -1042,6 +1046,62 @@ function renderProjectCard(project) {
       </div>
     </div>
   `;
+}
+
+// ============ DASHBOARD FASES RENDERING (8 Steps) ============
+function renderDashboardFases(currentStep) {
+  const fases = [
+    { step: 1, icon: '📖', name: 'Synopsis Writer', toolId: 'story-01', isCore: true, desc: 'Tulis sinopsis cerita' },
+    { step: 2, icon: '📋', name: 'Pra Produksi', tools: ['story-02', 'story-03', 'story-04'], stepRange: [2, 4], desc: 'Episode, Scene, Character Arc', hasSubSteps: true },
+    { step: 5, icon: '📝', name: 'Script to Treatment', toolId: '01', desc: 'Konversi script ke treatment visual' },
+    { step: 6, icon: '🎬', name: 'Storyboard Creator', toolId: '02', desc: 'Buat storyboard per scene' },
+    { step: 7, icon: '👤', name: 'Character Designer', toolId: '03', desc: 'Desain visual karakter' },
+    { step: 8, icon: '🌍', name: 'World Builder', toolId: '04', desc: 'Desain lokasi dan environment' }
+  ];
+  
+  return fases.map(fase => {
+    let isCompleted, isCurrent, mainToolId, stepText;
+    
+    if (fase.hasSubSteps) {
+      const completedSubs = fase.tools.filter(t => isToolCompleted(t)).length;
+      isCompleted = completedSubs === fase.tools.length;
+      isCurrent = currentStep >= fase.stepRange[0] && currentStep <= fase.stepRange[1];
+      mainToolId = fase.tools[0];
+      stepText = `Steps ${fase.stepRange[0]}-${fase.stepRange[1]}`;
+    } else {
+      isCompleted = isToolCompleted(fase.toolId);
+      isCurrent = currentStep === fase.step;
+      mainToolId = fase.toolId;
+      stepText = `Step ${fase.step}`;
+    }
+    
+    return `
+      <div class="flex items-center gap-3 p-3 rounded-lg ${isCurrent ? 'bg-cyan-500/10 border border-cyan-500/30' : 'hover:bg-white/5'} cursor-pointer" onclick="navigateTo('app', '${mainToolId}')">
+        <div class="w-8 h-8 rounded-full flex items-center justify-center text-sm ${isCompleted ? 'bg-green-500 text-white' : isCurrent ? 'bg-cyan-500 text-white' : 'bg-slate-700 text-slate-400'}">
+          ${isCompleted ? '✓' : fase.step}
+        </div>
+        <div class="flex-1">
+          <div class="flex items-center gap-2">
+            <span>${fase.icon}</span>
+            <span class="font-medium text-sm">${fase.name}</span>
+            ${fase.isCore ? '<span class="text-[10px] text-yellow-400">⭐ Core</span>' : ''}
+            <span class="text-[9px] text-slate-500">${stepText}</span>
+          </div>
+          <p class="text-[11px] text-slate-500">${fase.desc}</p>
+          ${fase.hasSubSteps ? `
+            <div class="flex gap-1 mt-1">
+              ${fase.tools.map(toolId => {
+                const tool = findApp(toolId);
+                const subDone = isToolCompleted(toolId);
+                return `<span class="text-[8px] px-1 py-0.5 rounded ${subDone ? 'bg-green-500/20 text-green-400' : 'bg-slate-700 text-slate-400'}">${tool?.name || toolId}</span>`;
+              }).join('')}
+            </div>
+          ` : ''}
+        </div>
+        <span class="text-cyan-400 text-sm">→</span>
+      </div>
+    `;
+  }).join('');
 }
 
 function renderNoProject() {
@@ -1164,11 +1224,12 @@ function renderQuickStat(icon, count, label, page) {
 // ============ APP PAGE (Tool Page) ============
 function renderAppPage() {
   const app = findApp(state.currentApp);
-  if (!app) return '<p class="text-slate-400">Tool not found</p>';
+  if (!app) return '<p class="text-slate-400">Tool tidak ditemukan</p>';
 
   const phase = findPhase(state.currentApp);
   const opalLink = getEffectiveOpalLink(state.currentApp);
   const isCompleted = isToolCompleted(state.currentApp);
+  const toolGuide = getToolGuide(state.currentApp);
 
   return `
     <div class="max-w-4xl mx-auto">
@@ -1180,17 +1241,16 @@ function renderAppPage() {
             <div>
               <div class="flex items-center gap-2 mb-1">
                 <span class="tag">${phase?.name || ''}</span>
-                ${isCompleted ? '<span class="tag bg-green-500/20 border-green-500/30 text-green-400">✓ Completed</span>' : ''}
+                ${isCompleted ? '<span class="tag bg-green-500/20 border-green-500/30 text-green-400">✓ Selesai</span>' : ''}
               </div>
               <h1 class="text-xl font-bold">${app.name}</h1>
-              <p class="text-slate-400 text-sm mt-1">${app.description || ''}</p>
+              <p class="text-slate-400 text-sm mt-1">${toolGuide.shortDesc}</p>
             </div>
           </div>
-          ${opalLink ? `
-            <a href="${opalLink}" target="_blank" class="btn-primary px-4 py-2 rounded-lg text-sm flex items-center gap-2">
-              🔗 ${t('openOpal')}
-            </a>
-          ` : ''}
+          <div class="flex gap-2">
+            <button onclick="showToolGuide('${state.currentApp}')" class="btn-secondary px-3 py-2 rounded-lg text-sm">❓ Cara Kerja</button>
+            ${opalLink ? `<a href="${opalLink}" target="_blank" class="btn-primary px-4 py-2 rounded-lg text-sm">🔗 Buka di Opal</a>` : ''}
+          </div>
         </div>
       </div>
       
@@ -1199,8 +1259,8 @@ function renderAppPage() {
         <div class="flex items-center justify-between mb-4">
           <h3 class="font-semibold flex items-center gap-2">📝 Input Form</h3>
           ${state.currentApp !== 'story-01' && (hasAutoFillData(state.currentApp) || state.productionBible.synopsis) ? `
-            <button onclick="autoFillForm('${app.id}')" class="btn-secondary px-3 py-1.5 rounded-lg text-xs flex items-center gap-1.5 bg-yellow-500/10 border-yellow-500/30 text-yellow-400 hover:bg-yellow-500/20">
-              ✨ Auto-Fill from Synopsis
+            <button onclick="autoFillForm('${app.id}')" class="btn-secondary px-3 py-1.5 rounded-lg text-xs bg-yellow-500/10 border-yellow-500/30 text-yellow-400 hover:bg-yellow-500/20">
+              ✨ Auto-Fill dari Synopsis
             </button>
           ` : ''}
         </div>
@@ -1212,7 +1272,7 @@ function renderAppPage() {
       <!-- Generate Button -->
       <div class="flex gap-3 mb-5">
         <button onclick="generatePrompt('${app.id}')" class="btn-primary px-6 py-3 rounded-xl font-semibold flex-1">
-          ✨ ${t('generatePrompt')}
+          ✨ Generate Prompt
         </button>
         <div class="flex items-center gap-2 glass rounded-xl px-4">
           <span class="text-xs text-slate-400">Output:</span>
@@ -1225,10 +1285,10 @@ function renderAppPage() {
       <!-- Output Area -->
       <div id="prompt-output" class="hidden glass rounded-xl p-5 mb-5">
         <div class="flex items-center justify-between mb-3">
-          <h3 class="font-semibold flex items-center gap-2">📋 Generated Prompt</h3>
+          <h3 class="font-semibold flex items-center gap-2">📋 Prompt yang Dihasilkan</h3>
           <div class="flex gap-2">
-            <button onclick="copyPrompt()" class="btn-secondary px-3 py-1.5 rounded-lg text-xs">📋 ${t('copyPrompt')}</button>
-            ${opalLink ? `<a href="${opalLink}" target="_blank" class="btn-secondary px-3 py-1.5 rounded-lg text-xs">🔗 ${t('openOpal')}</a>` : ''}
+            <button onclick="copyPrompt()" class="btn-secondary px-3 py-1.5 rounded-lg text-xs">📋 Salin</button>
+            ${opalLink ? `<a href="${opalLink}" target="_blank" class="btn-secondary px-3 py-1.5 rounded-lg text-xs">🔗 Buka di Opal</a>` : ''}
           </div>
         </div>
         <div id="prompt-text" class="prompt-output rounded-lg p-4 text-sm whitespace-pre-wrap font-mono"></div>
