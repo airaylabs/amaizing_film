@@ -920,6 +920,28 @@ const DB = {
     }
   },
 
+  // ============ SAVE TOOL PROGRESS ============
+  async saveToolProgress(projectId, userId, toolId, phaseId, data) {
+    try {
+      const { data: result, error } = await supabase.from('workflow_progress')
+        .upsert({
+          project_id: projectId,
+          user_id: userId,
+          tool_id: toolId,
+          phase_id: phaseId,
+          ...data,
+          updated_at: new Date().toISOString()
+        }, { onConflict: 'project_id,tool_id' })
+        .select()
+        .single();
+      if (error) throw error;
+      return result;
+    } catch (error) {
+      console.warn('Could not save tool progress:', error);
+      throw error;
+    }
+  },
+
   // ============ GLOBAL OPAL LINKS ============
   async getGlobalOpalLinks() {
     try {
