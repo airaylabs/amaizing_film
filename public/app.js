@@ -20,47 +20,47 @@ const INSIGHT_TOOLS = {
 // ============ 2. FASE PRODUKSI (Celtx-style Sequential) ============
 // Semua tools ini BISA generate di Opal (text/image/video/audio)
 const WORKFLOW_PHASES = [
-  { 
-    id: 'story', 
-    step: 1, 
-    icon: '📖', 
-    isCore: true, 
+  {
+    id: 'story',
+    step: 1,
+    icon: '📖',
+    isCore: true,
     required: true,
     name: { id: 'Story', en: 'Story' },
     description: { id: 'Synopsis → Episode → Scene → Character Arc', en: 'Synopsis → Episode → Scene → Character Arc' },
     tools: ['story-01', 'story-02', 'story-03', 'story-04']
   },
-  { 
-    id: 'preproduction', 
-    step: 2, 
-    icon: '📝', 
+  {
+    id: 'preproduction',
+    step: 2,
+    icon: '📝',
     autoFrom: 'story',
     name: { id: 'Pre-Production', en: 'Pre-Production' },
     description: { id: 'Treatment, Storyboard, Character Design, World Building', en: 'Treatment, Storyboard, Character Design, World Building' },
     tools: ['01', '02', '03', '04'] // Script to Treatment, Storyboard, Character Designer, World Builder
   },
-  { 
-    id: 'image', 
-    step: 3, 
-    icon: '🖼️', 
+  {
+    id: 'image',
+    step: 3,
+    icon: '🖼️',
     autoFrom: 'story',
     name: { id: 'Image Production', en: 'Image Production' },
     description: { id: 'Generate gambar scene, karakter, background', en: 'Generate scene images, characters, backgrounds' },
     tools: ['05', '06', '07'] // Text to Image, Character Transform, Scene Generator
   },
-  { 
-    id: 'video', 
-    step: 4, 
-    icon: '🎬', 
+  {
+    id: 'video',
+    step: 4,
+    icon: '🎬',
     autoFrom: 'story',
     name: { id: 'Video Production', en: 'Video Production' },
     description: { id: 'Generate video dengan VEO 3', en: 'Generate videos with VEO 3' },
     tools: ['08', '09', '10', '11'] // Text to Video, Image to Video, Dialogue Animator, Action Sequence
   },
-  { 
-    id: 'audio', 
-    step: 5, 
-    icon: '🔊', 
+  {
+    id: 'audio',
+    step: 5,
+    icon: '🔊',
     autoFrom: 'story',
     name: { id: 'Audio Production', en: 'Audio Production' },
     description: { id: 'Dialog, musik, sound effects', en: 'Dialogue, music, sound effects' },
@@ -108,7 +108,7 @@ let state = {
   currentPage: 'dashboard',
   currentApp: null,
   currentProject: null,
-  
+
   // Data
   projects: [],
   characters: [],
@@ -120,18 +120,18 @@ let state = {
   globalOpalLinks: {},
   generatedAssets: [],
   workflowProgress: [],
-  
+
   // Production Bible
   productionBible: {
     title: '', logline: '', synopsis: '', genre: '', projectType: '',
     style: '', mood: '', setting: '', themes: '',
     episodes: [], characters: [], locations: [], scenes: []
   },
-  
+
   // UI State
   outputCount: 1,
   expandedPhases: [],
-  
+
   // Selection Context
   selectedEpisode: null,
   selectedScene: null,
@@ -146,28 +146,28 @@ document.addEventListener('DOMContentLoaded', () => {
 
 async function initAuth() {
   showLoading(true);
-  
+
   // DEV MODE: Skip auth for localhost testing
   const isLocalDev = window.location.hostname === 'localhost' || window.location.hostname === '127.0.0.1';
   const devModeEnabled = localStorage.getItem('devMode') === 'true';
-  
+
   if (isLocalDev && devModeEnabled) {
     console.log('🔧 DEV MODE: Skipping auth');
     state.user = { id: 'dev-user', email: 'dev@localhost', user_metadata: { full_name: 'Dev User' } };
     showApp();
     return;
   }
-  
+
   try {
     const session = await Auth.getSession();
-    
+
     if (session) {
       state.user = session.user;
       await loadUserData();
       showApp();
     } else {
       showAuthScreen();
-      
+
       // Show dev mode hint on localhost
       if (isLocalDev) {
         console.log('💡 TIP: Enable dev mode with: localStorage.setItem("devMode", "true"); then refresh');
@@ -177,7 +177,7 @@ async function initAuth() {
     console.error('Auth error:', error);
     showAuthScreen();
   }
-  
+
   Auth.onAuthStateChange(async (event, session) => {
     if (event === 'SIGNED_IN' && session) {
       state.user = session.user;
@@ -188,7 +188,7 @@ async function initAuth() {
       showAuthScreen();
     }
   });
-  
+
   // Listen for tab visibility changes to restore state
   document.addEventListener('visibilitychange', () => {
     if (document.visibilityState === 'visible' && state.user) {
@@ -212,16 +212,16 @@ function showApp() {
   document.getElementById('app').classList.remove('hidden');
   document.getElementById('loading-screen').classList.add('hidden');
   updateUserInfo();
-  
+
   // Load local progress (fallback when DB unavailable)
   loadLocalProgress();
-  
+
   // Load local history
   loadLocalHistory();
-  
+
   // Restore navigation state from sessionStorage (for tab switching)
   restoreNavigationState();
-  
+
   renderSidebar();
   renderPage();
   updateHistoryCount();
@@ -250,7 +250,7 @@ function showAuthTab(tab) {
   const signupTab = document.getElementById('tab-signup');
   const loginForm = document.getElementById('form-login');
   const signupForm = document.getElementById('form-signup');
-  
+
   if (tab === 'login') {
     loginTab.classList.add('bg-cyan-500/20', 'text-cyan-400');
     loginTab.classList.remove('text-slate-400');
@@ -354,33 +354,33 @@ async function loadUserData() {
       DB.getUserRole(state.user.id),
       DB.getGeneratedAssets(state.user.id)
     ]);
-    
+
     state.projects = projects;
     state.characters = characters;
     state.locations = locations;
     state.history = history;
     state.userRole = userRole;
     state.generatedAssets = generatedAssets;
-    
+
     // Personal opal links
     state.opalLinks = {};
     opalLinks.forEach(link => { state.opalLinks[link.app_id] = link.url; });
-    
+
     // Global opal links
     state.globalOpalLinks = {};
     globalOpalLinks.forEach(link => { state.globalOpalLinks[link.app_id] = link.url; });
-    
+
     // Load saved project
     const savedProject = localStorage.getItem('currentProject');
     if (savedProject && state.projects.find(p => p.id === savedProject)) {
       state.currentProject = savedProject;
       await loadProjectData(savedProject);
     }
-    
+
     // Load preferences
     const savedOutputCount = localStorage.getItem('outputCount');
     if (savedOutputCount) state.outputCount = parseInt(savedOutputCount);
-    
+
     loadProductionBible();
     updateProjectSelector();
   } catch (error) { console.error('Error loading data:', error); }
@@ -405,7 +405,7 @@ async function loadProjectData(projectId) {
 function loadProductionBible() {
   const saved = localStorage.getItem('productionBible');
   if (saved) {
-    try { state.productionBible = JSON.parse(saved); } catch (e) {}
+    try { state.productionBible = JSON.parse(saved); } catch (e) { }
   }
 }
 
@@ -442,13 +442,13 @@ function getWorkflowPhaseName(phaseId) {
   if (phaseId === 'insight') {
     return INSIGHT_TOOLS.name[getLang()] || INSIGHT_TOOLS.name.en;
   }
-  
+
   // Check workflow phases
   const phase = WORKFLOW_PHASES.find(p => p.id === phaseId);
   if (phase && phase.name) {
     return phase.name[getLang()] || phase.name.en;
   }
-  
+
   return phaseId;
 }
 
@@ -456,12 +456,12 @@ function getPhaseDescription(phaseId) {
   if (phaseId === 'insight') {
     return INSIGHT_TOOLS.description[getLang()] || INSIGHT_TOOLS.description.en;
   }
-  
+
   const phase = WORKFLOW_PHASES.find(p => p.id === phaseId);
   if (phase && phase.description) {
     return phase.description[getLang()] || phase.description.en;
   }
-  
+
   return '';
 }
 
@@ -517,10 +517,10 @@ async function markToolAsCompleted(toolId, formData = null, generatedPrompt = nu
     saveToolProgressLocally(toolId, formData, generatedPrompt);
     return;
   }
-  
+
   const phase = WORKFLOW_PHASES.find(p => p.tools.includes(toolId));
   if (!phase) return;
-  
+
   try {
     await DB.saveToolProgress(state.currentProject, state.user.id, toolId, phase.id, {
       is_completed: true,
@@ -528,7 +528,7 @@ async function markToolAsCompleted(toolId, formData = null, generatedPrompt = nu
       form_data: formData,
       generated_prompt: generatedPrompt
     });
-    
+
     state.workflowProgress = await DB.getWorkflowProgress(state.currentProject);
     showToast(t('stepCompleted'), 'success');
     renderSidebar();
@@ -551,7 +551,7 @@ function saveToolProgressLocally(toolId, formData, generatedPrompt) {
     generated_prompt: generatedPrompt
   };
   localStorage.setItem('localWorkflowProgress', JSON.stringify(localProgress));
-  
+
   // Update state with local progress
   const existingIdx = state.workflowProgress.findIndex(p => p.tool_id === toolId);
   if (existingIdx >= 0) {
@@ -559,7 +559,7 @@ function saveToolProgressLocally(toolId, formData, generatedPrompt) {
   } else {
     state.workflowProgress.push(localProgress[toolId]);
   }
-  
+
   showToast(t('stepCompleted') + ' (local)', 'success');
   renderSidebar();
 }
@@ -578,7 +578,7 @@ function loadLocalProgress() {
 function navigateTo(page, appId = null) {
   state.currentPage = page;
   state.currentApp = appId;
-  
+
   // Save navigation state to sessionStorage
   sessionStorage.setItem('currentPage', page);
   if (appId) {
@@ -586,7 +586,7 @@ function navigateTo(page, appId = null) {
   } else {
     sessionStorage.removeItem('currentApp');
   }
-  
+
   renderSidebar();
   renderPage();
   updateBreadcrumb();
@@ -596,7 +596,7 @@ function navigateTo(page, appId = null) {
 function restoreNavigationState() {
   const savedPage = sessionStorage.getItem('currentPage');
   const savedApp = sessionStorage.getItem('currentApp');
-  
+
   if (savedPage) {
     state.currentPage = savedPage;
   }
@@ -625,14 +625,14 @@ function updateBreadcrumb() {
 // ============ PROJECT MANAGEMENT ============
 function updateProjectSelector() {
   const sel = document.getElementById('project-selector');
-  sel.innerHTML = `<option value="">📁 ${t('selectProject')}</option>` + 
+  sel.innerHTML = `<option value="">📁 ${t('selectProject')}</option>` +
     state.projects.map(p => `<option value="${p.id}" ${p.id === state.currentProject ? 'selected' : ''}>${p.name}</option>`).join('');
 }
 
 async function switchProject(projectId) {
   state.currentProject = projectId || null;
   localStorage.setItem('currentProject', state.currentProject || '');
-  
+
   if (projectId) {
     await loadProjectData(projectId);
   } else {
@@ -640,7 +640,7 @@ async function switchProject(projectId) {
     state.episodes = [];
     state.scenes = [];
   }
-  
+
   renderSidebar();
   renderPage();
 }
@@ -686,8 +686,8 @@ function showNewProjectModal() {
       hideModal();
       renderPage();
       showToast(t('savedSuccessfully'), 'success');
-    } catch (error) { 
-      showToast(error.message, 'error'); 
+    } catch (error) {
+      showToast(error.message, 'error');
     }
   });
 }
@@ -698,13 +698,13 @@ function renderSidebar() {
   const chars = state.characters.filter(c => !state.currentProject || c.project_id === state.currentProject);
   const locs = state.locations.filter(l => !state.currentProject || l.project_id === state.currentProject);
   const hasSynopsis = state.productionBible.synopsis && state.productionBible.synopsis.length > 0;
-  
+
   let html = `
     <div class="sidebar-item ${state.currentPage === 'dashboard' ? 'active' : ''} rounded-lg p-2 cursor-pointer mb-1 text-sm" onclick="navigateTo('dashboard')">
       <span class="mr-2">🏠</span> Dashboard
     </div>
   `;
-  
+
   // Project Status with Synopsis indicator
   if (state.currentProject) {
     const project = state.projects.find(p => p.id === state.currentProject);
@@ -722,10 +722,10 @@ function renderSidebar() {
       </div>
     `;
   }
-  
+
   // ============ INSIGHT SECTION (Not a phase, just for ideas) ============
   html += `<div class="mt-3 mb-1 px-2 text-[10px] text-yellow-500 uppercase tracking-wider">💡 INSIGHT</div>`;
-  
+
   const insightExpanded = state.expandedPhases.includes('insight') || INSIGHT_TOOLS.tools.includes(state.currentApp);
   html += `
     <div class="mb-0.5">
@@ -739,10 +739,10 @@ function renderSidebar() {
       </div>
       <div id="phase-insight" class="${insightExpanded ? '' : 'hidden'} ml-3 border-l border-yellow-500/15 pl-1.5">
         ${INSIGHT_TOOLS.tools.map(toolId => {
-          const tool = findApp(toolId);
-          if (!tool) return '';
-          const hasLink = getEffectiveOpalLink(toolId);
-          return `
+    const tool = findApp(toolId);
+    if (!tool) return '';
+    const hasLink = getEffectiveOpalLink(toolId);
+    return `
             <div class="sidebar-item ${state.currentApp === toolId ? 'active' : ''} rounded p-1.5 cursor-pointer text-xs flex items-center justify-between group" 
                  onclick="navigateTo('app', '${toolId}')">
               <span class="flex items-center gap-1.5 truncate">
@@ -752,14 +752,14 @@ function renderSidebar() {
               ${hasLink ? `<a href="${hasLink}" target="_blank" onclick="event.stopPropagation()" class="opacity-0 group-hover:opacity-100 text-cyan-400 text-[10px]">↗</a>` : ''}
             </div>
           `;
-        }).join('')}
+  }).join('')}
       </div>
     </div>
   `;
-  
+
   // ============ PRODUCTION PHASES (7 phases) ============
   html += `<div class="mt-3 mb-1 px-2 text-[10px] text-cyan-500 uppercase tracking-wider">🎬 FASE PRODUKSI</div>`;
-  
+
   WORKFLOW_PHASES.forEach(phase => {
     const isCompleted = isPhaseCompleted(phase.id);
     const isLocked = isPhaseLocked(phase.id);
@@ -767,7 +767,7 @@ function renderSidebar() {
     const isExpanded = state.expandedPhases.includes(phase.id) || phase.tools.includes(state.currentApp);
     const isCore = phase.isCore;
     const hasAutoFill = phase.autoFillFrom && hasSynopsis;
-    
+
     html += `
       <div class="mb-0.5">
         <div class="flex items-center justify-between p-2 rounded-lg cursor-pointer hover:bg-white/5 text-sm ${isLocked ? 'opacity-50' : ''}" 
@@ -784,12 +784,12 @@ function renderSidebar() {
         </div>
         <div id="phase-${phase.id}" class="${isExpanded ? '' : 'hidden'} ml-3 border-l border-cyan-500/15 pl-1.5">
           ${phase.tools.map(toolId => {
-            const tool = findApp(toolId);
-            if (!tool) return '';
-            const isToolDone = isToolCompleted(toolId);
-            const hasLink = getEffectiveOpalLink(toolId);
-            const toolHasAutoFill = tool.autoPopulate && hasSynopsis;
-            return `
+      const tool = findApp(toolId);
+      if (!tool) return '';
+      const isToolDone = isToolCompleted(toolId);
+      const hasLink = getEffectiveOpalLink(toolId);
+      const toolHasAutoFill = tool.autoPopulate && hasSynopsis;
+      return `
               <div class="sidebar-item ${state.currentApp === toolId ? 'active' : ''} rounded p-1.5 cursor-pointer text-xs flex items-center justify-between group" 
                    onclick="navigateTo('app', '${toolId}')">
                 <span class="flex items-center gap-1.5 truncate">
@@ -801,15 +801,15 @@ function renderSidebar() {
                 ${hasLink ? `<a href="${hasLink}" target="_blank" onclick="event.stopPropagation()" class="opacity-0 group-hover:opacity-100 text-cyan-400 text-[10px]">↗</a>` : ''}
               </div>
             `;
-          }).join('')}
+    }).join('')}
         </div>
       </div>
     `;
   });
-  
+
   // ============ MARKETING SECTION ============
   html += `<div class="mt-3 mb-1 px-2 text-[10px] text-purple-500 uppercase tracking-wider">📢 MARKETING</div>`;
-  
+
   const marketingExpanded = state.expandedPhases.includes('marketing') || MARKETING_TOOLS.tools.includes(state.currentApp);
   html += `
     <div class="mb-0.5">
@@ -822,11 +822,11 @@ function renderSidebar() {
       </div>
       <div id="phase-marketing" class="${marketingExpanded ? '' : 'hidden'} ml-3 border-l border-purple-500/15 pl-1.5">
         ${MARKETING_TOOLS.tools.map(toolId => {
-          const tool = findApp(toolId);
-          if (!tool) return '';
-          const hasLink = getEffectiveOpalLink(toolId);
-          const isToolDone = isToolCompleted(toolId);
-          return `
+    const tool = findApp(toolId);
+    if (!tool) return '';
+    const hasLink = getEffectiveOpalLink(toolId);
+    const isToolDone = isToolCompleted(toolId);
+    return `
             <div class="sidebar-item ${state.currentApp === toolId ? 'active' : ''} rounded p-1.5 cursor-pointer text-xs flex items-center justify-between group" 
                  onclick="navigateTo('app', '${toolId}')">
               <span class="flex items-center gap-1.5 truncate">
@@ -837,7 +837,7 @@ function renderSidebar() {
               ${hasLink ? `<a href="${hasLink}" target="_blank" onclick="event.stopPropagation()" class="opacity-0 group-hover:opacity-100 text-cyan-400 text-[10px]">↗</a>` : ''}
             </div>
           `;
-        }).join('')}
+  }).join('')}
       </div>
     </div>
   `;
@@ -862,7 +862,7 @@ function renderSidebar() {
       <span class="text-[10px] text-slate-500">${state.generatedAssets.length}</span>
     </div>
   `;
-  
+
   // Admin Section
   if (isAdmin()) {
     html += `
@@ -872,7 +872,7 @@ function renderSidebar() {
       </div>
     `;
   }
-  
+
   nav.innerHTML = html;
 }
 
@@ -891,7 +891,7 @@ function togglePhase(phaseId) {
 function renderPage() {
   const content = document.getElementById('page-content');
   let html = '';
-  switch(state.currentPage) {
+  switch (state.currentPage) {
     case 'dashboard': html = renderDashboard(); break;
     case 'app': html = renderAppPage(); break;
     case 'characters': html = renderCharactersPage(); break;
@@ -903,7 +903,7 @@ function renderPage() {
   }
   content.innerHTML = `<div class="fade-in">${html}</div>`;
   updateBreadcrumb();
-  
+
   // Restore tool state if on app page (after DOM is updated)
   if (state.currentPage === 'app' && state.currentApp) {
     setTimeout(() => applyRestoredState(state.currentApp), 50);
@@ -916,7 +916,7 @@ function renderDashboard() {
   const currentStep = getCurrentWorkflowStep();
   const completionPercent = getOverallCompletionPercent();
   const hasSynopsis = state.productionBible.synopsis && state.productionBible.synopsis.length > 0;
-  
+
   return `
     <div class="w-full">
       <!-- Header -->
@@ -944,17 +944,17 @@ function renderDashboard() {
         </div>
         <div class="flex flex-wrap gap-2">
           ${INSIGHT_TOOLS.tools.map(toolId => {
-            const tool = findApp(toolId);
-            if (!tool) return '';
-            const hasLink = getEffectiveOpalLink(toolId);
-            return `
+    const tool = findApp(toolId);
+    if (!tool) return '';
+    const hasLink = getEffectiveOpalLink(toolId);
+    return `
               <button onclick="navigateTo('app', '${toolId}')" class="btn-secondary px-3 py-2 rounded-lg text-xs flex items-center gap-2 hover:bg-yellow-500/10">
                 <span>${tool.icon}</span>
                 <span>${tool.name}</span>
                 ${hasLink ? '<span class="text-cyan-400">↗</span>' : ''}
               </button>
             `;
-          }).join('')}
+  }).join('')}
         </div>
       </div>
       
@@ -1053,7 +1053,7 @@ function renderWorkflowStep(phase, currentStep) {
   const isLocked = isPhaseLocked(phase.id);
   const completionPercent = getPhaseCompletionPercent(phase.id);
   const completedToolCount = phase.tools.filter(t => isToolCompleted(t)).length;
-  
+
   // Get phase info from WORKFLOW_PHASES
   const phaseInfo = WORKFLOW_PHASES.find(p => p.id === phase.id);
   const info = {
@@ -1061,16 +1061,16 @@ function renderWorkflowStep(phase, currentStep) {
     desc: phaseInfo?.description?.[getLang()] || phaseInfo?.description?.en || '',
     tip: phaseInfo?.autoFillFrom ? (getLang() === 'id' ? '🔗 Otomatis terisi dari Synopsis' : '🔗 Auto-filled from Synopsis') : ''
   };
-  
+
   // Override for synopsis (core)
   if (phase.id === 'synopsis') {
     info.tip = getLang() === 'id' ? '⭐ CORE: Isi ini, semua otomatis!' : '⭐ CORE: Fill this, everything auto-fills!';
   }
-  
-  const stepNames = {}; // Not used anymore, using phaseInfo directly
-  
 
-  
+  const stepNames = {}; // Not used anymore, using phaseInfo directly
+
+
+
   return `
     <div class="workflow-step ${isCurrent ? 'current' : ''} ${isCompleted ? 'completed' : ''} ${isLocked ? 'locked' : ''} 
                 rounded-xl p-4 border ${isCurrent ? 'border-cyan-500 bg-cyan-500/10' : isCompleted ? 'border-green-500/30 bg-green-500/5' : 'border-slate-700 bg-slate-800/50'}
@@ -1146,11 +1146,11 @@ function renderQuickStat(icon, count, label, page) {
 function renderAppPage() {
   const app = findApp(state.currentApp);
   if (!app) return '<p class="text-slate-400">Tool not found</p>';
-  
+
   const phase = findPhase(state.currentApp);
   const opalLink = getEffectiveOpalLink(state.currentApp);
   const isCompleted = isToolCompleted(state.currentApp);
-  
+
   return `
     <div class="max-w-4xl mx-auto">
       <!-- Tool Header -->
@@ -1198,7 +1198,7 @@ function renderAppPage() {
         <div class="flex items-center gap-2 glass rounded-xl px-4">
           <span class="text-xs text-slate-400">Output:</span>
           <select id="output-count" class="bg-transparent border-none text-sm" onchange="state.outputCount = parseInt(this.value); localStorage.setItem('outputCount', this.value)">
-            ${[1,2,3,4,5].map(n => `<option value="${n}" ${state.outputCount === n ? 'selected' : ''}>${n}x</option>`).join('')}
+            ${[1, 2, 3, 4, 5].map(n => `<option value="${n}" ${state.outputCount === n ? 'selected' : ''}>${n}x</option>`).join('')}
           </select>
         </div>
       </div>
@@ -1237,17 +1237,17 @@ function renderToolForm(app) {
   // Get form definition from APP_FORMS in data.js
   const formDef = typeof APP_FORMS !== 'undefined' ? APP_FORMS[app.id] : null;
   const fields = formDef?.inputs || app.fields || [];
-  
+
   if (!fields || fields.length === 0) {
     return '<p class="text-slate-500 text-sm">No form fields defined for this tool.</p>';
   }
-  
+
   return fields.map(field => {
     const fieldId = `field-${field.id}`;
     const label = field.label || field.name || field.id;
     const placeholder = field.placeholder || '';
     const rows = field.rows || 4;
-    
+
     if (field.type === 'textarea') {
       return `
         <div>
@@ -1280,11 +1280,11 @@ function renderToolForm(app) {
 function generatePrompt(appId) {
   const app = findApp(appId);
   if (!app) return;
-  
+
   // Get form definition from APP_FORMS
   const formDef = typeof APP_FORMS !== 'undefined' ? APP_FORMS[appId] : null;
   const fields = formDef?.inputs || app.fields || [];
-  
+
   // Collect form data
   const formData = {};
   fields.forEach(field => {
@@ -1292,16 +1292,16 @@ function generatePrompt(appId) {
     const el = document.getElementById(fieldId);
     if (el) formData[field.id] = el.value;
   });
-  
+
   // Get prompt template
   let prompt = formDef?.promptTemplate || app.promptTemplate || '';
-  
+
   // Replace placeholders with form data
   Object.keys(formData).forEach(key => {
     const placeholder = new RegExp(`\\{${key}\\}`, 'gi');
     prompt = prompt.replace(placeholder, formData[key] || '');
   });
-  
+
   // Add production bible data if available
   if (state.productionBible.synopsis) {
     prompt = prompt.replace(/\{synopsis\}/gi, state.productionBible.synopsis);
@@ -1311,24 +1311,24 @@ function generatePrompt(appId) {
     prompt = prompt.replace(/\{mood\}/gi, state.productionBible.mood || '');
     prompt = prompt.replace(/\{setting\}/gi, state.productionBible.setting || '');
   }
-  
+
   // Clean up empty placeholders
   prompt = prompt.replace(/\{[^}]+\}/g, '');
-  
+
   // Generate multiple outputs if needed
   let finalPrompt = prompt.trim();
   if (state.outputCount > 1) {
     finalPrompt = `Generate ${state.outputCount} variations:\n\n${finalPrompt}`;
   }
-  
+
   // Show output
   document.getElementById('prompt-output').classList.remove('hidden');
   document.getElementById('prompt-text').textContent = finalPrompt;
-  
+
   // Store for later use
   state.lastGeneratedPrompt = finalPrompt;
   state.lastFormData = formData;
-  
+
   // Save to sessionStorage so it persists when switching tabs
   saveToolState(appId, formData, finalPrompt);
 }
@@ -1343,7 +1343,7 @@ function saveToolState(toolId, formData, generatedPrompt) {
     timestamp: Date.now()
   };
   sessionStorage.setItem(`tool_state_${toolId}`, JSON.stringify(toolState));
-  
+
   // Also save current tool ID
   sessionStorage.setItem('currentToolId', toolId);
 }
@@ -1352,7 +1352,7 @@ function saveToolState(toolId, formData, generatedPrompt) {
 function restoreToolState(toolId) {
   const saved = sessionStorage.getItem(`tool_state_${toolId}`);
   if (!saved) return null;
-  
+
   try {
     const toolState = JSON.parse(saved);
     // Only restore if less than 1 hour old
@@ -1369,7 +1369,7 @@ function restoreToolState(toolId) {
 function applyRestoredState(toolId) {
   const savedState = restoreToolState(toolId);
   if (!savedState) return;
-  
+
   // Restore form values
   if (savedState.formData) {
     Object.keys(savedState.formData).forEach(fieldId => {
@@ -1379,7 +1379,7 @@ function applyRestoredState(toolId) {
       }
     });
   }
-  
+
   // Restore generated prompt
   if (savedState.generatedPrompt) {
     const outputEl = document.getElementById('prompt-output');
@@ -1405,16 +1405,16 @@ async function saveAndMarkComplete(appId) {
     showToast(t('selectProjectFirst'), 'warning');
     return;
   }
-  
+
   try {
     await markToolAsCompleted(appId, state.lastFormData, state.lastGeneratedPrompt);
     await saveToHistory(appId);
-    
+
     // ============ AUTO-INTEGRATION TRIGGER ============
     // If this is Synopsis Writer (story-01), trigger auto-integration
     if (appId === 'story-01' && state.lastFormData) {
       showToast('🚀 Synopsis completed! Starting auto-integration...', 'info');
-      
+
       // Save synopsis to production bible
       const synopsisData = {
         title: state.lastFormData.title || '',
@@ -1424,11 +1424,11 @@ async function saveAndMarkComplete(appId) {
         style: state.lastFormData.style || '',
         mood: state.lastFormData.mood || ''
       };
-      
+
       // Save to production bible
       await DB.saveBible(state.currentProject, state.user.id, synopsisData);
       state.productionBible = { ...state.productionBible, ...synopsisData };
-      
+
       // Trigger auto-integration
       setTimeout(() => triggerAutoIntegration(synopsisData), 1000);
     }
@@ -1444,14 +1444,14 @@ async function saveAndMarkComplete(appId) {
 // ============ MARK TOOL AS COMPLETED ============
 async function markToolAsCompleted(appId, formData, generatedPrompt) {
   if (!state.user || !state.currentProject) return;
-  
+
   const phase = findPhase(appId);
   const phaseId = phase?.id || 'unknown';
-  
+
   try {
     // Save to workflow progress
     await DB.markToolCompleted(state.currentProject, state.user.id, appId, phaseId);
-    
+
     // Update local state
     const existingProgress = state.workflowProgress.find(p => p.tool_id === appId);
     if (existingProgress) {
@@ -1465,7 +1465,7 @@ async function markToolAsCompleted(appId, formData, generatedPrompt) {
         completed_at: new Date().toISOString()
       });
     }
-    
+
     // Update UI
     renderSidebar();
     showToast(t('savedSuccessfully'), 'success');
@@ -1481,15 +1481,15 @@ async function saveToHistory(appId) {
     saveToLocalHistory(appId);
     return;
   }
-  
+
   const app = findApp(appId);
   const promptText = document.getElementById('prompt-text')?.textContent;
-  
+
   if (!promptText) {
     showToast('Generate a prompt first', 'warning');
     return;
   }
-  
+
   try {
     const historyEntry = {
       user_id: state.user.id,
@@ -1499,7 +1499,7 @@ async function saveToHistory(appId) {
       prompt: promptText,
       form_data: state.lastFormData
     };
-    
+
     await DB.saveToHistory(historyEntry);
     state.history = await DB.getHistory(state.user.id);
     updateHistoryCount();
@@ -1517,7 +1517,7 @@ function saveToLocalHistory(appId) {
   const app = findApp(appId);
   const promptText = document.getElementById('prompt-text')?.textContent;
   if (!promptText) return;
-  
+
   const localHistory = JSON.parse(localStorage.getItem('localHistory') || '[]');
   localHistory.unshift({
     id: Date.now().toString(),
@@ -1527,11 +1527,11 @@ function saveToLocalHistory(appId) {
     form_data: state.lastFormData,
     created_at: new Date().toISOString()
   });
-  
+
   // Keep only last 50 entries
   if (localHistory.length > 50) localHistory.pop();
   localStorage.setItem('localHistory', JSON.stringify(localHistory));
-  
+
   // Update state
   state.history = [...localHistory, ...state.history.filter(h => h.user_id)];
   updateHistoryCount();
@@ -1540,7 +1540,7 @@ function saveToLocalHistory(appId) {
 // ============ CHARACTERS PAGE ============
 function renderCharactersPage() {
   const chars = state.characters.filter(c => !state.currentProject || c.project_id === state.currentProject);
-  
+
   return `
     <div class="max-w-4xl mx-auto">
       <div class="flex items-center justify-between mb-5">
@@ -1637,7 +1637,7 @@ async function deleteCharacter(charId) {
 // ============ LOCATIONS PAGE ============
 function renderLocationsPage() {
   const locs = state.locations.filter(l => !state.currentProject || l.project_id === state.currentProject);
-  
+
   return `
     <div class="max-w-4xl mx-auto">
       <div class="flex items-center justify-between mb-5">
@@ -1735,7 +1735,7 @@ async function deleteLocation(locId) {
 // ============ SCENES PAGE ============
 function renderScenesPage() {
   const scenes = state.scenes.filter(s => !state.currentProject || s.project_id === state.currentProject);
-  
+
   return `
     <div class="max-w-4xl mx-auto">
       <div class="flex items-center justify-between mb-5">
@@ -1779,7 +1779,7 @@ function showNewSceneModal() {
     showToast(t('selectProjectFirst'), 'warning');
     return;
   }
-  
+
   showModal('Add Scene', `
     <div class="space-y-4">
       <div>
@@ -1851,7 +1851,7 @@ async function deleteScene(sceneId) {
 // ============ ASSETS PAGE ============
 function renderAssetsPage() {
   const assets = state.generatedAssets.filter(a => !state.currentProject || a.project_id === state.currentProject);
-  
+
   return `
     <div class="max-w-6xl mx-auto">
       <div class="flex items-center justify-between mb-5">
@@ -1926,7 +1926,7 @@ function renderAdminOpalLinksPage() {
       });
     });
   });
-  
+
   return `
     <div class="max-w-4xl mx-auto">
       <div class="mb-5">
@@ -1982,12 +1982,12 @@ function hideHistoryPanel() {
 function renderHistoryList() {
   const list = document.getElementById('history-list');
   const projectHistory = state.history.filter(h => !state.currentProject || h.project_id === state.currentProject);
-  
+
   if (projectHistory.length === 0) {
     list.innerHTML = '<p class="text-slate-500 text-sm text-center py-8">No history yet</p>';
     return;
   }
-  
+
   list.innerHTML = projectHistory.map(h => `
     <div class="glass rounded-lg p-3 mb-2 card-hover">
       <div class="flex items-start justify-between mb-2">
@@ -2063,12 +2063,12 @@ function showToast(message, type = 'info') {
     warning: 'bg-yellow-500/20 border-yellow-500/30 text-yellow-400',
     info: 'bg-cyan-500/20 border-cyan-500/30 text-cyan-400'
   };
-  
+
   const toast = document.createElement('div');
   toast.className = `glass rounded-xl px-4 py-3 border ${colors[type]} toast`;
   toast.innerHTML = `<p class="text-sm">${message}</p>`;
   container.appendChild(toast);
-  
+
   setTimeout(() => {
     toast.remove();
   }, 3000);
@@ -2092,7 +2092,7 @@ function showSettingsModal() {
       <div>
         <label class="block text-sm text-slate-400 mb-2">Default Output Count</label>
         <select id="settings-output" class="w-full rounded-lg px-3 py-2">
-          ${[1,2,3,4,5].map(n => `<option value="${n}" ${state.outputCount === n ? 'selected' : ''}>${n}x</option>`).join('')}
+          ${[1, 2, 3, 4, 5].map(n => `<option value="${n}" ${state.outputCount === n ? 'selected' : ''}>${n}x</option>`).join('')}
         </select>
       </div>
     </div>
@@ -2136,7 +2136,7 @@ function showWorkflowHelp() {
 function showEditProjectModal(projectId) {
   const project = state.projects.find(p => p.id === projectId);
   if (!project) return;
-  
+
   showModal(t('edit') + ' Project', `
     <div class="space-y-4">
       <div>
@@ -2184,7 +2184,7 @@ function showEditProjectModal(projectId) {
 function showEditCharacterModal(charId) {
   const char = state.characters.find(c => c.id === charId);
   if (!char) return;
-  
+
   showModal(t('edit') + ' Character', `
     <div class="space-y-4">
       <div>
@@ -2229,7 +2229,7 @@ function showEditCharacterModal(charId) {
 function showEditLocationModal(locId) {
   const loc = state.locations.find(l => l.id === locId);
   if (!loc) return;
-  
+
   showModal(t('edit') + ' Location', `
     <div class="space-y-4">
       <div>
@@ -2274,7 +2274,7 @@ function showEditLocationModal(locId) {
 function showEditSceneModal(sceneId) {
   const scene = state.scenes.find(s => s.id === sceneId);
   if (!scene) return;
-  
+
   showModal('Edit Scene', `
     <div class="space-y-4">
       <div>
@@ -2332,24 +2332,24 @@ function showEditSceneModal(sceneId) {
 
 async function triggerAutoIntegration(synopsisData) {
   if (!state.currentProject || !synopsisData) return;
-  
+
   showToast('🔄 Auto-integration started...', 'info');
-  
+
   try {
     // 1. Parse synopsis and extract data
     const extractedData = await extractDataFromSynopsis(synopsisData);
-    
+
     // 2. Auto-create characters, locations, episodes, scenes
     await autoCreateProjectElements(extractedData);
-    
+
     // 3. Auto-populate all production tools with extracted data
     await autoPopulateProductionTools(extractedData);
-    
+
     // 4. Update UI
     await loadProjectData(state.currentProject);
     renderSidebar();
     renderPage();
-    
+
     showToast('✅ Auto-integration completed! All phases ready.', 'success');
   } catch (error) {
     console.error('Auto-integration error:', error);
@@ -2360,7 +2360,7 @@ async function triggerAutoIntegration(synopsisData) {
 // Extract structured data from synopsis using simple parsing
 async function extractDataFromSynopsis(synopsisData) {
   const { title, synopsis, genre, style, mood, logline } = synopsisData;
-  
+
   return {
     title: title || 'Untitled',
     logline: logline || '',
@@ -2382,9 +2382,9 @@ async function extractDataFromSynopsis(synopsisData) {
 // Simple character extraction from synopsis text
 function extractCharacters(synopsis) {
   if (!synopsis) return getDefaultCharacters();
-  
+
   const characters = [];
-  
+
   // Look for character patterns in synopsis
   const characterPatterns = [
     /([A-Z][a-z]+)(?:\s+[A-Z][a-z]+)?\s+(?:adalah|is|was|were|who|that)/g,
@@ -2393,7 +2393,7 @@ function extractCharacters(synopsis) {
     /tokoh\s+([A-Z][a-z]+)/gi,
     /([A-Z][a-z]+)\s+(?:seorang|a|an)\s+/g
   ];
-  
+
   characterPatterns.forEach(pattern => {
     let match;
     while ((match = pattern.exec(synopsis)) !== null) {
@@ -2412,7 +2412,7 @@ function extractCharacters(synopsis) {
       }
     }
   });
-  
+
   // Return defaults if none found
   return characters.length > 0 ? characters.slice(0, 5) : getDefaultCharacters();
 }
@@ -2427,9 +2427,9 @@ function getDefaultCharacters() {
 // Simple location extraction from synopsis text
 function extractLocations(synopsis) {
   if (!synopsis) return getDefaultLocations();
-  
+
   const locations = [];
-  
+
   // Look for location patterns
   const locationPatterns = [
     /(?:di|at|in)\s+([A-Z][a-z]+(?:\s+[A-Z][a-z]+)?)/g,
@@ -2437,7 +2437,7 @@ function extractLocations(synopsis) {
     /location\s+([A-Z][a-z]+)/gi,
     /tempat\s+([A-Z][a-z]+)/gi
   ];
-  
+
   locationPatterns.forEach(pattern => {
     let match;
     while ((match = pattern.exec(synopsis)) !== null) {
@@ -2452,7 +2452,7 @@ function extractLocations(synopsis) {
       }
     }
   });
-  
+
   // Return defaults if none found
   return locations.length > 0 ? locations.slice(0, 3) : getDefaultLocations();
 }
@@ -2468,12 +2468,12 @@ function getDefaultLocations() {
 function createEpisodesFromSynopsis(synopsis) {
   const episodes = [];
   const synopsisLength = synopsis?.length || 0;
-  
+
   // Determine episode count based on synopsis length
   let episodeCount = 1;
   if (synopsisLength > 1000) episodeCount = 3;
   if (synopsisLength > 2000) episodeCount = 5;
-  
+
   for (let i = 1; i <= episodeCount; i++) {
     episodes.push({
       episode_number: i,
@@ -2482,7 +2482,7 @@ function createEpisodesFromSynopsis(synopsis) {
       duration_minutes: 5
     });
   }
-  
+
   return episodes;
 }
 
@@ -2490,10 +2490,10 @@ function createEpisodesFromSynopsis(synopsis) {
 function createScenesFromSynopsis(synopsis) {
   const scenes = [];
   const synopsisLength = synopsis?.length || 0;
-  
+
   // Create basic scene structure
   const sceneCount = Math.min(Math.max(Math.floor(synopsisLength / 200), 3), 8);
-  
+
   for (let i = 1; i <= sceneCount; i++) {
     scenes.push({
       scene_number: i,
@@ -2503,14 +2503,14 @@ function createScenesFromSynopsis(synopsis) {
       duration_seconds: 30
     });
   }
-  
+
   return scenes;
 }
 
 // Auto-create project elements in database
 async function autoCreateProjectElements(extractedData) {
   if (!state.user || !state.currentProject) return;
-  
+
   try {
     // Create characters (only if none exist)
     if (state.characters.filter(c => c.project_id === state.currentProject).length === 0) {
@@ -2523,7 +2523,7 @@ async function autoCreateProjectElements(extractedData) {
         state.characters.push(newChar);
       }
     }
-    
+
     // Create locations (only if none exist)
     if (state.locations.filter(l => l.project_id === state.currentProject).length === 0) {
       for (const locData of extractedData.locations) {
@@ -2535,7 +2535,7 @@ async function autoCreateProjectElements(extractedData) {
         state.locations.push(newLoc);
       }
     }
-    
+
     // Create episodes (only if none exist)
     if (state.episodes.length === 0) {
       for (const epData of extractedData.episodes) {
@@ -2547,7 +2547,7 @@ async function autoCreateProjectElements(extractedData) {
         state.episodes.push(newEp);
       }
     }
-    
+
     // Create scenes (only if none exist)
     if (state.scenes.length === 0) {
       for (const sceneData of extractedData.scenes) {
@@ -2567,12 +2567,12 @@ async function autoCreateProjectElements(extractedData) {
 // Auto-populate all production tools with extracted data
 async function autoPopulateProductionTools(extractedData) {
   if (!state.user || !state.currentProject) return;
-  
+
   try {
     // Mark all production phases as having auto-fill data available
     for (const phase of PRODUCTION_PHASES) {
       if (phase.id === 'synopsis') continue; // Skip synopsis itself
-      
+
       for (const toolId of phase.tools) {
         await DB.saveToolProgress(state.currentProject, state.user.id, toolId, phase.id, {
           is_completed: false,
@@ -2581,7 +2581,7 @@ async function autoPopulateProductionTools(extractedData) {
         });
       }
     }
-    
+
     // Update local state
     state.workflowProgress = await DB.getWorkflowProgress(state.currentProject);
   } catch (error) {
@@ -2615,17 +2615,17 @@ function autoFillForm(appId) {
     showToast('No auto-fill data available. Complete Synopsis Writer first.', 'warning');
     return;
   }
-  
+
   // Fill form fields with auto data
   const formDef = typeof APP_FORMS !== 'undefined' ? APP_FORMS[appId] : null;
   const fields = formDef?.inputs || [];
-  
+
   fields.forEach(field => {
     const el = document.getElementById(`field-${field.id}`);
     if (el && autoData[field.id]) {
       el.value = autoData[field.id];
     }
   });
-  
+
   showToast('✨ Form auto-filled from Synopsis!', 'success');
 }

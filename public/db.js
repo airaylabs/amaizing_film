@@ -1,6 +1,9 @@
 // raymAIzing film - Database Operations
 // Celtx-Style Project Management with Content Storage
 
+// Get supabase client from global
+const supabase = window.supabaseClient;
+
 // ============ DATABASE OPERATIONS ============
 const DB = {
   // ============ PROJECTS ============
