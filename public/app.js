@@ -101,10 +101,6 @@ const POST_PRODUCTION_GUIDE = {
 const PRODUCTION_PHASES = WORKFLOW_PHASES;
 const INSIGHT_SECTION = INSIGHT_TOOLS;
 
-// Legacy compatibility
-const PRODUCTION_PHASES = WORKFLOW_PHASES;
-const INSIGHT_SECTION = INSIGHT_TOOLS;
-
 // ============ APP STATE ============
 let state = {
   user: null,
