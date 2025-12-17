@@ -1077,15 +1077,15 @@ function renderDashboard() {
           </div>
         </div>
         <div class="grid grid-cols-3 gap-2">
-          <button onclick="navigateTo('app', 'gen-image')" class="p-3 rounded-lg text-xs bg-green-500/10 text-green-400 hover:bg-green-500/20 text-center">
+          <button onclick="navigateTo('app', '05')" class="p-3 rounded-lg text-xs bg-green-500/10 text-green-400 hover:bg-green-500/20 text-center">
             <div class="text-lg mb-1">🖼️</div>
             <div>Gambar</div>
           </button>
-          <button onclick="navigateTo('app', 'gen-video')" class="p-3 rounded-lg text-xs bg-green-500/10 text-green-400 hover:bg-green-500/20 text-center">
+          <button onclick="navigateTo('app', '08')" class="p-3 rounded-lg text-xs bg-green-500/10 text-green-400 hover:bg-green-500/20 text-center">
             <div class="text-lg mb-1">🎬</div>
             <div>Video</div>
           </button>
-          <button onclick="navigateTo('app', 'gen-audio')" class="p-3 rounded-lg text-xs bg-green-500/10 text-green-400 hover:bg-green-500/20 text-center">
+          <button onclick="navigateTo('app', 'audio-01')" class="p-3 rounded-lg text-xs bg-green-500/10 text-green-400 hover:bg-green-500/20 text-center">
             <div class="text-lg mb-1">🎵</div>
             <div>Audio</div>
           </button>
