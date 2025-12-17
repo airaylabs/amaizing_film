@@ -113,15 +113,15 @@ const GENERATE_SECTION = {
 // Legacy compatibility
 const WORKFLOW_PHASES = FASE_PRODUKSI;
 const PRODUCTION_PHASES = FASE_PRODUKSI;
-const INSIGHT_TOOLS = { 
+const INSIGHT_TOOLS = {
   tools: INSIGHT_SECTION.subsections.flatMap(s => s.tools),
   icon: '💡',
   name: 'Insight'
 };
-const MARKETING_TOOLS = { 
-  tools: ['dist-01', 'dist-02', 'dist-03', 'dist-04'], 
-  name: 'Marketing', 
-  icon: '📢' 
+const MARKETING_TOOLS = {
+  tools: ['dist-01', 'dist-02', 'dist-03', 'dist-04'],
+  name: 'Marketing',
+  icon: '📢'
 };
 
 // ============ APP STATE ============
@@ -706,220 +706,154 @@ function renderSidebar() {
   const nav = document.getElementById('sidebar-nav');
   const chars = state.characters.filter(c => !state.currentProject || c.project_id === state.currentProject);
   const locs = state.locations.filter(l => !state.currentProject || l.project_id === state.currentProject);
-  const hasSynopsis = state.productionBible.synopsis && state.productionBible.synopsis.length > 0;
 
-  let html = `
-    <div class="sidebar-item ${state.currentPage === 'dashboard' ? 'active' : ''} rounded-lg p-2 cursor-pointer mb-1 text-sm" onclick="navigateTo('dashboard')">
+  let html = '';
+
+  // Dashboard
+  html += `
+    <div class="sidebar-item ${state.currentPage === 'dashboard' ? 'active' : ''} rounded-lg p-2 cursor-pointer mb-2 text-sm" onclick="navigateTo('dashboard')">
       <span class="mr-2">🏠</span> Dashboard
     </div>
   `;
 
-  // Project Status with Synopsis indicator
-  if (state.currentProject) {
-    const project = state.projects.find(p => p.id === state.currentProject);
-    const completionPercent = getOverallCompletionPercent();
-    html += `
-      <div class="mx-2 my-2 p-2 rounded-lg ${hasSynopsis ? 'bg-green-500/10 border-green-500/20' : 'bg-cyan-500/10 border-cyan-500/20'} border">
-        <div class="flex items-center justify-between mb-1">
-          <span class="text-xs font-medium truncate">${project?.name || 'Project'}</span>
-          <span class="text-[10px] ${hasSynopsis ? 'text-green-400' : 'text-cyan-400'}">${completionPercent}%</span>
-        </div>
-        <div class="h-1 bg-slate-700 rounded-full overflow-hidden">
-          <div class="h-full ${hasSynopsis ? 'bg-green-500' : 'bg-cyan-500'} transition-all" style="width: ${completionPercent}%"></div>
-        </div>
-        ${hasSynopsis ? `<p class="text-[9px] text-green-400 mt-1">📖 Synopsis Active - Auto-fill enabled</p>` : ''}
-      </div>
-    `;
-  }
-
-  // ============ INSIGHT SECTION (Not a phase, just for ideas) ============
-  html += `<div class="mt-3 mb-1 px-2 text-[10px] text-yellow-500 uppercase tracking-wider">💡 INSIGHT</div>`;
-
-  const insightExpanded = state.expandedPhases.includes('insight') || INSIGHT_TOOLS.tools.includes(state.currentApp);
-  html += `
-    <div class="mb-0.5">
-      <div class="flex items-center justify-between p-2 rounded-lg cursor-pointer hover:bg-yellow-500/5 text-sm" 
-           onclick="togglePhase('insight')">
-        <span class="flex items-center gap-1.5">
-          <span class="text-sm">${INSIGHT_TOOLS.icon}</span>
-          <span class="text-xs text-yellow-400">${getWorkflowPhaseName('insight')}</span>
-        </span>
-        <span class="text-[10px] text-yellow-500/50">Optional</span>
-      </div>
-      <div id="phase-insight" class="${insightExpanded ? '' : 'hidden'} ml-3 border-l border-yellow-500/15 pl-1.5">
-        ${INSIGHT_TOOLS.tools.map(toolId => {
-    const tool = findApp(toolId);
-    if (!tool) return '';
-    const hasLink = getEffectiveOpalLink(toolId);
-    return `
-            <div class="sidebar-item ${state.currentApp === toolId ? 'active' : ''} rounded p-1.5 cursor-pointer text-xs flex items-center justify-between group" 
-                 onclick="navigateTo('app', '${toolId}')">
-              <span class="flex items-center gap-1.5 truncate">
-                <span>${tool.icon}</span>
-                <span class="truncate">${tool.name}</span>
-              </span>
-              ${hasLink ? `<a href="${hasLink}" target="_blank" onclick="event.stopPropagation()" class="opacity-0 group-hover:opacity-100 text-cyan-400 text-[10px]">↗</a>` : ''}
-            </div>
-          `;
-  }).join('')}
-      </div>
-    </div>
-  `;
-
-  // ============ PRODUCTION PHASES (7 phases) ============
-  html += `<div class="mt-3 mb-1 px-2 text-[10px] text-cyan-500 uppercase tracking-wider">🎬 FASE PRODUKSI</div>`;
-
-  WORKFLOW_PHASES.forEach(phase => {
-    const isCompleted = isPhaseCompleted(phase.id);
-    const isLocked = isPhaseLocked(phase.id);
-    const completionPercent = getPhaseCompletionPercent(phase.id);
-    const isExpanded = state.expandedPhases.includes(phase.id) || phase.tools.includes(state.currentApp);
-    const isCore = phase.isCore;
-    const hasAutoFill = phase.autoFillFrom && hasSynopsis;
-
-    html += `
-      <div class="mb-0.5">
-        <div class="flex items-center justify-between p-2 rounded-lg cursor-pointer hover:bg-white/5 text-sm ${isLocked ? 'opacity-50' : ''}" 
-             onclick="${isLocked ? '' : `togglePhase('${phase.id}')`}">
-          <span class="flex items-center gap-1.5">
-            <span class="text-sm">${phase.icon}</span>
-            <span class="text-xs">${getWorkflowPhaseName(phase.id)}</span>
-            ${isCore ? '<span class="text-yellow-400 text-[8px]">⭐</span>' : ''}
-            ${hasAutoFill ? '<span class="text-green-400 text-[8px]">🔗</span>' : ''}
-            ${isCompleted ? '<span class="text-green-400 text-[10px]">✓</span>' : ''}
-            ${isLocked ? '<span class="text-slate-500 text-[10px]">🔒</span>' : ''}
-          </span>
-          <span class="text-[10px] ${isCompleted ? 'text-green-400' : 'text-slate-500'}">${completionPercent}%</span>
-        </div>
-        <div id="phase-${phase.id}" class="${isExpanded ? '' : 'hidden'} ml-3 border-l border-cyan-500/15 pl-1.5">
-          ${phase.tools.map(toolId => {
-      const tool = findApp(toolId);
-      if (!tool) return '';
-      const isToolDone = isToolCompleted(toolId);
-      const hasLink = getEffectiveOpalLink(toolId);
-      const toolHasAutoFill = tool.autoPopulate && hasSynopsis;
-      return `
-              <div class="sidebar-item ${state.currentApp === toolId ? 'active' : ''} rounded p-1.5 cursor-pointer text-xs flex items-center justify-between group" 
-                   onclick="navigateTo('app', '${toolId}')">
-                <span class="flex items-center gap-1.5 truncate">
-                  <span>${tool.icon}</span>
-                  <span class="truncate">${tool.name}</span>
-                  ${toolHasAutoFill ? '<span class="text-green-400 text-[8px]">🔗</span>' : ''}
-                  ${isToolDone ? '<span class="text-green-400 text-[8px]">✓</span>' : ''}
-                </span>
-                ${hasLink ? `<a href="${hasLink}" target="_blank" onclick="event.stopPropagation()" class="opacity-0 group-hover:opacity-100 text-cyan-400 text-[10px]">↗</a>` : ''}
-              </div>
-            `;
-    }).join('')}
-        </div>
-      </div>
-    `;
-  });
-
-  // ============ MARKETING SECTION ============
-  html += `<div class="mt-3 mb-1 px-2 text-[10px] text-purple-500 uppercase tracking-wider">📢 MARKETING</div>`;
-
-  const marketingExpanded = state.expandedPhases.includes('marketing') || MARKETING_TOOLS.tools.includes(state.currentApp);
-  html += `
-    <div class="mb-0.5">
-      <div class="flex items-center justify-between p-2 rounded-lg cursor-pointer hover:bg-purple-500/5 text-sm" 
-           onclick="togglePhase('marketing')">
-        <span class="flex items-center gap-1.5">
-          <span class="text-sm">${MARKETING_TOOLS.icon}</span>
-          <span class="text-xs text-purple-400">${MARKETING_TOOLS.name}</span>
-        </span>
-      </div>
-      <div id="phase-marketing" class="${marketingExpanded ? '' : 'hidden'} ml-3 border-l border-purple-500/15 pl-1.5">
-        ${MARKETING_TOOLS.tools.map(toolId => {
-    const tool = findApp(toolId);
-    if (!tool) return '';
-    const hasLink = getEffectiveOpalLink(toolId);
-    const isToolDone = isToolCompleted(toolId);
-    return `
-            <div class="sidebar-item ${state.currentApp === toolId ? 'active' : ''} rounded p-1.5 cursor-pointer text-xs flex items-center justify-between group" 
-                 onclick="navigateTo('app', '${toolId}')">
-              <span class="flex items-center gap-1.5 truncate">
-                <span>${tool.icon}</span>
-                <span class="truncate">${tool.name}</span>
-                ${isToolDone ? '<span class="text-green-400 text-[8px]">✓</span>' : ''}
-              </span>
-              ${hasLink ? `<a href="${hasLink}" target="_blank" onclick="event.stopPropagation()" class="opacity-0 group-hover:opacity-100 text-cyan-400 text-[10px]">↗</a>` : ''}
-            </div>
-          `;
-  }).join('')}
-      </div>
-    </div>
-  `;
-
-  // ============ GENERATE SECTION ============
-  html += `<div class="mt-3 mb-1 px-2 text-[10px] text-green-500 uppercase tracking-wider">🔧 GENERATE</div>`;
+  // ============ 💡 INSIGHT ============
+  html += `<div class="mt-4 mb-1 px-2 text-[10px] text-yellow-500 uppercase tracking-wider font-medium">💡 INSIGHT</div>`;
   
-  GENERATE_SECTION.subsections.forEach(sub => {
-    const subExpanded = state.expandedPhases.includes(sub.id) || sub.tools.includes(state.currentApp);
-    html += `
-      <div class="mb-0.5">
-        <div class="flex items-center justify-between p-2 rounded-lg cursor-pointer hover:bg-green-500/5 text-sm" 
-             onclick="togglePhase('${sub.id}')">
-          <span class="flex items-center gap-1.5">
-            <span class="text-sm">${sub.icon}</span>
-            <span class="text-xs text-green-400">${sub.name}</span>
-          </span>
-        </div>
-        <div id="phase-${sub.id}" class="${subExpanded ? '' : 'hidden'} ml-3 border-l border-green-500/15 pl-1.5">
-          ${sub.tools.map(toolId => {
-            const tool = findApp(toolId);
-            if (!tool) return '';
-            const hasLink = getEffectiveOpalLink(toolId);
-            const isToolDone = isToolCompleted(toolId);
-            return `
-              <div class="sidebar-item ${state.currentApp === toolId ? 'active' : ''} rounded p-1.5 cursor-pointer text-xs flex items-center justify-between group" 
-                   onclick="navigateTo('app', '${toolId}')">
-                <span class="flex items-center gap-1.5 truncate">
-                  <span>${tool.icon}</span>
-                  <span class="truncate">${tool.name}</span>
-                  ${isToolDone ? '<span class="text-green-400 text-[8px]">✓</span>' : ''}
-                </span>
-                ${hasLink ? `<a href="${hasLink}" target="_blank" onclick="event.stopPropagation()" class="opacity-0 group-hover:opacity-100 text-cyan-400 text-[10px]">↗</a>` : ''}
-              </div>
-            `;
-          }).join('')}
-        </div>
-      </div>
-    `;
-  });
+  // Ide
+  const ideTools = ['idea-01', 'idea-02'];
+  const ideExpanded = state.expandedPhases.includes('ide') || ideTools.includes(state.currentApp);
+  html += renderSidebarSection('ide', '💡', 'Ide', ideTools, ideExpanded, 'yellow');
+  
+  // Marketing  
+  const marketingTools = ['dist-01', 'dist-02', 'dist-03', 'dist-04'];
+  const marketingExpanded = state.expandedPhases.includes('marketing') || marketingTools.includes(state.currentApp);
+  html += renderSidebarSection('marketing', '📢', 'Marketing', marketingTools, marketingExpanded, 'yellow');
 
-  // Assets Section
+  // ============ 🎬 FASE PRODUKSI ============
+  html += `<div class="mt-4 mb-1 px-2 text-[10px] text-cyan-500 uppercase tracking-wider font-medium">🎬 FASE PRODUKSI</div>`;
+  
+  // Synopsis Writer (Core)
+  html += renderSidebarItem('story-01', '📖', 'Synopsis Writer', true);
+  
+  // Pra Produksi (Episode, Scene, Character Arc)
+  const praProduksiTools = ['story-02', 'story-03', 'story-04'];
+  const praProduksiExpanded = state.expandedPhases.includes('pra-produksi') || praProduksiTools.includes(state.currentApp);
+  html += renderSidebarSection('pra-produksi', '📋', 'Pra Produksi', praProduksiTools, praProduksiExpanded, 'cyan');
+  
+  // Script to Treatment
+  html += renderSidebarItem('01', '📝', 'Script to Treatment');
+  
+  // Storyboard Creator
+  html += renderSidebarItem('02', '🎬', 'Storyboard Creator');
+  
+  // Character Designer
+  html += renderSidebarItem('03', '👤', 'Character Designer');
+  
+  // World Builder
+  html += renderSidebarItem('04', '🌍', 'World Builder');
+
+  // ============ 🔧 GENERATE ============
+  html += `<div class="mt-4 mb-1 px-2 text-[10px] text-green-500 uppercase tracking-wider font-medium">🔧 GENERATE</div>`;
+  
+  // Produksi Gambar
+  const gambarTools = ['05', '06', '07'];
+  const gambarExpanded = state.expandedPhases.includes('produksi-gambar') || gambarTools.includes(state.currentApp);
+  html += renderSidebarSection('produksi-gambar', '🖼️', 'Produksi Gambar', gambarTools, gambarExpanded, 'green');
+  
+  // Produksi Video
+  const videoTools = ['08', '09', '10', '11'];
+  const videoExpanded = state.expandedPhases.includes('produksi-video') || videoTools.includes(state.currentApp);
+  html += renderSidebarSection('produksi-video', '🎬', 'Produksi Video', videoTools, videoExpanded, 'green');
+  
+  // Produksi Audio
+  const audioTools = ['audio-01', 'audio-02', 'audio-03', 'audio-04'];
+  const audioExpanded = state.expandedPhases.includes('produksi-audio') || audioTools.includes(state.currentApp);
+  html += renderSidebarSection('produksi-audio', '🔊', 'Produksi Audio', audioTools, audioExpanded, 'green');
+
+  // ============ 📦 ASET ============
+  html += `<div class="mt-4 mb-1 px-2 text-[10px] text-slate-400 uppercase tracking-wider font-medium">📦 ASET</div>`;
   html += `
-    <div class="mt-3 mb-1 px-2 text-[10px] text-slate-500 uppercase tracking-wider">📦 ASET</div>
     <div class="sidebar-item ${state.currentPage === 'characters' ? 'active' : ''} rounded-lg p-2 cursor-pointer mb-0.5 text-sm flex items-center justify-between" onclick="navigateTo('characters')">
-      <span class="flex items-center gap-1.5"><span>👤</span><span class="text-xs">Karakter</span></span>
+      <span class="flex items-center gap-2"><span>👤</span><span class="text-xs">Karakter</span></span>
       <span class="text-[10px] text-slate-500">${chars.length}</span>
     </div>
     <div class="sidebar-item ${state.currentPage === 'locations' ? 'active' : ''} rounded-lg p-2 cursor-pointer mb-0.5 text-sm flex items-center justify-between" onclick="navigateTo('locations')">
-      <span class="flex items-center gap-1.5"><span>🎭</span><span class="text-xs">Lokasi</span></span>
+      <span class="flex items-center gap-2"><span>🎭</span><span class="text-xs">Lokasi</span></span>
       <span class="text-[10px] text-slate-500">${locs.length}</span>
     </div>
     <div class="sidebar-item ${state.currentPage === 'scenes' ? 'active' : ''} rounded-lg p-2 cursor-pointer mb-0.5 text-sm flex items-center justify-between" onclick="navigateTo('scenes')">
-      <span class="flex items-center gap-1.5"><span>🎬</span><span class="text-xs">Scene</span></span>
+      <span class="flex items-center gap-2"><span>🎬</span><span class="text-xs">Scene</span></span>
       <span class="text-[10px] text-slate-500">${state.scenes.length}</span>
     </div>
     <div class="sidebar-item ${state.currentPage === 'assets' ? 'active' : ''} rounded-lg p-2 cursor-pointer mb-0.5 text-sm flex items-center justify-between" onclick="navigateTo('assets')">
-      <span class="flex items-center gap-1.5"><span>🖼️</span><span class="text-xs">Aset Tergenerate</span></span>
+      <span class="flex items-center gap-2"><span>🖼️</span><span class="text-xs">Aset Tergenerate</span></span>
       <span class="text-[10px] text-slate-500">${state.generatedAssets.length}</span>
     </div>
   `;
 
-  // Admin Section
+  // Admin
   if (isAdmin()) {
     html += `
-      <div class="mt-3 mb-1 px-2 text-[10px] text-amber-400 uppercase tracking-wider">Admin</div>
-      <div class="sidebar-item ${state.currentPage === 'admin-opal-links' ? 'active' : ''} rounded-lg p-2 cursor-pointer mb-0.5 text-xs" onclick="navigateTo('admin-opal-links')">
-        <span class="flex items-center gap-1.5"><span>⚙️</span> Global Opal Links</span>
+      <div class="mt-4 mb-1 px-2 text-[10px] text-amber-400 uppercase tracking-wider">⚙️ Admin</div>
+      <div class="sidebar-item ${state.currentPage === 'admin-opal-links' ? 'active' : ''} rounded-lg p-2 cursor-pointer text-xs" onclick="navigateTo('admin-opal-links')">
+        Global Opal Links
       </div>
     `;
   }
 
   nav.innerHTML = html;
+}
+
+// Helper: Render sidebar section with expandable tools
+function renderSidebarSection(id, icon, name, tools, expanded, color) {
+  let html = `
+    <div class="mb-0.5">
+      <div class="flex items-center justify-between p-2 rounded-lg cursor-pointer hover:bg-${color}-500/5 text-sm" onclick="togglePhase('${id}')">
+        <span class="flex items-center gap-2">
+          <span>${icon}</span>
+          <span class="text-xs text-${color}-400">${name}</span>
+        </span>
+        <span class="text-[10px] text-slate-500">${expanded ? '▼' : '▶'}</span>
+      </div>
+      <div class="${expanded ? '' : 'hidden'} ml-4 border-l border-${color}-500/20 pl-2">
+  `;
+  
+  tools.forEach(toolId => {
+    const tool = findApp(toolId);
+    if (!tool) return;
+    const hasLink = getEffectiveOpalLink(toolId);
+    const isActive = state.currentApp === toolId;
+    html += `
+      <div class="sidebar-item ${isActive ? 'active' : ''} rounded p-1.5 cursor-pointer text-xs flex items-center justify-between group" onclick="navigateTo('app', '${toolId}')">
+        <span class="flex items-center gap-2 truncate">
+          <span>${tool.icon}</span>
+          <span class="truncate">${tool.name}</span>
+        </span>
+        ${hasLink ? `<a href="${hasLink}" target="_blank" onclick="event.stopPropagation()" class="opacity-0 group-hover:opacity-100 text-cyan-400 text-[10px]">↗</a>` : ''}
+      </div>
+    `;
+  });
+  
+  html += `</div></div>`;
+  return html;
+}
+
+// Helper: Render single sidebar item (not expandable)
+function renderSidebarItem(toolId, icon, name, isCore = false) {
+  const tool = findApp(toolId);
+  const hasLink = getEffectiveOpalLink(toolId);
+  const isActive = state.currentApp === toolId;
+  
+  return `
+    <div class="sidebar-item ${isActive ? 'active' : ''} rounded-lg p-2 cursor-pointer mb-0.5 text-sm flex items-center justify-between group" onclick="navigateTo('app', '${toolId}')">
+      <span class="flex items-center gap-2">
+        <span>${icon}</span>
+        <span class="text-xs">${tool?.name || name}</span>
+        ${isCore ? '<span class="text-yellow-400 text-[8px]">⭐</span>' : ''}
+      </span>
+      ${hasLink ? `<a href="${hasLink}" target="_blank" onclick="event.stopPropagation()" class="opacity-0 group-hover:opacity-100 text-cyan-400 text-[10px]">↗</a>` : ''}
+    </div>
+  `;
 }
 
 function togglePhase(phaseId) {
